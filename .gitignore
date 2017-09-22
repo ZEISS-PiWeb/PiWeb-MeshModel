@@ -1,0 +1,7 @@
+*.suo
+*.dll
+*.xml
+bin
+obj
+.vs
+*.user

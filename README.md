@@ -41,7 +41,7 @@ Or compile the library by yourself. Requirements:
 <a id="markdown-1-a-simple-cube" name="1-a-simple-cube"></a>
 ## A simple cube
 
-To get started, let's create a very basic shape with only a few points and a single **mesh** object. Positions, as well as normals and texture coordinates, are handed into the library as plain float arrays. The only thing you actually have to specify are positions and indices; PiWeb can calculate the normals from the adjacent triangles.
+To get started, let's create a very basic shape with only a few points and a single **mesh**. Positions, as well as normals and texture coordinates, are handed into the library as plain float arrays. The only thing you actually have to specify are positions and indices; PiWeb can calculate the normals from the adjacent triangles.
 
 ```csharp
 var positions = new[]
@@ -67,7 +67,7 @@ When we display the model in PiWeb, the result will look like this:
 
 <img style="width:100px;" src="gfx/CubeSingleMesh.png" >
 
-This isn't very nice, because the **normals are calculated per vertex** from the adjacent triangles. You could improve this by duplicating points and specifying precalculated normals, but there's an easier way: just create a single **mesh** object for **every side** of the cube:
+This isn't very nice, because every vertex has only one normal, and it points to none of the sides, since the adjacent triangles are orthogonal to each other. You could improve this by duplicating points and specifying precalculated normals, but there's an easier way: just create a single **mesh** for **every side** of the cube:
 
 ```csharp
 static Mesh CreateSquare( Point3F p1, Point3F p2, Point3F p3, Point3F p4)

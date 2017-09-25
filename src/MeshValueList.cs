@@ -23,6 +23,11 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	/// </summary>
 	public class MeshValueList
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MeshValueList"/> class.
+		/// </summary>
+		/// <param name="meshValues">The mesh values.</param>
+		/// <param name="entry">The entry.</param>
 		public MeshValueList( MeshValue[] meshValues, MeshValueEntry entry )
 		{
 			MeshValues = meshValues ?? new MeshValue[0];

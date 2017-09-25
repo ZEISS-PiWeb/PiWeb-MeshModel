@@ -6,17 +6,19 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
 #endregion
 
-namespace Zeiss.IMT.PiWeb.Meshmodels
+namespace Zeiss.IMT.PiWeb.MeshModel
 {
 	#region using
 
 	using System;
 	using System.Globalization;
 	using System.Xml;
-	using Zeiss.IMT.PiWeb.MeshModel;
 
 	#endregion
 
+	/// <summary>
+	/// Describes an entry of a <see cref="ColorScale"/>
+	/// </summary>
 	public class ColorScaleEntry
 	{
 		#region constructor
@@ -104,6 +106,12 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 			writer.WriteColorAttribute("RightColor", RightColor);
 		}
 
+		/// <summary>
+		/// Returns a <see cref="System.String" /> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String" /> that represents this instance.
+		/// </returns>
 		public override string ToString()
 		{
 			return $"{Value} [{LeftColor}, {RightColor}] ";

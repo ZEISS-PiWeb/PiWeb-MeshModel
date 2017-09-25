@@ -16,7 +16,6 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	using System.IO.Compression;
 	using System.Linq;
 	using System.Xml;
-	using Zeiss.IMT.PiWeb.Meshmodels;
 
 	#endregion
 

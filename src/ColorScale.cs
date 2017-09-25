@@ -18,10 +18,12 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	using System.Linq;
 	using System.Runtime.CompilerServices;
 	using System.Xml;
-	using Zeiss.IMT.PiWeb.Meshmodels;
 
 	#endregion
 
+	/// <summary>
+	/// Describes value range that is represented by discrete or continous colors.
+	/// </summary>
 	public class ColorScale
 	{
 		#region members

@@ -17,7 +17,6 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	using System.IO;
 	using System.IO.Compression;
 	using System.Linq;
-	using Zeiss.IMT.PiWeb.Meshmodels;
 
 	#endregion
 
@@ -161,6 +160,11 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 
 		#region methods
 
+		/// <summary>
+		/// Converts this model to a <see cref="MeshModelPart"/>
+		/// </summary>
+		/// <param name="meshValueLists">The mesh value lists.</param>
+		/// <returns></returns>
 		public MeshModelPart ToMeshModelPart(IEnumerable<MeshValueList> meshValueLists = null)
 		{
 			var meshes = Parts.SelectMany(p => p.Meshes);

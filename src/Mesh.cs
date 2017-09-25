@@ -13,7 +13,6 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	using System;
 	using System.IO;
 	using System.Linq;
-	using Zeiss.IMT.PiWeb.Meshmodels;
 
 	#endregion
 
@@ -165,6 +164,11 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			return _TriangleIndices?.GetIndizes() ?? new int[0];
 		}
 
+		/// <summary>
+		/// Gets the index of the triangle.
+		/// </summary>
+		/// <param name="index">The index.</param>
+		/// <returns></returns>
 		public int GetTriangleIndex( int index )
 		{
 			return _TriangleIndices[ index ];

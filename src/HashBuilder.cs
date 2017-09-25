@@ -14,7 +14,6 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 
 	using System.IO;
 	using System.Security.Cryptography;
-	using Zeiss.IMT.PiWeb.Meshmodels;
 
 	#endregion
 

@@ -13,19 +13,41 @@
 // ReSharper disable NonReadonlyMemberInGetHashCode
 namespace Zeiss.IMT.PiWeb.MeshModel
 {
-	using Zeiss.IMT.PiWeb.Meshmodels;
-
 	/// <summary>
 	/// Describes a point in 3D space with floating point coordinates. Adapted from the .NET Point3D class.
 	/// </summary>
 	public struct Point3F
 	{
+		/// <summary>
+		/// Gets or sets the x value.
+		/// </summary>
+		/// <value>
+		/// The x value.
+		/// </value>
 		public float X { get; set; }
 
+		/// <summary>
+		/// Gets or sets the y value.
+		/// </summary>
+		/// <value>
+		/// The y value.
+		/// </value>
 		public float Y { get; set; }
 
+		/// <summary>
+		/// Gets or sets the z value.
+		/// </summary>
+		/// <value>
+		/// The z value.
+		/// </value>
 		public float Z { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Point3F"/> struct.
+		/// </summary>
+		/// <param name="x">The x.</param>
+		/// <param name="y">The y.</param>
+		/// <param name="z">The z.</param>
 		public Point3F( float x, float y, float z )
 		{
 			X = x;
@@ -33,6 +55,14 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			Z = z;
 		}
 
+		/// <summary>
+		/// Implements the operator ==.
+		/// </summary>
+		/// <param name="point1">The point1.</param>
+		/// <param name="point2">The point2.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
 		public static bool operator ==( Point3F point1, Point3F point2 )
 		{
 			if( point1.X == point2.X &&
@@ -42,26 +72,64 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			return false;
 		}
 
+		/// <summary>
+		/// Implements the operator !=.
+		/// </summary>
+		/// <param name="point1">The point1.</param>
+		/// <param name="point2">The point2.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
 		public static bool operator !=( Point3F point1, Point3F point2 )
 		{
 			return !( point1 == point2 );
 		}
 
+		/// <summary>
+		/// Implements the operator +.
+		/// </summary>
+		/// <param name="point">The point.</param>
+		/// <param name="vector">The vector.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
 		public static Point3F operator +( Point3F point, Vector3F vector )
 		{
 			return new Point3F( point.X + vector.X, point.Y + vector.Y, point.Z + vector.Z );
 		}
 
+		/// <summary>
+		/// Implements the operator -.
+		/// </summary>
+		/// <param name="point">The point.</param>
+		/// <param name="vector">The vector.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
 		public static Point3F operator -( Point3F point, Vector3F vector )
 		{
 			return new Point3F( point.X - vector.X, point.Y - vector.Y, point.Z - vector.Z );
 		}
 
+		/// <summary>
+		/// Implements the operator -.
+		/// </summary>
+		/// <param name="point1">The point1.</param>
+		/// <param name="point2">The point2.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
 		public static Vector3F operator -( Point3F point1, Point3F point2 )
 		{
 			return new Vector3F( point1.X - point2.X, point1.Y - point2.Y, point1.Z - point2.Z );
 		}
 
+		/// <summary>
+		/// Offsets the point.
+		/// </summary>
+		/// <param name="offsetX">The offset x.</param>
+		/// <param name="offsetY">The offset y.</param>
+		/// <param name="offsetZ">The offset z.</param>
 		public void Offset( float offsetX, float offsetY, float offsetZ )
 		{
 			X = X + offsetX;
@@ -69,6 +137,12 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			Z = Z + offsetZ;
 		}
 
+		/// <summary>
+		/// Equalses the specified point1.
+		/// </summary>
+		/// <param name="point1">The point1.</param>
+		/// <param name="point2">The point2.</param>
+		/// <returns></returns>
 		public static bool Equals( Point3F point1, Point3F point2 )
 		{
 			if( point1.X.Equals( point2.X ) && point1.Y.Equals( point2.Y ) )
@@ -76,6 +150,13 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			return false;
 		}
 
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+		/// </summary>
+		/// <param name="o">The <see cref="System.Object" /> to compare with this instance.</param>
+		/// <returns>
+		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		/// </returns>
 		public override bool Equals( object o )
 		{
 			if( !( o is Point3F ) )
@@ -84,11 +165,22 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			return Equals( this, ( Point3F ) o );
 		}
 
+		/// <summary>
+		/// Equalses the specified value.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <returns></returns>
 		public bool Equals( Point3F value )
 		{
 			return Equals( this, value );
 		}
 
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
+		/// <returns>
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// </returns>
 		public override int GetHashCode()
 		{
 			var num1 = X;

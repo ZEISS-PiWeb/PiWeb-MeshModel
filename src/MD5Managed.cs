@@ -1,6 +1,9 @@
 ﻿// Source: http://dlaa.me/blog/post/9380245
 
-namespace Zeiss.IMT.PiWeb.Meshmodels
+// ReSharper disable InconsistentNaming
+// ReSharper disable SuggestVarOrType_BuiltInTypes
+// ReSharper disable RedundantCast
+namespace Zeiss.IMT.PiWeb.MeshModel
 {
 	#region usings
 
@@ -222,28 +225,28 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 
 		private static void FF( ref uint a, uint b, uint c, uint d, uint x, int s, uint ac )
 		{
-			( a ) += F( ( b ), ( c ), ( d ) ) + ( x ) + ( uint )( ac );
+			( a ) += F( ( b ), ( c ), ( d ) ) + ( x ) + ac;
 			( a ) = ROTATE_LEFT( ( a ), ( s ) );
 			( a ) += ( b );
 		}
 
 		private static void GG( ref uint a, uint b, uint c, uint d, uint x, int s, uint ac )
 		{
-			( a ) += G( ( b ), ( c ), ( d ) ) + ( x ) + ( uint )( ac );
+			( a ) += G( ( b ), ( c ), ( d ) ) + ( x ) + ac;
 			( a ) = ROTATE_LEFT( ( a ), ( s ) );
 			( a ) += ( b );
 		}
 
 		private static void HH( ref uint a, uint b, uint c, uint d, uint x, int s, uint ac )
 		{
-			( a ) += H( ( b ), ( c ), ( d ) ) + ( x ) + ( uint )( ac );
+			( a ) += H( ( b ), ( c ), ( d ) ) + ( x ) + ac;
 			( a ) = ROTATE_LEFT( ( a ), ( s ) );
 			( a ) += ( b );
 		}
 
 		private static void II( ref uint a, uint b, uint c, uint d, uint x, int s, uint ac )
 		{
-			( a ) += I( ( b ), ( c ), ( d ) ) + ( x ) + ( uint )( ac );
+			( a ) += I( ( b ), ( c ), ( d ) ) + ( x ) + ac;
 			( a ) = ROTATE_LEFT( ( a ), ( s ) );
 			( a ) += ( b );
 		}
@@ -271,14 +274,14 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 			uint inputLen ) /* length of input block */
 		{
 			/* Compute number of bytes mod 64 */
-			uint index = ( uint )( ( context.count[ 0 ] >> 3 ) & 0x3F );
+			uint index = (context.count[0] >> 3) & 0x3F;
 
 			/* Update number of bits */
-			if( ( context.count[ 0 ] += ( ( uint )inputLen << 3 ) ) < ( ( uint )inputLen << 3 ) )
+			if( ( context.count[ 0 ] += inputLen << 3) < inputLen << 3)
 			{
 				context.count[ 1 ]++;
 			}
-			context.count[ 1 ] += ( ( uint )inputLen >> 29 );
+			context.count[ 1 ] += inputLen >> 29;
 
 			uint partLen = 64 - index;
 
@@ -313,7 +316,7 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 			Encode( bits, context.count, 8 );
 
 			/* Pad out to 56 mod 64. */
-			uint index = ( uint )( ( context.count[ 0 ] >> 3 ) & 0x3f );
+			uint index = (context.count[0] >> 3) & 0x3f;
 			uint padLen = ( index < 56 ) ? ( 56 - index ) : ( 120 - index );
 			MD5Update( context, PADDING, 0, padLen );
 
@@ -438,7 +441,7 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 		{
 			for( uint i = 0, j = 0; j < len; i++, j += 4 )
 			{
-				output[ i ] = ( ( uint )input[ inputIndex + j ] ) | ( ( ( uint )input[ inputIndex + j + 1 ] ) << 8 ) | ( ( ( uint )input[ inputIndex + j + 2 ] ) << 16 ) | ( ( ( uint )input[ inputIndex + j + 3 ] ) << 24 );
+				output[ i ] = input[inputIndex + j] | ( ( ( uint )input[ inputIndex + j + 1 ] ) << 8 ) | ( ( ( uint )input[ inputIndex + j + 2 ] ) << 16 ) | ( ( ( uint )input[ inputIndex + j + 3 ] ) << 24 );
 			}
 		}
 

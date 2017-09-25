@@ -8,7 +8,7 @@
 
 #endregion
 
-namespace Zeiss.IMT.PiWeb.Meshmodels
+namespace Zeiss.IMT.PiWeb.MeshModel
 {
 	#region usings
 
@@ -24,10 +24,10 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 	/// </remarks>
 	public struct Color : IEquatable<Color>
 	{
-		public byte A;
-		public byte R;
-		public byte G;
-		public byte B;
+		public readonly byte A;
+		public readonly byte R;
+		public readonly byte G;
+		public readonly byte B;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Color"/> struct from ARGB values.

@@ -11,8 +11,10 @@
 
 // ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable NonReadonlyMemberInGetHashCode
-namespace Zeiss.IMT.PiWeb.Meshmodels
+namespace Zeiss.IMT.PiWeb.MeshModel
 {
+	using Zeiss.IMT.PiWeb.Meshmodels;
+
 	/// <summary>
 	/// Describes a point in 3D space with floating point coordinates. Adapted from the .NET Point3D class.
 	/// </summary>

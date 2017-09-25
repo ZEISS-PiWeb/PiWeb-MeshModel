@@ -13,6 +13,7 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 	using System;
 	using System.Globalization;
 	using System.Xml;
+	using Zeiss.IMT.PiWeb.MeshModel;
 
 	#endregion
 

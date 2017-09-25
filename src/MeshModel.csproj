@@ -8,7 +8,7 @@
     <ProjectGuid>{A49C23AE-E781-496E-9808-34D1C508635D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Zeiss.IMT.PiWeb.Meshmodels</RootNamespace>
+    <RootNamespace>Zeiss.IMT.PiWeb.MeshModel</RootNamespace>
     <AssemblyName>MeshModel</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AssemblyOriginatorKeyFile>MeshModel.snk</AssemblyOriginatorKeyFile>

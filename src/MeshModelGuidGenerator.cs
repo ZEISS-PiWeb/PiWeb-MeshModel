@@ -6,7 +6,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
 #endregion
 
-namespace Zeiss.IMT.PiWeb.Meshmodels
+namespace Zeiss.IMT.PiWeb.MeshModel
 {
 	#region using
 
@@ -16,7 +16,6 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 	using System.IO.Compression;
 	using System.Linq;
 	using System.Reflection;
-	using System.Security.Cryptography;
 
 	#endregion
 

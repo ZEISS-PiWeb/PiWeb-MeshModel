@@ -6,7 +6,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
 #endregion
 
-namespace Zeiss.IMT.PiWeb.Meshmodels
+namespace Zeiss.IMT.PiWeb.MeshModel
 {
 	#region using
 
@@ -16,11 +16,12 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 	using System.IO.Compression;
 	using System.Linq;
 	using System.Xml;
+	using Zeiss.IMT.PiWeb.Meshmodels;
 
 	#endregion
 
 	/// <summary>
-	/// Describes the meta data of a <see cref="MeshModel"/> or <see cref="MeshModelPart"/>.
+	/// Describes the meta data of a <see cref="MeshModelPart"/> or <see cref="MeshModel"/>.
 	/// </summary>
 	public class MeshModelMetadata
 	{
@@ -186,7 +187,7 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 				writer.WriteStartElement("MeshModelMetadata");
 
 				writer.WriteElementString("FileVersion", FileVersion.ToString());
-				writer.WriteElementString("SourceFormat", SourceFormat.ToString());
+				writer.WriteElementString("SourceFormat", SourceFormat);
 				writer.WriteElementString("Guid", Guid.ToString("N", System.Globalization.CultureInfo.InvariantCulture));
 				writer.WriteElementString("TriangulationHash", TriangulationHash.ToString("N", System.Globalization.CultureInfo.InvariantCulture));
 				writer.WriteElementString("Name", Name);

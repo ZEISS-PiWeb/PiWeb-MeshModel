@@ -8,7 +8,8 @@
 
 #endregion
 
-namespace Zeiss.IMT.PiWeb.Meshmodels
+// ReSharper disable CompareOfFloatsByEqualityOperator
+namespace Zeiss.IMT.PiWeb.MeshModel
 {
 	#region usings
 
@@ -17,6 +18,7 @@ namespace Zeiss.IMT.PiWeb.Meshmodels
 	using System.Linq;
 	using System.Runtime.CompilerServices;
 	using System.Xml;
+	using Zeiss.IMT.PiWeb.Meshmodels;
 
 	#endregion
 

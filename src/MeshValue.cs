@@ -6,12 +6,13 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
 #endregion
 
-namespace Zeiss.IMT.PiWeb.Meshmodels
+namespace Zeiss.IMT.PiWeb.MeshModel
 {
 	#region using
 
 	using System;
 	using System.IO;
+	using Zeiss.IMT.PiWeb.Meshmodels;
 
 	#endregion
 

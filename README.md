@@ -11,7 +11,7 @@
 <a id="markdown-introduction" name="introduction"></a>
 # Introduction
 
-The **PiWeb MeshModel library** provides an easy to use interface for reading and especially writing PiWeb formplot data. PiWeb meshmodel files are zip-compressed archives, containing...
+The **PiWeb MeshModel library** provides an easy to use interface for reading and especially writing PiWeb meshmodel data. PiWeb meshmodel files are zip-compressed archives, containing...
 
 * Positions
 * Indices
@@ -41,7 +41,7 @@ Or compile the library by yourself. Requirements:
 <a id="markdown-1-a-simple-cube" name="1-a-simple-cube"></a>
 ## A simple cube
 
-To get started, let's create a very basic shape with only a few points and a single **mesh** object. Positions, as well as normals and texture coordinates, are handed into the library as plain float arrays.
+To get started, let's create a very basic shape with only a few points and a single **mesh** object. Positions, as well as normals and texture coordinates, are handed into the library as plain float arrays. The only thing you actually have to specify are positions and indices; PiWeb can calculate the normals from the adjacent triangles.
 
 ```csharp
 var positions = new[]
@@ -67,7 +67,7 @@ When we display the model in PiWeb, the result will look like this:
 
 <img style="width:100px;" src="gfx/CubeSingleMesh.png" >
 
-This isn't exactly very nice, because the **normals are calculated per vertex** from the adjacent triangles. You could improve this by duplicating points and specifying precalculated normals, but there's an easier way: just create a single **mesh** object for **every side** of the cube:
+This isn't very nice, because the **normals are calculated per vertex** from the adjacent triangles. You could improve this by duplicating points and specifying precalculated normals, but there's an easier way: just create a single **mesh** object for **every side** of the cube:
 
 ```csharp
 static Mesh CreateSquare( Point3F p1, Point3F p2, Point3F p3, Point3F p4)
@@ -97,6 +97,9 @@ This will already look much better. You can improve this example further, by add
 <img style="width:100px;" src="gfx/CubeMultiMesh.png" >
 
 ## Models with deviation data
+
+PiWeb 6.2 or later can display deviations on a CAD model. To use the model with CAD deviation analysis, you must attach it to a measurement with the **RawDataService**. When creating multiple measurements
+with deviation data, PiWeb offers you a set of statistical evaluations based on the data, e.g. minima, maxima, deltas or capability values. The required data is specfied like this:
 
 ```csharp
 var meshes = CreateMeshes( ); // ... meshes from the previous example
@@ -135,7 +138,3 @@ var part = new MeshModelPart( new MeshModelMetadata( ), meshes, squares.Select(s
 A cube isn't exactly a perfect example for showing deviations on a CAD model, but it's sufficient to show the mechanics. 
 
 <img style="width:100px;" src="gfx/CubeWithDeviations.png" >
-
-
->To use the model with CAD deviation analysis, you must attach it to a measurement with the **RawDataService**. When creating multiple measurements
->with CAD deviation data, PiWeb offers you a set of statistical evaluations based on the data, e.g. minima, maxima, deltas or capability values.

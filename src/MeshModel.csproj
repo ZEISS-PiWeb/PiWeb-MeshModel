@@ -26,7 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\PiWeb.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\PiWeb.ruleset</CodeAnalysisRuleSet>
     <LangVersion>6</LangVersion>
     <DocumentationFile>
     </DocumentationFile>
@@ -39,7 +39,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\PiWeb.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\PiWeb.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

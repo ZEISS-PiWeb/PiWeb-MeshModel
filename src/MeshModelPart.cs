@@ -68,8 +68,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			UpdateTriangulationHash();
 			MeshValues = ( meshValueLists ?? new MeshValueList[0] ).ToArray();
 
-			if( MeshValues.Length > 0 && Meshes.Length > 0 && Meshes.Length != MeshValues.Length )
-				throw new ArgumentException( $"The {nameof(meshValueLists)} must be either empty, or exactly as long as the {nameof(meshes)}" );
+			CheckMeshValueIntegrity();
 
 			Metadata.MeshValueEntries = MeshValues.Select( m => m.Entry ).ToArray();
 
@@ -153,6 +152,18 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		#endregion
 
 		#region methods
+
+		private void CheckMeshValueIntegrity()
+		{
+			if( MeshValues == null || MeshValues.Length == 0 || Meshes == null || Meshes.Length == 0 )
+				return;
+
+			foreach (var meshValue in MeshValues)
+			{
+				if (meshValue.MeshValues.Length != Meshes.Length)
+					throw new ArgumentException( $"When specifiying a MeshValueList, every MeshValue must be exactly as long as the {nameof( Meshes )}" );
+			}
+		}
 
 		private void ConstructGeometry( IEnumerable<Mesh> meshes, IEnumerable<Edge> edges )
 		{

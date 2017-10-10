@@ -135,32 +135,24 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// Extracts the <see cref="MeshModelMetadata"/> from the specified <paramref name="stream"/>.
 		/// </summary>
 		/// <remarks>
-		/// The stream must contain a meshmodel file which has been created with the <see cref="MeshModel.Serialize(Stream)"/> method..
+		/// The stream must contain a meshmodel file which has been created with the <see cref="MeshModel.Serialize(Stream)"/> method.
 		/// </remarks>
-		/// <param name="stream">The stream.</param>
-		/// <returns></returns>
-		public static MeshModelMetadata ExtractFromStream(Stream stream)
+		public static MeshModelMetadata ExtractFromStream( Stream stream )
 		{
-			MeshModelMetadata result = null;
+			if( stream == null )
+				throw new ArgumentNullException( nameof(stream) );
 
-			try
+			using( var zipFile = new ZipArchive( stream.CanSeek ? stream : new MemoryStream( MeshModelHelper.StreamToArray( stream ) ), ZipArchiveMode.Read ) )
+			using( var entryStream = zipFile.GetEntry( "Metadata.xml" ).Open() )
 			{
-				using (var zipFile = new ZipArchive(stream.CanSeek ? stream : new MemoryStream(MeshModelHelper.StreamToArray(stream)), ZipArchiveMode.Read))
-				{
-					using (var entryStream = zipFile.GetEntry("Metadata.xml").Open())
-					{
-						result = ReadFrom(entryStream);
-					}
+				var result = ReadFrom( entryStream );
 
-					// falls Guid noch nicht Teil der Metadaten war, dann hier stabile (und hoffentlich eindeutige) Guid den Metadaten zuweisen
-					if (result.FileVersion < new Version(3, 1, 0, 0))
-						result.Guid = MeshModelGuidGenerator.GenerateGuids(zipFile.Entries);
-				}
+				// falls Guid noch nicht Teil der Metadaten war, dann hier stabile (und hoffentlich eindeutige) Guid den Metadaten zuweisen
+				if( result.FileVersion < new Version( 3, 1, 0, 0 ) )
+					result.Guid = MeshModelGuidGenerator.GenerateGuids( zipFile.Entries );
+
+				return result;
 			}
-			catch (IOException)
-			{ }
-
-			return result;
 		}
 
 		/// <summary>

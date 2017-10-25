@@ -416,6 +416,9 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 
 			public static MeshIndices Create( int[] indices )
 			{
+				if( indices.Length == 0 )
+					return new ByteMeshIndices( new byte[] { } );
+
 				var maxValue = indices.Max();
 				if( maxValue <= byte.MaxValue )
 					return new ByteMeshIndices( indices.Select( i => ( byte ) i ).ToArray() );

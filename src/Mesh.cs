@@ -416,11 +416,11 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 
 			public static MeshIndices Create( int[] indices )
 			{
-				//TODO: Ist das nicht ziemlich gefährlich? Ein Fehlerhaftes Modell kann ungenutzte Positions haben, wodurch der Index nicht fortlaufend ist.
-				if( indices.Length < byte.MaxValue )
+				var maxValue = indices.Max();
+				if( maxValue <= byte.MaxValue )
 					return new ByteMeshIndices( indices.Select( i => ( byte ) i ).ToArray() );
-
-				if( indices.Length < short.MaxValue )
+				
+				if (maxValue <= short.MaxValue )
 					return new ShortMeshIndices( indices.Select( i => ( short ) i ).ToArray() );
 
 				return new IntegerMeshIndices( indices );

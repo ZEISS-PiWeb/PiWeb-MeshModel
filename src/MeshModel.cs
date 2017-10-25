@@ -318,11 +318,11 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 
 				// Versionscheck
 				var fileVersion = metadata.FileVersion;
-				if( fileVersion == null )
-					throw new ArgumentOutOfRangeException( nameof(fileVersion), MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
+			    if( fileVersion == null )
+			        throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
 
-				if( fileVersion.Major > MeshModelFileVersion.Major )
-					throw new ArgumentOutOfRangeException( nameof(fileVersion), MeshModelHelper.FormatResource<MeshModel>( "FileVersionError_Text", fileVersion, MeshModelFileVersion ) );
+			    if( fileVersion.Major > MeshModelFileVersion.Major )
+			        throw new InvalidOperationException( MeshModelHelper.FormatResource<MeshModel>( "FileVersionError_Text", fileVersion, MeshModelFileVersion ) );
 
 				// Vorschaubild lesen
 				byte[] thumbnail = null;

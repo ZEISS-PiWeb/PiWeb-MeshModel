@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Zeiss.IMT.PiWeb.MeshModel</RootNamespace>
-    <AssemblyName>MeshModel</AssemblyName>
+    <AssemblyName>PiWeb.MeshModel</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AssemblyOriginatorKeyFile>MeshModel.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
@@ -40,7 +40,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>..\..\PiWeb.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Release\MeshModel.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\PiWeb.MeshModel.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

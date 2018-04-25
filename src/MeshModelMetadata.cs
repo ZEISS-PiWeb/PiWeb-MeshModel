@@ -22,11 +22,10 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	/// <summary>
 	/// Describes the meta data of a <see cref="MeshModelPart"/> or <see cref="MeshModel"/>.
 	/// </summary>
-	public class MeshModelMetadata
+	public sealed class MeshModelMetadata
 	{
 		#region constructor
-
-
+		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MeshModelMetadata" /> class.
 		/// </summary>
@@ -79,7 +78,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <summary>
 		/// Gets or sets the layers that exist in the model.
 		/// </summary>
-		public string[] Layer { get; set; }
+		public string[] Layer { get; set; } = new string[0];
 
 		/// <summary>
 		/// Gets the names of the source models, in case this is a combined model
@@ -104,7 +103,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="name">The name.</param>
 		/// <param name="metadatas">The metadatas.</param>
 		/// <returns></returns>
-		public static MeshModelMetadata CreateCombined(string name, params MeshModelMetadata[] metadatas)
+		public static MeshModelMetadata CreateCombined( string name, params MeshModelMetadata[] metadatas )
 		{
 			var format = metadatas[0].SourceFormat;
 			var layer = new HashSet<string>();
@@ -137,22 +136,40 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <remarks>
 		/// The stream must contain a meshmodel file which has been created with the <see cref="MeshModel.Serialize(Stream)"/> method.
 		/// </remarks>
-		public static MeshModelMetadata ExtractFromStream( Stream stream )
+		public static MeshModelMetadata ExtractFrom( Stream stream, string subFolder = "" )
 		{
 			if( stream == null )
 				throw new ArgumentNullException( nameof(stream) );
 
 			using( var zipFile = new ZipArchive( stream.CanSeek ? stream : new MemoryStream( MeshModelHelper.StreamToArray( stream ) ), ZipArchiveMode.Read ) )
-			using( var entryStream = zipFile.GetEntry( "Metadata.xml" ).Open() )
+				return ExtractFrom( zipFile, subFolder );
+		}
+
+		/// <summary>
+		/// Extracts the <see cref="MeshModelMetadata"/> from the specified archive.
+		/// </summary>
+		/// <remarks>
+		/// The stream must contain a meshmodel file which has been created with the <see cref="MeshModel.Serialize(Stream)"/> method.
+		/// </remarks>
+		public static MeshModelMetadata ExtractFrom( ZipArchive archive, string subFolder = "" )
+		{
+			if( archive == null )
+				throw new ArgumentNullException( nameof(archive) );
+			
+			using( var entryStream = archive.GetEntry( Path.Combine( subFolder, "Metadata.xml" ) ).Open() )
 			{
-				var result = ReadFrom( entryStream );
-
-				// falls Guid noch nicht Teil der Metadaten war, dann hier stabile (und hoffentlich eindeutige) Guid den Metadaten zuweisen
-				if( result.FileVersion < new Version( 3, 1, 0, 0 ) )
-					result.Guid = MeshModelGuidGenerator.GenerateGuids( zipFile.Entries );
-
+				var dataEntries = GetSubfolderEntries( archive, subFolder );
+				var result = ReadFrom( entryStream, new ZipEntriesGuidGenerator( dataEntries ) );
 				return result;
 			}
+		}
+
+		private static IEnumerable<ZipArchiveEntry> GetSubfolderEntries( ZipArchive archive, string subFolder )
+		{
+			var dataEntries = string.IsNullOrEmpty( subFolder )
+				? archive.Entries
+				: archive.Entries.Where( e => string.Equals( Path.GetDirectoryName( e.FullName ), subFolder, StringComparison.OrdinalIgnoreCase ) );
+			return dataEntries;
 		}
 
 		/// <summary>
@@ -160,7 +177,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// </summary>
 		/// <param name="stream">The stream.</param>
 		/// <param name="upgradeVersionNumber">if set to <c>true</c>, the version number is adjusted to match the current version.</param>
-		public void WriteTo(Stream stream, bool upgradeVersionNumber)
+		public void WriteTo( Stream stream, bool upgradeVersionNumber )
 		{
 			if (upgradeVersionNumber)
 				FileVersion = MeshModel.MeshModelFileVersion;
@@ -211,7 +228,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			}
 		}
 
-		private void WriteMeshValueEntries(XmlWriter writer)
+		private void WriteMeshValueEntries( XmlWriter writer )
 		{
 			writer.WriteStartElement("MeshValueEntries");
 			foreach (var entry in MeshValueEntries)
@@ -228,6 +245,16 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// </summary>
 		public static MeshModelMetadata ReadFrom(Stream stream)
 		{
+			return ReadFrom( stream, new RandomGuidGenerator() );
+		}
+		
+		private static MeshModelMetadata ReadFrom( Stream stream, IGuidGenerator fallbackGuidGenerator )
+		{
+			// Needed for later property validation 
+			var hasGuid = false;
+			var hasName = false;
+			var hasPartCount = false;
+
 			var settings = new XmlReaderSettings
 			{
 				IgnoreComments = true,
@@ -246,15 +273,18 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 					{
 						case "Guid":
 							result.Guid = Guid.ParseExact(reader.ReadString(), "N");
+							hasGuid = true;
 							break;
 						case "TriangulationHash":
 							result.TriangulationHash = Guid.ParseExact(reader.ReadString(), "N");
 							break;
 						case "Name":
 							result.Name = reader.ReadString();
+							hasName = true;
 							break;
 						case "PartCount":
 							result.PartCount = int.Parse(reader.ReadString(), System.Globalization.CultureInfo.InvariantCulture);
+							hasPartCount = true;
 							break;
 						case "FileVersion":
 							result.FileVersion = new Version(reader.ReadString());
@@ -289,6 +319,25 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 							break;
 					}
 				}
+
+				// validation for mendatory properties since version 5.1.0.0 and missing Guid fallback for older versions
+				if( result.FileVersion != null && result.FileVersion >= new Version( 5, 1, 0, 0 ) )
+				{
+					if( !hasGuid )
+						throw new InvalidOperationException( MeshModelHelper.FormatResource<MeshModel>( "InvalidFormatMissingProperty_ErrorText", "Guid" ) );
+
+					if( !hasName )
+						throw new InvalidOperationException( MeshModelHelper.FormatResource<MeshModel>( "InvalidFormatMissingProperty_ErrorText", "Name" ) );
+					
+					if( !hasPartCount )
+						throw new InvalidOperationException( MeshModelHelper.FormatResource<MeshModel>( "InvalidFormatMissingProperty_ErrorText", "PartCount" ) );
+				}
+				else
+				{
+					if( !hasGuid )
+						result.Guid = fallbackGuidGenerator.CreateGuid();
+				}
+
 				return result;
 			}
 		}

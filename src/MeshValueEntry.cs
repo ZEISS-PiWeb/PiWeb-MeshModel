@@ -17,7 +17,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	/// <summary>
 	/// Describes the type or content of one or more <see cref="MeshValue"/> datasets.
 	/// </summary>
-	public class MeshValueEntry
+	public sealed class MeshValueEntry
 	{
 		#region constructor
 

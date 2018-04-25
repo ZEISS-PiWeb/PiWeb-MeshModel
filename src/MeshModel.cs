@@ -39,7 +39,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <summary>
 		/// The current mesh model file version
 		/// </summary>
-		public static readonly Version MeshModelFileVersion = new Version( 5, 0, 0, 0 );
+		public static readonly Version MeshModelFileVersion = new Version( 5, 1, 0, 0 );
 
 		private Rect3F? _Bounds;
 		private byte[] _Thumbnail;
@@ -299,66 +299,60 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// </summary>
 		public static MeshModel Deserialize( Stream stream )
 		{
-			MeshModel result;
-
 			if( !stream.CanSeek )
 				stream = new MemoryStream( MeshModelHelper.StreamToArray( stream ) );
 
 			using( var zipFile = new ZipArchive( stream ) )
 			{
-				// Metadaten lesen
-				MeshModelMetadata metadata;
+				var formatData = MeshModelFormatData.ExtractFrom( zipFile );
 
-				using( var entryStream = zipFile.GetEntry( "Metadata.xml" ).Open() )
-				{
-					metadata = MeshModelMetadata.ReadFrom( entryStream );
-				}
-
-				var partCount = metadata.PartCount;
-
-				// Versionscheck
-				var fileVersion = metadata.FileVersion;
-			    if( fileVersion == null )
-			        throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
-
-			    if( fileVersion.Major > MeshModelFileVersion.Major )
-			        throw new InvalidOperationException( MeshModelHelper.FormatResource<MeshModel>( "FileVersionError_Text", fileVersion, MeshModelFileVersion ) );
-
-				// Vorschaubild lesen
-				byte[] thumbnail = null;
-
-				if( partCount != 1 )
-				{
-					var entry = zipFile.GetEntry( "PreviewImage.png" );
-					if( entry != null )
-					{
-						using( var entryStream = entry.Open() )
-						{
-							thumbnail = MeshModelHelper.StreamToArray( entryStream );
-						}
-					}
-				}
+				// Versionschecks
+				var fileVersion = formatData.FileVersion;
+				if( fileVersion == null )
+					throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
+				if( fileVersion.Major > MeshModelFileVersion.Major )
+					throw new InvalidOperationException( MeshModelHelper.FormatResource<MeshModel>( "FileVersionError_Text", fileVersion, MeshModelFileVersion ) );
 
 				// Modelldaten laden
-				if( partCount == 1 )
-				{
-					result = new MeshModel( MeshModelPart.Deserialize( zipFile ) );
-				}
-				else
-				{
-					var parts = new List<MeshModelPart>( partCount );
-					for( var i = 0; i < partCount; i += 1 )
-					{
-						parts.Add( MeshModelPart.Deserialize( zipFile, i.ToString() ) );
-					}
-					result = new MeshModel( metadata, thumbnail, parts.ToArray() );
+				return formatData.Type == MeshModelType.Part 
+					? DeserializeSinglePart( zipFile )
+					: DeserializeComposite( zipFile );
+			}
+		}
 
-					// falls Guid noch nicht Teil der Metadaten war, dann hier stabile (und hoffentlich eindeutige) Guid den Metadaten zuweisen
-					if( fileVersion < new Version( 3, 1, 0, 0 ) )
-						metadata.Guid = MeshModelGuidGenerator.GenerateGuids( zipFile.Entries );
+		private static MeshModel DeserializeSinglePart( ZipArchive zipFile )
+		{
+			return new MeshModel( MeshModelPart.Deserialize( zipFile ) );
+		}
+
+		private static MeshModel DeserializeComposite( ZipArchive zipFile )
+		{
+			var metadata = MeshModelMetadata.ExtractFrom( zipFile );
+			var partCount = metadata.PartCount;
+			
+			// Vorschaubild lesen
+			byte[] thumbnail = null;
+
+			if( partCount != 1 )
+			{
+				var entry = zipFile.GetEntry( "PreviewImage.png" );
+				if( entry != null )
+				{
+					using( var entryStream = entry.Open() )
+					{
+						thumbnail = MeshModelHelper.StreamToArray( entryStream );
+					}
 				}
 			}
-			return result;
+
+			// Parts lesen
+			var parts = new List<MeshModelPart>( partCount );
+			for( var i = 0; i < partCount; i += 1 )
+			{
+				parts.Add( MeshModelPart.Deserialize( zipFile, i.ToString() ) );
+			}
+
+			return new MeshModel( metadata, thumbnail, parts.ToArray() );
 		}
 
 		/// <summary>

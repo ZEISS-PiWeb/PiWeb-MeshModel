@@ -13,6 +13,8 @@
 // ReSharper disable NonReadonlyMemberInGetHashCode
 namespace Zeiss.IMT.PiWeb.MeshModel
 {
+	using System.Runtime.CompilerServices;
+
 	/// <summary>
 	/// Describes a point in 3D space with floating point coordinates. Adapted from the .NET Point3D class.
 	/// </summary>
@@ -48,6 +50,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="x">The x.</param>
 		/// <param name="y">The y.</param>
 		/// <param name="z">The z.</param>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public Point3F( float x, float y, float z )
 		{
 			X = x;
@@ -63,6 +66,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator ==( Point3F point1, Point3F point2 )
 		{
 			if( point1.X == point2.X &&
@@ -80,6 +84,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator !=( Point3F point1, Point3F point2 )
 		{
 			return !( point1 == point2 );
@@ -93,6 +98,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Point3F operator +( Point3F point, Vector3F vector )
 		{
 			return new Point3F( point.X + vector.X, point.Y + vector.Y, point.Z + vector.Z );
@@ -106,6 +112,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Point3F operator -( Point3F point, Vector3F vector )
 		{
 			return new Point3F( point.X - vector.X, point.Y - vector.Y, point.Z - vector.Z );
@@ -119,6 +126,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator -( Point3F point1, Point3F point2 )
 		{
 			return new Vector3F( point1.X - point2.X, point1.Y - point2.Y, point1.Z - point2.Z );
@@ -130,6 +138,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="offsetX">The offset x.</param>
 		/// <param name="offsetY">The offset y.</param>
 		/// <param name="offsetZ">The offset z.</param>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public void Offset( float offsetX, float offsetY, float offsetZ )
 		{
 			X = X + offsetX;
@@ -143,6 +152,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="point1">The point1.</param>
 		/// <param name="point2">The point2.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool Equals( Point3F point1, Point3F point2 )
 		{
 			if( point1.X.Equals( point2.X ) && point1.Y.Equals( point2.Y ) )
@@ -157,6 +167,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override bool Equals( object o )
 		{
 			if( !( o is Point3F ) )
@@ -170,6 +181,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// </summary>
 		/// <param name="value">The value.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public bool Equals( Point3F value )
 		{
 			return Equals( this, value );
@@ -181,6 +193,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override int GetHashCode()
 		{
 			var num1 = X;
@@ -191,6 +204,22 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			num1 = Z;
 			var hashCode3 = num1.GetHashCode();
 			return num2 ^ hashCode3;
+		}
+
+		/// <summary>
+		/// Support explicit conversion from point to vector when used as position vector.
+		/// </summary>
+		/// <param name="point">Source <see cref="Point3F"/> instance.</param>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
+		public static explicit operator Vector3F( Point3F point )
+		{
+			return new Vector3F( point.X, point.Y, point.Z );
+		}
+
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return $"[{X} {Y} {Z}]";
 		}
 	}
 }

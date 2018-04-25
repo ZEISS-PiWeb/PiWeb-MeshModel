@@ -15,6 +15,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	#region usings
 
 	using System;
+	using System.Runtime.CompilerServices;
 
 	#endregion
 
@@ -69,6 +70,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="x">The x.</param>
 		/// <param name="y">The y.</param>
 		/// <param name="z">The z.</param>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public Vector3F( float x, float y, float z )
 		{
 			X = x;
@@ -83,6 +85,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the conversion.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static explicit operator Point3F( Vector3F vector )
 		{
 			return new Point3F( vector.X, vector.Y, vector.Z );
@@ -95,6 +98,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the conversion.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static explicit operator Size3F( Vector3F vector )
 		{
 			return new Size3F( Math.Abs( vector.X ), Math.Abs( vector.Y ), Math.Abs( vector.Z ) );
@@ -107,6 +111,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator -( Vector3F vector )
 		{
 			return new Vector3F( -vector.X, -vector.Y, -vector.Z );
@@ -120,6 +125,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator +( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X + vector2.X, vector1.Y + vector2.Y, vector1.Z + vector2.Z );
@@ -133,6 +139,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator -( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X - vector2.X, vector1.Y - vector2.Y, vector1.Z - vector2.Z );
@@ -146,6 +153,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Point3F operator +( Vector3F vector, Point3F point )
 		{
 			return new Point3F( vector.X + point.X, vector.Y + point.Y, vector.Z + point.Z );
@@ -159,6 +167,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Point3F operator -( Vector3F vector, Point3F point )
 		{
 			return new Point3F( vector.X - point.X, vector.Y - point.Y, vector.Z - point.Z );
@@ -172,6 +181,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator *( Vector3F vector, float scalar )
 		{
 			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
@@ -185,6 +195,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator *( float scalar, Vector3F vector )
 		{
 			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
@@ -198,6 +209,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator /( Vector3F vector, float scalar )
 		{
 			return vector * ( 1.0f / scalar );
@@ -211,6 +223,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator ==( Vector3F vector1, Vector3F vector2 )
 		{
 			if( vector1.X == vector2.X &&
@@ -227,6 +240,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator !=( Vector3F vector1, Vector3F vector2 )
 		{
 			return !( vector1 == vector2 );
@@ -235,6 +249,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <summary>
 		/// Normalizes this instance.
 		/// </summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public void Normalize()
 		{
 			float num1 = Math.Abs( X );
@@ -256,6 +271,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="vector1">The vector1.</param>
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static float AngleBetween( Vector3F vector1, Vector3F vector2 )
 		{
 			vector1.Normalize();
@@ -263,6 +279,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			return RadiansToDegrees( DotProduct( vector1, vector2 ) >= 0.0f ? 2.0f * ( float ) Math.Asin( ( vector1 - vector2 ).Length / 2.0f ) : ( float ) Math.PI - 2.0f * ( float ) Math.Asin( ( -vector1 - vector2 ).Length / 2.0f ) );
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		private static float RadiansToDegrees( float value )
 		{
 			return value * 180 / ( float ) Math.PI;
@@ -271,6 +288,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <summary>
 		/// Negates this instance.
 		/// </summary>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public void Negate()
 		{
 			X = -X;
@@ -284,6 +302,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="vector1">The vector1.</param>
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Add( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X + vector2.X, vector1.Y + vector2.Y, vector1.Z + vector2.Z );
@@ -295,6 +314,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="vector1">The vector1.</param>
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Subtract( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X - vector2.X, vector1.Y - vector2.Y, vector1.Z - vector2.Z );
@@ -306,6 +326,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="vector">The vector.</param>
 		/// <param name="point">The point.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Point3F Add( Vector3F vector, Point3F point )
 		{
 			return new Point3F( vector.X + point.X, vector.Y + point.Y, vector.Z + point.Z );
@@ -317,6 +338,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="vector">The vector.</param>
 		/// <param name="point">The point.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Point3F Subtract( Vector3F vector, Point3F point )
 		{
 			return new Point3F( vector.X - point.X, vector.Y - point.Y, vector.Z - point.Z );
@@ -328,6 +350,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="vector">The vector.</param>
 		/// <param name="scalar">The scalar.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Multiply( Vector3F vector, float scalar )
 		{
 			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
@@ -339,6 +362,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="scalar">The scalar.</param>
 		/// <param name="vector">The vector.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Multiply( float scalar, Vector3F vector )
 		{
 			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
@@ -350,11 +374,13 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="vector1">The vector1.</param>
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static float DotProduct( Vector3F vector1, Vector3F vector2 )
 		{
 			return DotProduct( ref vector1, ref vector2 );
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		internal static float DotProduct( ref Vector3F vector1, ref Vector3F vector2 )
 		{
 			return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
@@ -366,6 +392,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="vector1">The vector1.</param>
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F CrossProduct( Vector3F vector1, Vector3F vector2 )
 		{
 			Vector3F result;
@@ -373,6 +400,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			return result;
 		}
 
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		private static void CrossProduct( ref Vector3F vector1, ref Vector3F vector2, out Vector3F result )
 		{
 			result = new Vector3F(
@@ -388,6 +416,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <param name="vector1">The vector1.</param>
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool Equals( Vector3F vector1, Vector3F vector2 )
 		{
 			if( vector1.X.Equals( vector2.X ) && vector1.Y.Equals( vector2.Y ) )
@@ -402,6 +431,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override bool Equals( object o )
 		{
 			if( !( o is Vector3F ) )
@@ -414,6 +444,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// </summary>
 		/// <param name="value">The value.</param>
 		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public bool Equals( Vector3F value )
 		{
 			return Equals( this, value );
@@ -425,6 +456,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// <returns>
 		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
 		/// </returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override int GetHashCode()
 		{
 			unchecked

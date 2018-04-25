@@ -24,7 +24,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	/// <summary>
 	/// Describes value range that is represented by discrete or continous colors.
 	/// </summary>
-	public class ColorScale
+	public sealed class ColorScale
 	{
 		#region members
 
@@ -37,16 +37,19 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		#region constructors
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ColorScale"/> class.
+		/// Initializes a new instance of the <see cref="ColorScale" /> class.
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="invalidColor">Color of the invalid.</param>
 		/// <param name="entries">The entries.</param>
+		/// <param name="interpolation">The interpolation mode.</param>
+		/// <exception cref="ArgumentException">Error creating color scale: Duplicate color entries (values) are not allowed.</exception>
 		/// <exception cref="System.ArgumentException">Error creating color scale: Duplicate color entries (values) are not allowed.</exception>
-		public ColorScale( string name, Color invalidColor, IEnumerable<ColorScaleEntry> entries = null )
+		public ColorScale( string name, Color invalidColor, IEnumerable<ColorScaleEntry> entries = null, ColorScaleInterpolation interpolation = ColorScaleInterpolation.HSV )
 		{
 			Name = name;
 			InvalidColor = invalidColor;
+			Interpolation = interpolation;
 
 			Entries = entries?.OrderBy( entry => entry.Value ).ToArray() ?? new ColorScaleEntry[0];
 			_OrderedValueList = Entries.Select( entry => entry.Value ).ToArray();
@@ -112,6 +115,11 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// </summary>
 		public bool IsContinious => !_ColorSpans.All( s => s.IsSolidColor );
 
+		/// <summary>
+		/// Gets the interpolation mode.
+		/// </summary>
+		public ColorScaleInterpolation  Interpolation { get; }
+
 		#endregion
 
 		#region methods
@@ -143,13 +151,14 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 				return Entries[ index ].LeftColor;
 
 			// Linear color interpolation
-			return _ColorSpans[ index - 1 ].GetColor( value );
+			return _ColorSpans[ index - 1 ].GetColor( value, Interpolation );
 		}
 
 		internal static ColorScale Read( XmlReader reader )
 		{
 			var name = reader.GetAttribute( "Name" );
 			var invalidColor = reader.ReadColorAttribute( "InvalidColor" );
+			var interpolation = reader.GetAttribute("Interpolation");
 
 			var entries = new List<ColorScaleEntry>();
 
@@ -160,12 +169,14 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 				entries.Add( ColorScaleEntry.Read( colorScaleReader ) );
 			}
 
-			return new ColorScale( name, invalidColor, entries.ToArray() );
+			
+			return new ColorScale( name, invalidColor, entries.ToArray(), interpolation != null ? (ColorScaleInterpolation)Enum.Parse(typeof(ColorScaleInterpolation), interpolation) : ColorScaleInterpolation.HSV);
 		}
 
 		internal void Write( XmlWriter writer )
 		{
 			writer.WriteAttributeString( "Name", Name );
+			writer.WriteAttributeString( "Interpolation", Interpolation.ToString() );
 			writer.WriteColorAttribute( "InvalidColor", InvalidColor );
 
 			if( Entries != null && Entries.Length > 0 )
@@ -215,6 +226,12 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			private readonly double _DistL;
 			private readonly double _DistH;
 			private readonly double _DistLeftRight;
+			private readonly byte _LeftColorR;
+			private readonly byte _LeftColorG;
+			private readonly byte _LeftColorB;
+			private readonly int _DistR;
+			private int _DistG;
+			private readonly int _DistB;
 
 			#endregion
 
@@ -229,6 +246,14 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 				_RightValue = rightValue;
 
 				_DistLeftRight = _RightValue - _LeftValue;
+
+				_LeftColorR = leftColor.R;
+				_LeftColorG = leftColor.G;
+				_LeftColorB = leftColor.B;
+
+				_DistR = rightColor.R - leftColor.R;
+				_DistG = rightColor.G - leftColor.G;
+				_DistB = rightColor.B - leftColor.B;
 
 				_LeftColorH = leftColorHsl.Item1;
 				_LeftColorS = leftColorHsl.Item2;
@@ -254,10 +279,10 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 
 			#region methods
 
-			[MethodImpl( MethodImplOptions.AggressiveInlining )]
-			internal Color GetColor( double value )
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private Color GetColorHsv(double value)
 			{
-				value = ( Math.Max( _LeftValue, Math.Min( _RightValue, value ) ) - _LeftValue ) / _DistLeftRight;
+				value = (Math.Max(_LeftValue, Math.Min(_RightValue, value)) - _LeftValue) / _DistLeftRight;
 
 				var h = _LeftColorH + _DistH * value;
 				var s = _LeftColorS + _DistS * value;
@@ -265,48 +290,71 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 
 				// The hue is actually a normalized angle (0 = 0° to 1 = 360°). This means we can interpolate in both directions to reach the desired hue.
 				// Lets make sure we go the shorter route. 
-				if( h < 0 )
+				if (h < 0)
 					h += 1;
 
-				h = Math.Max( 0, Math.Min( 1, h ) );
-				s = Math.Max( 0, Math.Min( 1, s ) );
-				l = Math.Max( 0, Math.Min( 1, l ) );
+				h = Math.Max(0, Math.Min(1, h));
+				s = Math.Max(0, Math.Min(1, s));
+				l = Math.Max(0, Math.Min(1, l));
 
-				var max = Round( l * 255 );
-				var min = Round( ( 1.0 - s ) * l * 255 );
-				var q = ( double ) ( max - min ) / 255;
+				var max = Round(l * 255);
+				var min = Round((1.0 - s) * l * 255);
+				var q = (double)(max - min) / 255;
 
-				if( h >= 0 && h <= 1.0 / 6.0 )
+				if (h >= 0 && h <= 1.0 / 6.0)
 				{
-					var mid = Round( h * q * 1530.0 + min );
-					return Color.FromRgb( max, mid, min );
+					var mid = Round(h * q * 1530.0 + min);
+					return Color.FromRgb(max, mid, min);
 				}
-				if( h <= 1.0 / 3.0 )
+				if (h <= 1.0 / 3.0)
 				{
-					var mid = Round( -( ( h - 1.0 / 6.0 ) * q ) * 1530.0 + max );
-					return Color.FromRgb( mid, max, min );
+					var mid = Round(-((h - 1.0 / 6.0) * q) * 1530.0 + max);
+					return Color.FromRgb(mid, max, min);
 				}
-				if( h <= 0.5 )
+				if (h <= 0.5)
 				{
-					var mid = Round( ( h - 1.0 / 3.0 ) * q * 1530.0 + min );
-					return Color.FromRgb( min, max, mid );
+					var mid = Round((h - 1.0 / 3.0) * q * 1530.0 + min);
+					return Color.FromRgb(min, max, mid);
 				}
-				if( h <= 2.0 / 3.0 )
+				if (h <= 2.0 / 3.0)
 				{
-					var mid = Round( -( ( h - 0.5 ) * q ) * 1530.0 + max );
-					return Color.FromRgb( min, mid, max );
+					var mid = Round(-((h - 0.5) * q) * 1530.0 + max);
+					return Color.FromRgb(min, mid, max);
 				}
-				if( h <= 5.0 / 6.0 )
+				if (h <= 5.0 / 6.0)
 				{
-					var mid = Round( ( h - 2.0 / 3.0 ) * q * 1530.0 + min );
-					return Color.FromRgb( mid, min, max );
+					var mid = Round((h - 2.0 / 3.0) * q * 1530.0 + min);
+					return Color.FromRgb(mid, min, max);
 				}
-				if( h <= 1.0 )
+				if (h <= 1.0)
 				{
-					var mid = Round( -( ( h - 5.0 / 6.0 ) * q ) * 1530.0 + max );
-					return Color.FromRgb( max, min, mid );
+					var mid = Round(-((h - 5.0 / 6.0) * q) * 1530.0 + max);
+					return Color.FromRgb(max, min, mid);
 				}
-				return Color.FromRgb( 0, 0, 0 );
+				return Color.FromRgb(0, 0, 0);
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private Color GetColorRgb(double value)
+			{
+				value = (Math.Max(_LeftValue, Math.Min(_RightValue, value)) - _LeftValue) / _DistLeftRight;
+
+				return Color.FromRgb(
+					(byte)(_LeftColorR + value * _DistR),
+					(byte)(_LeftColorG + value * _DistG),
+					(byte)(_LeftColorB + value * _DistB)
+				);
+			}
+
+			[MethodImpl( MethodImplOptions.AggressiveInlining )]
+			internal Color GetColor( double value, ColorScaleInterpolation interpolation = ColorScaleInterpolation.HSV )
+			{
+				if( interpolation == ColorScaleInterpolation.HSV )
+					return GetColorHsv( value );
+				if( interpolation == ColorScaleInterpolation.RGB )
+					return GetColorRgb( value );
+
+				throw new NotSupportedException( string.Concat( "Unsupported interpolation type '", interpolation, "'." ));
 			}
 
 			[MethodImpl( MethodImplOptions.AggressiveInlining )]

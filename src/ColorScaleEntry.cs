@@ -19,7 +19,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	/// <summary>
 	/// Describes an entry of a <see cref="ColorScale"/>
 	/// </summary>
-	public class ColorScaleEntry
+	public sealed class ColorScaleEntry
 	{
 		#region constructor
 

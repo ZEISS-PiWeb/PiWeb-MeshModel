@@ -232,23 +232,19 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		/// </summary>
 		public static MeshModelPart Deserialize( ZipArchive zipFile, string subFolder = "" )
 		{
-			var result = new MeshModelPart( new MeshModelMetadata() );
 			var fileVersion10 = new Version( 1, 0, 0, 0 );
 
-			// Metadaten lesen
-			using( var entryStream = zipFile.GetEntry( Path.Combine( subFolder, "Metadata.xml" ) ).Open() )
-			{
-				result.Metadata = MeshModelMetadata.ReadFrom( entryStream );
-			}
+			var result = new MeshModelPart( new MeshModelMetadata() );
+			result.Metadata = MeshModelMetadata.ExtractFrom( zipFile, subFolder );
 
-			// Versionscheck
+			// Versionschecks
 			var fileVersion = result.Metadata.FileVersion;
-		    if( fileVersion < fileVersion10 )
+			if( fileVersion < fileVersion10 )
 		        throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
 
 			if( fileVersion.Major > MeshModel.MeshModelFileVersion.Major )
 				throw new InvalidOperationException( MeshModelHelper.FormatResource<MeshModel>( "FileVersionError_Text", fileVersion, MeshModel.MeshModelFileVersion ) );
-
+			
 			// Vorschaubild lesen
 			var thumbnailEntry = zipFile.GetEntry( Path.Combine( subFolder, "PreviewImage.png" ) );
 			if( thumbnailEntry != null )
@@ -296,10 +292,6 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 				}
 			}
 			result.MeshValues = meshValueList.ToArray();
-
-			// falls Guid noch nicht Teil der Metadaten war, dann hier stabile (und hoffentlich eindeutige) Guid den Metadaten zuweisen
-			if( fileVersion < new Version( 3, 1, 0, 0 ) )
-				result.Metadata.Guid = MeshModelGuidGenerator.GenerateGuids( zipFile.Entries.Where( e => string.Equals( Path.GetDirectoryName( e.FullName ), subFolder, StringComparison.OrdinalIgnoreCase ) ) );
 
 			return result;
 		}

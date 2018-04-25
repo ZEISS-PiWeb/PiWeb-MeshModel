@@ -120,6 +120,12 @@
   <data name="FileVersionError_Text" xml:space="preserve">
     <value>The mesh model file is of version {0}. This software can only read mesh model files up to version {1}.</value>
   </data>
+  <data name="InvalidFormatMissingManifest_ErrorText" xml:space="preserve">
+    <value>Invalid format: Missing meta data file '{0}'.</value>
+  </data>
+  <data name="InvalidFormatMissingProperty_ErrorText" xml:space="preserve">
+    <value>Invalid format: Missing mendatory meta property '{0}'.</value>
+  </data>
   <data name="OldFileVersionError_Text" xml:space="preserve">
     <value>The mesh model file was created by an older version of PiWeb and is not supported any more.</value>
   </data>

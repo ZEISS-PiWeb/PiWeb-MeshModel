@@ -120,6 +120,12 @@
   <data name="FileVersionError_Text" xml:space="preserve">
     <value>Die MeshModel-Datei hat die Version {0}. Diese Software kann nur MeshModel-Dateien bis Version {1} einlesen.</value>
   </data>
+  <data name="InvalidFormatMissingManifest_ErrorText" xml:space="preserve">
+    <value>Ungültiges Format: Die Meta-Daten-Datei '{0}' konnte nicht gefunden werden.</value>
+  </data>
+  <data name="InvalidFormatMissingProperty_ErrorText" xml:space="preserve">
+    <value>Ungültiges Format: Das Meta-Daten-Pflichtfeld '{0}' ist nicht definiert.</value>
+  </data>
   <data name="OldFileVersionError_Text" xml:space="preserve">
     <value>Die MeshModel-Datei stammt aus einer zu alten PiWeb Version und wird nicht mehr unterstützt.</value>
   </data>

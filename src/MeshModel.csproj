@@ -52,6 +52,11 @@
     <Compile Include="ColorScale.cs" />
     <Compile Include="ColorScaleEntry.cs" />
     <Compile Include="Color.cs" />
+    <Compile Include="ColorScaleInterpolation.cs" />
+    <Compile Include="IGuidGenerator.cs" />
+    <Compile Include="MeshModelFormatData.cs" />
+    <Compile Include="MeshModelType.cs" />
+    <Compile Include="RandomGuidGenerator.cs" />
     <Compile Include="Rect3F.cs" />
     <Compile Include="HashBuilder.cs" />
     <Compile Include="MD5Managed.cs" />
@@ -66,7 +71,7 @@
     <Compile Include="MeshValueList.cs" />
     <Compile Include="ReaderWriterExtensions.cs" />
     <Compile Include="MeshModel.cs" />
-    <Compile Include="MeshModelGuidGenerator.cs" />
+    <Compile Include="ZipEntriesGuidGenerator.cs" />
     <Compile Include="MeshModelHelper.cs" />
     <Compile Include="MeshModelMetadata.cs" />
     <Compile Include="MeshModelPart.cs" />

@@ -21,7 +21,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	/// <see cref="MeshModel"/>, the number of <see cref="MeshValue"/> objects should be equal to the number of <see cref="Mesh"/> objects within
 	/// the <see cref="MeshModel"/>.
 	/// </summary>
-	public class MeshValueList
+	public sealed class MeshValueList
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MeshValueList"/> class.

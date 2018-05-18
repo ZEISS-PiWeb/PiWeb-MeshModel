@@ -53,6 +53,7 @@
     <Compile Include="ColorScaleEntry.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="ColorScaleInterpolation.cs" />
+    <Compile Include="ColorSpan.cs" />
     <Compile Include="IGuidGenerator.cs" />
     <Compile Include="MeshModelFormatData.cs" />
     <Compile Include="MeshModelType.cs" />

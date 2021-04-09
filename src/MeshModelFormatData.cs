@@ -13,8 +13,10 @@ namespace Zeiss.PiWeb.MeshModel
 	#region usings
 
 	using System;
+	using System.Globalization;
 	using System.IO;
 	using System.IO.Compression;
+	using System.Text;
 	using System.Xml;
 
 	#endregion
@@ -25,7 +27,7 @@ namespace Zeiss.PiWeb.MeshModel
 	public sealed class MeshModelFormatData
 	{
 		#region constructors
-		
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MeshModelFormatData" /> class.
 		/// </summary>
@@ -51,6 +53,8 @@ namespace Zeiss.PiWeb.MeshModel
 
 		#endregion
 
+		#region methods
+
 		/// <summary>
 		/// Extracts the <see cref="MeshModelFormatData"/> from the specified <paramref name="stream"/>.
 		/// </summary>
@@ -62,10 +66,8 @@ namespace Zeiss.PiWeb.MeshModel
 			if( stream == null )
 				throw new ArgumentNullException( nameof( stream ) );
 
-			using( var zipFile = new ZipArchive( stream.CanSeek ? stream : new MemoryStream( MeshModelHelper.StreamToArray( stream ) ), ZipArchiveMode.Read ) )
-			{
-				return ExtractFrom( zipFile );
-			}
+			using var zipFile = new ZipArchive( stream.CanSeek ? stream : new MemoryStream( MeshModelHelper.StreamToArray( stream ) ), ZipArchiveMode.Read, true, Encoding.UTF8 );
+			return ExtractFrom( zipFile );
 		}
 
 		/// <summary>
@@ -76,12 +78,9 @@ namespace Zeiss.PiWeb.MeshModel
 			var entry = archive.GetEntry( "Metadata.xml" );
 			if( entry == null )
 				throw new InvalidOperationException( MeshModelHelper.FormatResource<MeshModel>( "InvalidFormatMissingManifest_ErrorText", "Metadata.xml" ) );
-				
-			using( var entryStream = entry.Open() )
-			{
-				var result = ReadFrom( entryStream );
-				return result;
-			}
+
+			using var entryStream = entry.Open();
+			return ReadFrom( entryStream );
 		}
 
 		/// <summary>
@@ -97,29 +96,30 @@ namespace Zeiss.PiWeb.MeshModel
 				CloseInput = false,
 				NameTable = new NameTable()
 			};
-			using( var reader = XmlReader.Create( stream, settings ) )
+			using var reader = XmlReader.Create( stream, settings );
+
+			Version fileVersion = null;
+			var type = MeshModelType.Part;
+
+			reader.MoveToElement();
+			while( reader.Read() )
 			{
-				Version fileVersion = null;
-				var type = MeshModelType.Part;
-
-				reader.MoveToElement();
-				while( reader.Read() )
+				switch( reader.Name )
 				{
-					switch( reader.Name )
-					{
-						case "PartCount":
-							var partCount = int.Parse( reader.ReadString(), System.Globalization.CultureInfo.InvariantCulture );
-							type = partCount == 1 ? MeshModelType.Part : MeshModelType.Composite;
-							break;
+					case "PartCount":
+						var partCount = int.Parse( reader.ReadString(), CultureInfo.InvariantCulture );
+						type = partCount == 1 ? MeshModelType.Part : MeshModelType.Composite;
+						break;
 
-						case "FileVersion":
-							fileVersion = new Version( reader.ReadString() );
-							break;
-					}
+					case "FileVersion":
+						fileVersion = new Version( reader.ReadString() );
+						break;
 				}
-
-				return new MeshModelFormatData( fileVersion, type );
 			}
+
+			return new MeshModelFormatData( fileVersion, type );
 		}
+
+		#endregion
 	}
 }

@@ -15,6 +15,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 	using System;
 	using System.Runtime.CompilerServices;
+	using Zeiss.PiWeb.MeshModel.Common;
 
 	#endregion
 
@@ -29,7 +30,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <value>
 		/// The length.
 		/// </value>
-		public float Length => ( float ) Math.Sqrt( X * X + Y * Y + Z * Z );
+		public float Length => (float)Math.Sqrt( X * X + Y * Y + Z * Z );
 
 		/// <summary>
 		/// Gets the length squared.
@@ -225,10 +226,10 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator ==( Vector3F vector1, Vector3F vector2 )
 		{
-			if( vector1.X == vector2.X &&
-			    vector1.Y == vector2.Y )
-				return vector1.Z == vector2.Z;
-			return false;
+			return
+				vector1.X.IsCloseTo( vector2.X ) &&
+				vector1.Y.IsCloseTo( vector2.Y ) &&
+				vector1.Z.IsCloseTo( vector2.Z );
 		}
 
 		/// <summary>
@@ -251,17 +252,19 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public void Normalize()
 		{
-			float num1 = Math.Abs( X );
-			float num2 = Math.Abs( Y );
-			float num3 = Math.Abs( Z );
+			var num1 = Math.Abs( X );
+			var num2 = Math.Abs( Y );
+			var num3 = Math.Abs( Z );
+
 			if( num2 > num1 )
 				num1 = num2;
 			if( num3 > num1 )
 				num1 = num3;
-			X = X / num1;
-			Y = Y / num1;
-			Z = Z / num1;
-			this = this / ( float ) Math.Sqrt( X * X + Y * Y + Z * Z );
+
+			X /= num1;
+			Y /= num1;
+			Z /= num1;
+			this = this / (float)Math.Sqrt( X * X + Y * Y + Z * Z );
 		}
 
 		/// <summary>
@@ -275,13 +278,15 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			vector1.Normalize();
 			vector2.Normalize();
-			return RadiansToDegrees( DotProduct( vector1, vector2 ) >= 0.0f ? 2.0f * ( float ) Math.Asin( ( vector1 - vector2 ).Length / 2.0f ) : ( float ) Math.PI - 2.0f * ( float ) Math.Asin( ( -vector1 - vector2 ).Length / 2.0f ) );
+			return RadiansToDegrees( DotProduct( vector1, vector2 ) >= 0.0
+				? 2.0f * (float)Math.Asin( ( vector1 - vector2 ).Length / 2.0f )
+				: (float)Math.PI - 2.0f * (float)Math.Asin( ( -vector1 - vector2 ).Length / 2.0f ) );
 		}
 
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		private static float RadiansToDegrees( float value )
 		{
-			return value * 180 / ( float ) Math.PI;
+			return value * 180 / (float)Math.PI;
 		}
 
 		/// <summary>
@@ -376,7 +381,7 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static float DotProduct( Vector3F vector1, Vector3F vector2 )
 		{
-			return DotProduct( ref vector1, ref vector2 );
+			return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
 		}
 
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
@@ -394,15 +399,7 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F CrossProduct( Vector3F vector1, Vector3F vector2 )
 		{
-			Vector3F result;
-			CrossProduct( ref vector1, ref vector2, out result );
-			return result;
-		}
-
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		private static void CrossProduct( ref Vector3F vector1, ref Vector3F vector2, out Vector3F result )
-		{
-			result = new Vector3F(
+			return new Vector3F(
 				vector1.Y * vector2.Z - vector1.Z * vector2.Y,
 				vector1.Z * vector2.X - vector1.X * vector2.Z,
 				vector1.X * vector2.Y - vector1.Y * vector2.X
@@ -418,9 +415,10 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool Equals( Vector3F vector1, Vector3F vector2 )
 		{
-			if( vector1.X.Equals( vector2.X ) && vector1.Y.Equals( vector2.Y ) )
-				return vector1.Z.Equals( vector2.Z );
-			return false;
+			return
+				vector1.X.IsCloseTo( vector2.X ) &&
+				vector1.Y.IsCloseTo( vector2.Y ) &&
+				vector1.Z.IsCloseTo( vector2.Z );
 		}
 
 		/// <summary>
@@ -435,7 +433,7 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			if( !( o is Vector3F ) )
 				return false;
-			return Equals( this, ( Vector3F ) o );
+			return Equals( this, (Vector3F)o );
 		}
 
 		/// <summary>
@@ -453,7 +451,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Returns a hash code for this instance.
 		/// </summary>
 		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override int GetHashCode()
@@ -465,6 +463,11 @@ namespace Zeiss.PiWeb.MeshModel
 				hashCode = ( hashCode * 397 ) ^ Z.GetHashCode();
 				return hashCode;
 			}
+		}
+
+		public override string ToString()
+		{
+			return $"[{X} | {Y} | {Z}]";
 		}
 	}
 }

@@ -1,19 +1,19 @@
-﻿#region Copyright
+﻿#region copyright
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Carl Zeiss IMT (IZfM Dresden)                   */
+/* Carl Zeiss Industrielle Messtechnik GmbH        */
 /* Softwaresystem PiWeb                            */
-/* (c) Carl Zeiss 2010                             */
+/* (c) Carl Zeiss 2021                             */
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #endregion
 
-// ReSharper disable CompareOfFloatsByEqualityOperator
-namespace Zeiss.IMT.PiWeb.MeshModel
+namespace Zeiss.PiWeb.MeshModel
 {
 	#region usings
 
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Runtime.CompilerServices;
 
 	#endregion
@@ -21,7 +21,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	/// <summary>
 	/// An interpolated span between two colors
 	/// </summary>
-	public sealed class ColorSpan
+	public readonly struct ColorSpan
 	{
 		#region members
 
@@ -35,15 +35,9 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		private readonly double _DistS;
 		private readonly double _DistL;
 		private readonly double _DistH;
-		private readonly double _DistLeftRight;
-		private readonly byte _LeftColorR;
-		private readonly byte _LeftColorG;
-		private readonly byte _LeftColorB;
-		private readonly byte _LeftColorA;
-		private readonly int _DistR;
-		private readonly int _DistB;
-		private readonly int _DistG;
-		private readonly int _DistA;
+
+		private readonly Color _LeftColor;
+		private readonly Color _RightColor;
 
 		#endregion
 
@@ -59,33 +53,24 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		public ColorSpan( float leftValue, float rightValue, Color leftColor, Color rightColor )
 		{
 			_LeftValue = leftValue;
-			var leftColorHsl = RgbToHsl( leftColor );
-			var rightColorHsl = RgbToHsl( rightColor );
-
 			_RightValue = rightValue;
 
-			_DistLeftRight = _RightValue - _LeftValue;
+			_LeftColor = leftColor;
+			_RightColor = rightColor;
 
-			_LeftColorR = leftColor.R;
-			_LeftColorG = leftColor.G;
-			_LeftColorB = leftColor.B;
-			_LeftColorA = leftColor.A;
+			var (leftH, leftS, leftL) = RgbToHsl( leftColor );
+			var (rightH, rightS, rightL) = RgbToHsl( rightColor );
 
-			_DistR = rightColor.R - leftColor.R;
-			_DistG = rightColor.G - leftColor.G;
-			_DistB = rightColor.B - leftColor.B;
-			_DistA = rightColor.A - leftColor.A;
+			_LeftColorH = leftH;
+			_LeftColorS = leftS;
+			_LeftColorL = leftL;
 
-			_LeftColorH = leftColorHsl.Item1;
-			_LeftColorS = leftColorHsl.Item2;
-			_LeftColorL = leftColorHsl.Item3;
-
-			_DistH = rightColorHsl.Item1 - leftColorHsl.Item1;
-			_DistS = rightColorHsl.Item2 - leftColorHsl.Item2;
-			_DistL = rightColorHsl.Item3 - leftColorHsl.Item3;
+			_DistH = rightH - leftH;
+			_DistS = rightS - leftS;
+			_DistL = rightL - leftL;
 
 			if( _DistH > 0.5 )
-				_DistH = _DistH - 1;
+				_DistH -= 1;
 
 			IsSolidColor = leftColor == rightColor;
 		}
@@ -109,14 +94,14 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		private Color GetColorHsv( double value )
 		{
-			value = ( Math.Max( _LeftValue, Math.Min( _RightValue, value ) ) - _LeftValue ) / _DistLeftRight;
+			value = ( Math.Max( _LeftValue, Math.Min( _RightValue, value ) ) - _LeftValue ) / ( _RightValue - _LeftValue );
 
 			var h = _LeftColorH + _DistH * value;
 			var s = _LeftColorS + _DistS * value;
 			var l = _LeftColorL + _DistL * value;
 
 			// The hue is actually a normalized angle (0 = 0° to 1 = 360°). This means we can interpolate in both directions to reach the desired hue.
-			// Lets make sure we go the shorter route. 
+			// Lets make sure we go the shorter route.
 			if( h < 0 )
 				h += 1;
 
@@ -126,52 +111,58 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 
 			var max = Round( l * 255 );
 			var min = Round( ( 1.0 - s ) * l * 255 );
-			var q = ( double ) ( max - min ) / 255;
-			var a = ( byte ) ( _LeftColorA + value * _DistA );
+			var q = (double)( max - min ) / 255;
+			var a = (byte)( _LeftColor.A + value * ( _RightColor.A - _LeftColor.A ) );
 
-			if ( h >= 0 && h <= 1.0 / 6.0 )
+			if( h >= 0 && h <= 1.0 / 6.0 )
 			{
 				var mid = Round( h * q * 1530.0 + min );
 				return Color.FromArgb( a, max, mid, min );
 			}
+
 			if( h <= 1.0 / 3.0 )
 			{
 				var mid = Round( -( ( h - 1.0 / 6.0 ) * q ) * 1530.0 + max );
 				return Color.FromArgb( a, mid, max, min );
 			}
+
 			if( h <= 0.5 )
 			{
 				var mid = Round( ( h - 1.0 / 3.0 ) * q * 1530.0 + min );
 				return Color.FromArgb( a, min, max, mid );
 			}
+
 			if( h <= 2.0 / 3.0 )
 			{
 				var mid = Round( -( ( h - 0.5 ) * q ) * 1530.0 + max );
 				return Color.FromArgb( a, min, mid, max );
 			}
+
 			if( h <= 5.0 / 6.0 )
 			{
 				var mid = Round( ( h - 2.0 / 3.0 ) * q * 1530.0 + min );
 				return Color.FromArgb( a, mid, min, max );
 			}
+
 			if( h <= 1.0 )
 			{
 				var mid = Round( -( ( h - 5.0 / 6.0 ) * q ) * 1530.0 + max );
 				return Color.FromArgb( a, max, min, mid );
 			}
+
 			return Color.FromArgb( a, 0, 0, 0 );
 		}
 
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		private Color GetColorRgb( double value )
 		{
-			value = ( Math.Max( _LeftValue, Math.Min( _RightValue, value ) ) - _LeftValue ) / _DistLeftRight;
+			value = ( Math.Max( _LeftValue, Math.Min( _RightValue, value ) ) - _LeftValue ) / ( _RightValue - _LeftValue );
 
 			return Color.FromArgb(
-				( byte ) ( _LeftColorA + value * _DistA ),
-				( byte ) ( _LeftColorR + value * _DistR ),
-				( byte ) ( _LeftColorG + value * _DistG ),
-				( byte ) ( _LeftColorB + value * _DistB )
+				(byte)( _LeftColor.A + value * ( _RightColor.A - _LeftColor.A ) ),
+				(byte)( _LeftColor.R + value * ( _RightColor.R - _LeftColor.R ) ),
+				(byte)( _LeftColor.G + value * ( _RightColor.G - _LeftColor.G ) ),
+				(byte)( _LeftColor.B + value * ( _RightColor.B - _LeftColor.B ) )
 			);
 		}
 
@@ -185,62 +176,49 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public Color GetColor( double value, ColorScaleInterpolation interpolation = ColorScaleInterpolation.HSV )
 		{
-			if( interpolation == ColorScaleInterpolation.HSV )
-				return GetColorHsv( value );
-			if( interpolation == ColorScaleInterpolation.RGB )
-				return GetColorRgb( value );
-
-			throw new NotSupportedException( string.Concat( "Unsupported interpolation type '", interpolation, "'." ) );
+			return interpolation switch
+			{
+				ColorScaleInterpolation.HSV => GetColorHsv( value ),
+				ColorScaleInterpolation.RGB => GetColorRgb( value ),
+				_                           => throw new NotSupportedException( string.Concat( "Unsupported interpolation type '", interpolation, "'." ) )
+			};
 		}
 
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		private static byte Round( double val )
 		{
-			var result = ( byte ) val;
-			if( ( int ) ( val * 100 ) % 100 >= 50 )
+			var result = (byte)val;
+			if( (int)( val * 100 ) % 100 >= 50 )
 				result += 1;
 
 			return result;
 		}
 
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		private static Tuple<double, double, double> RgbToHsl( Color c )
+		[SuppressMessage( "ReSharper", "CompareOfFloatsByEqualityOperator" )]
+		[SuppressMessage( "ReSharper", "PossibleLossOfFraction" )]
+		private static (double h, double s, double l) RgbToHsl( Color c )
 		{
-			double h, s, l;
-			double max, min;
-
 			//	Of our RGB values, assign the highest value to Max, and the Smallest to Min
-			if( c.R > c.G )
-			{
-				max = c.R;
-				min = c.G;
-			}
-			else
-			{
-				max = c.G;
-				min = c.R;
-			}
-			if( c.B > max ) max = c.B;
-			else if( c.B < min ) min = c.B;
+			var min = Math.Min( Math.Min( c.R, c.G ), c.B );
+			var max = Math.Max( Math.Max( c.R, c.G ), c.B );
 
-			var diff = max - min;
+			var diff = (double)max - min;
 
 			//	Luminance - a.k.a. Brightness - Adobe photoshop uses the logic that the
-			//	site VBspeed regards (regarded) as too primitive = superior decides the 
+			//	site VBspeed regards (regarded) as too primitive = superior decides the
 			//	level of brightness.
-			l = max / 255.0;
+			var l = max / 255.0;
 
 			//	Saturation
-			if( max == 0.0 ) s = 0.0; //	Protecting from the impossible operation of division by zero.
-			else s = diff / max; //	The logic of Adobe Photoshops is this simple.
+			var s = max == 0.0 ? 0.0 : diff / max;
 
-			//	Hue		R is situated at the angel of 360 eller noll degrees; 
+			//	Hue		R is situated at the angel of 360 eller noll degrees;
 			//			G vid 120 degrees
 			//			B vid 240 degrees
-			double q;
-			if( diff == 0.0 ) q = 0.0; // Protecting from the impossible operation of division by zero.
-			else q = 60.0 / diff;
+			var q = diff == 0.0 ? 0.0 : 60.0 / diff;
 
+			var h = 0.0;
 			if( max == c.R )
 			{
 				if( c.G < c.B ) h = ( 360.0 + q * ( c.G - c.B ) ) / 360.0;
@@ -248,9 +226,8 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 			}
 			else if( max == c.G ) h = ( 120.0 + q * ( c.B - c.R ) ) / 360.0;
 			else if( max == c.B ) h = ( 240.0 + q * ( c.R - c.G ) ) / 360.0;
-			else h = 0.0;
 
-			return Tuple.Create( h, s, l );
+			return ( h, s, l );
 		}
 
 		#endregion

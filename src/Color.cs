@@ -22,8 +22,10 @@ namespace Zeiss.PiWeb.MeshModel
 	/// <remarks>
 	/// We use our own color struct, because the .net color struct is significantly slower.
 	/// </remarks>
-	public struct Color : IEquatable<Color>
+	public readonly struct Color : IEquatable<Color>
 	{
+		#region members
+
 		/// <summary>
 		/// Alpha channel.
 		/// </summary>
@@ -33,6 +35,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Red channel.
 		/// </summary>
 		public readonly byte R;
+
 		/// <summary>
 		/// Green channel.
 		/// </summary>
@@ -42,6 +45,10 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Blue channel.
 		/// </summary>
 		public readonly byte B;
+
+		#endregion
+
+		#region constructors
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Color"/> struct from ARGB values.
@@ -57,6 +64,10 @@ namespace Zeiss.PiWeb.MeshModel
 			G = g;
 			B = b;
 		}
+
+		#endregion
+
+		#region methods
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Color"/> struct from RGB values, with a default alpha value of 255 (opaque).
@@ -103,18 +114,6 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals( Color other )
-		{
-			return A == other.A && R == other.R && G == other.G && B == other.B;
-		}
-
-		/// <summary>
 		/// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
@@ -124,14 +123,14 @@ namespace Zeiss.PiWeb.MeshModel
 		public override bool Equals( object obj )
 		{
 			if( ReferenceEquals( null, obj ) ) return false;
-			return obj is Color && Equals( ( Color ) obj );
+			return obj is Color && Equals( (Color)obj );
 		}
 
 		/// <summary>
 		/// Returns a hash code for this instance.
 		/// </summary>
 		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
 		/// </returns>
 		public override int GetHashCode()
 		{
@@ -170,5 +169,23 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			return !color1.Equals( color2 );
 		}
+
+		#endregion
+
+		#region interface IEquatable<Color>
+
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals( Color other )
+		{
+			return A == other.A && R == other.R && G == other.G && B == other.B;
+		}
+
+		#endregion
 	}
 }

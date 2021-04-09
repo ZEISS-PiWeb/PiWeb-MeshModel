@@ -11,7 +11,12 @@
 // ReSharper disable NonReadonlyMemberInGetHashCode
 namespace Zeiss.PiWeb.MeshModel
 {
+	#region usings
+
 	using System.Runtime.CompilerServices;
+	using Zeiss.PiWeb.MeshModel.Common;
+
+	#endregion
 
 	/// <summary>
 	/// Describes a point in 3D space with floating point coordinates. Adapted from the .NET Point3D class.
@@ -67,11 +72,10 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator ==( Point3F point1, Point3F point2 )
 		{
-			if( point1.X == point2.X &&
-			    point1.Y == point2.Y )
-				return point1.Z == point2.Z;
-
-			return false;
+			return
+				point1.X.IsCloseTo( point2.X ) &&
+				point1.Y.IsCloseTo( point2.Y ) &&
+				point1.Z.IsCloseTo( point2.Z );
 		}
 
 		/// <summary>
@@ -153,9 +157,10 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool Equals( Point3F point1, Point3F point2 )
 		{
-			if( point1.X.Equals( point2.X ) && point1.Y.Equals( point2.Y ) )
-				return point1.Z.Equals( point2.Z );
-			return false;
+			return
+				point1.X.IsCloseTo( point2.X ) &&
+				point1.Y.IsCloseTo( point2.Y ) &&
+				point1.Z.IsCloseTo( point2.Z );
 		}
 
 		/// <summary>
@@ -168,10 +173,7 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override bool Equals( object o )
 		{
-			if( !( o is Point3F ) )
-				return false;
-
-			return Equals( this, ( Point3F ) o );
+			return o is Point3F point && Equals( this, point );
 		}
 
 		/// <summary>
@@ -189,7 +191,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Returns a hash code for this instance.
 		/// </summary>
 		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override int GetHashCode()

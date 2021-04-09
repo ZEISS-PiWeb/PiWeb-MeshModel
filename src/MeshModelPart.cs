@@ -13,6 +13,7 @@ namespace Zeiss.PiWeb.MeshModel
 	#region usings
 
 	using System;
+	using System.Buffers;
 	using System.Collections.Generic;
 	using System.IO;
 	using System.IO.Compression;
@@ -29,28 +30,11 @@ namespace Zeiss.PiWeb.MeshModel
 		#region members
 
 		private readonly HashSet<string> _DisabledLayers = new HashSet<string>();
-
 		private Rect3F? _Bounds;
-		private byte[] _Thumbnail;
 
 		#endregion
 
 		#region constructors
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="MeshModelPart" /> class.
-		/// </summary>
-		/// <param name="metaData">The meta data.</param>
-		private MeshModelPart( MeshModelMetadata metaData )
-		{
-			ConstructGeometry( new Mesh[0], new Edge[0] );
-			Metadata = metaData;
-
-			UpdateTriangulationHash();
-			MeshValues = new MeshValueList[0];
-
-			Thumbnail = null;
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MeshModelPart"/> class.
@@ -61,18 +45,39 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="meshValueLists">A list of data values for this model (deviations, minima, maxima, mean values, etc.).</param>
 		/// <param name="thumbnail">The thumbnail.</param>
 		public MeshModelPart( MeshModelMetadata metaData, IEnumerable<Mesh> meshes, IEnumerable<Edge> edges = null, IEnumerable<MeshValueList> meshValueLists = null, byte[] thumbnail = null )
+			: this( metaData, SortMeshes( meshes ), SortEdges( edges ), meshValueLists?.ToArray() ?? Array.Empty<MeshValueList>(), thumbnail, false )
+		{  }
+
+		private MeshModelPart( MeshModelMetadata metaData, Mesh[] meshes, Edge[] edges, MeshValueList[] meshValueLists, byte[] thumbnail, bool updateTriangulationHash )
 		{
-			ConstructGeometry( meshes, edges );
+			Meshes = meshes;
+			Edges = edges;
 			Metadata = metaData;
 
-			UpdateTriangulationHash();
-			MeshValues = ( meshValueLists ?? new MeshValueList[0] ).ToArray();
+			if( updateTriangulationHash || Metadata.TriangulationHash == Guid.Empty )
+				UpdateTriangulationHash();
+			MeshValues = meshValueLists;
 
 			CheckMeshValueIntegrity();
 
 			Metadata.MeshValueEntries = MeshValues.Select( m => m.Entry ).ToArray();
+			Thumbnail = thumbnail != null && thumbnail.Length > 0 ? thumbnail : null;
+		}
 
-			Thumbnail = thumbnail;
+		private static Mesh[] SortMeshes( IEnumerable<Mesh> meshes )
+		{
+			return ( meshes ?? Array.Empty<Mesh>() )
+				.Where( m => m.Positions != null && m.Positions.Length > 0 )
+				.OrderBy( m => ColorOrdering( m.Color ) )
+				.ToArray();
+		}
+
+		private static Edge[] SortEdges( IEnumerable<Edge> edges )
+		{
+			return ( edges ?? Array.Empty<Edge>() )
+				.Where( e => e.Points != null && e.Points.Length > 0 )
+				.OrderBy( e => ColorOrdering( e.Color ) )
+				.ToArray();
 		}
 
 		#endregion
@@ -82,22 +87,22 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Gets the triangulated meshes.
 		/// </summary>
-		public Mesh[] Meshes { get; private set; }
+		public Mesh[] Meshes { get; }
 
 		/// <summary>
 		/// Gets a list of data values for this model (deviations, minima, maxima, mean values, etc.)
 		/// </summary>
-		public MeshValueList[] MeshValues { get; private set; }
+		public MeshValueList[] MeshValues { get; }
 
 		/// <summary>
 		/// Gets the edges.
 		/// </summary>
-		public Edge[] Edges { get; private set; }
+		public Edge[] Edges { get; }
 
 		/// <summary>
 		/// Gets the metadata.
 		/// </summary>
-		public MeshModelMetadata Metadata { get; private set; }
+		public MeshModelMetadata Metadata { get; }
 
 		/// <summary>
 		/// Gets the bounding box of this <see cref="MeshModelPart"/>.
@@ -124,7 +129,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Gets a value indicating whether this instance has thumbnail.
 		/// </summary>
-		public bool HasThumbnail => _Thumbnail != null;
+		public bool HasThumbnail => Thumbnail != null;
 
 		/// <summary>
 		/// Gets or sets the thumbnail of this <see cref="MeshModelPart"/>.
@@ -132,17 +137,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <value>
 		/// A byte array containing image data.
 		/// </value>
-		public byte[] Thumbnail
-		{
-			get { return _Thumbnail; }
-			set
-			{
-				_Thumbnail = value;
-				if( _Thumbnail != null && _Thumbnail.Length == 0 )
-					_Thumbnail = null;
-			}
-		}
-
+		public byte[] Thumbnail { get; }
 
 		/// <summary>
 		/// Gets a value indicating whether this instance has mesh values.
@@ -153,26 +148,31 @@ namespace Zeiss.PiWeb.MeshModel
 
 		#region methods
 
+		/// <summary>
+		/// Create a clone of this mpdel with the new thumbnail <paramref name="thumbnail"/>.
+		/// </summary>
+		public MeshModelPart CreateModelWithThumbnail( byte[] thumbnail )
+		{
+			if( ( thumbnail ?? Array.Empty<byte>() ).SequenceEqual( Thumbnail ?? Array.Empty<byte>() ) )
+				return this;
+
+			return new MeshModelPart( Metadata, Meshes, Edges, MeshValues, thumbnail, false );
+		}
+
 		private void CheckMeshValueIntegrity()
 		{
 			if( MeshValues == null || MeshValues.Length == 0 || Meshes == null || Meshes.Length == 0 )
 				return;
 
-			foreach (var meshValue in MeshValues)
+			foreach( var meshValue in MeshValues )
 			{
-				if (meshValue.MeshValues.Length != Meshes.Length)
+				if( meshValue.MeshValues.Length != Meshes.Length )
 					throw new ArgumentException( $"When specifiying a MeshValueList, every MeshValue must be exactly as long as the {nameof( Meshes )}" );
 			}
 		}
 
-		private void ConstructGeometry( IEnumerable<Mesh> meshes, IEnumerable<Edge> edges )
-		{
-			Meshes = meshes.Where( m => m.Positions != null && m.Positions.Length > 0 ).OrderBy( m => ColorOrdering( m.Color ) ).ToArray();
-			Edges = ( edges ?? new Edge[0] ).Where( e => e.Points != null && e.Points.Length > 0 ).OrderBy( e => ColorOrdering( e.Color ) ).ToArray();
-		}
-
 		/// <summary>
-		/// Creates the specified <paramref name="subFolder"/> in the specified <paramref name="zipFile"/> and writes the serialized data into it. 
+		/// Creates the specified <paramref name="subFolder"/> in the specified <paramref name="zipFile"/> and writes the serialized data into it.
 		/// If the <paramref name="subFolder"/> is null or empty, the data will be serialized into the root directory of the zip archive .
 		/// </summary>
 		public void Serialize( ZipArchive zipFile, string subFolder = "" )
@@ -187,16 +187,14 @@ namespace Zeiss.PiWeb.MeshModel
 			// Vorschaubild
 			if( HasThumbnail )
 			{
-				using( var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, "PreviewImage.png" ), CompressionLevel.NoCompression ).Open() )
-				{
-					entryStream.Write( _Thumbnail, 0, _Thumbnail.Length );
-				}
+				using var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, "PreviewImage.png" ), CompressionLevel.NoCompression ).Open();
+				entryStream.Write( Thumbnail, 0, Thumbnail.Length );
 			}
 
 			// Triangulierungsdaten schreiben
 			using( var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, "Meshes.dat" ), CompressionLevel.Fastest ).Open() )
-			using( var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true ) )
 			{
+				using var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true );
 				binaryWriter.Write( Meshes.Length );
 				foreach( var mesh in Meshes )
 				{
@@ -206,8 +204,8 @@ namespace Zeiss.PiWeb.MeshModel
 
 			// Edgedaten schreiben
 			using( var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, "Edges.dat" ), CompressionLevel.Fastest ).Open() )
-			using( var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true ) )
 			{
+				using var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true );
 				binaryWriter.Write( Edges.Length );
 				foreach( var edge in Edges )
 				{
@@ -218,11 +216,9 @@ namespace Zeiss.PiWeb.MeshModel
 			// Datenwerte schreiben
 			foreach( var entry in MeshValues )
 			{
-				using( var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, entry.Entry.Filename ), CompressionLevel.Fastest ).Open() )
-				using( var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true ) )
-				{
-					entry.Write( binaryWriter );
-				}
+				using var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, entry.Entry.Filename ), CompressionLevel.Fastest ).Open();
+				using var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true );
+				entry.Write( binaryWriter );
 			}
 		}
 
@@ -234,66 +230,107 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			var fileVersion10 = new Version( 1, 0, 0, 0 );
 
-			var result = new MeshModelPart( new MeshModelMetadata() );
-			result.Metadata = MeshModelMetadata.ExtractFrom( zipFile, subFolder );
+			var metadata = MeshModelMetadata.ExtractFrom( zipFile, subFolder );
 
 			// Versionschecks
-			var fileVersion = result.Metadata.FileVersion;
+			var fileVersion = metadata.FileVersion;
 			if( fileVersion < fileVersion10 )
-		        throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
+				throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
 
 			if( fileVersion.Major > MeshModel.MeshModelFileVersion.Major )
 				throw new InvalidOperationException( MeshModelHelper.FormatResource<MeshModel>( "FileVersionError_Text", fileVersion, MeshModel.MeshModelFileVersion ) );
-			
-			// Vorschaubild lesen
+
+			var thumbnail = ReadThumbnail( zipFile, subFolder );
+			var meshes = ReadMeshes( zipFile, subFolder, fileVersion );
+			var edges = ReadEdges( zipFile, subFolder, fileVersion );
+			var meshValueList = ReadMeshValueLists( zipFile, metadata, subFolder, fileVersion );
+
+			return new MeshModelPart( metadata, meshes, edges, meshValueList, thumbnail, false );
+		}
+
+		/// <summary>
+		/// Reads the values from the specified <paramref name="subFolder"/> in the specified <paramref name="zipFile"/> and deserializes the data found in it.
+		/// If no <paramref name="subFolder"/> is specified, the method deserializes the data in the <paramref name="zipFile"/>s root directory.
+		/// </summary>
+		public static MeshModelPart DeserializeValues( MeshModelPart baseModelPart, ZipArchive zipFile, string subFolder = "" )
+		{
+			var fileVersion10 = new Version( 1, 0, 0, 0 );
+
+			var metadata = MeshModelMetadata.ExtractFrom( zipFile, subFolder );
+
+			if (metadata.TriangulationHash != baseModelPart.Metadata.TriangulationHash)
+				throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "TriangulationMismatch_ErrorText" ) );
+
+			// Versionschecks
+			var fileVersion = metadata.FileVersion;
+			if( fileVersion < fileVersion10 )
+				throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
+
+			if( fileVersion.Major > MeshModel.MeshModelFileVersion.Major )
+				throw new InvalidOperationException( MeshModelHelper.FormatResource<MeshModel>( "FileVersionError_Text", fileVersion, MeshModel.MeshModelFileVersion ) );
+
+			var meshValueList = ReadMeshValueLists( zipFile, metadata, subFolder, fileVersion );
+
+			metadata.TriangulationHash = baseModelPart.Metadata.TriangulationHash;
+
+			return new MeshModelPart( metadata, baseModelPart.Meshes, baseModelPart.Edges, meshValueList, baseModelPart.Thumbnail, false );
+		}
+
+		private static byte[] ReadThumbnail( ZipArchive zipFile, string subFolder )
+		{
 			var thumbnailEntry = zipFile.GetEntry( Path.Combine( subFolder, "PreviewImage.png" ) );
-			if( thumbnailEntry != null )
-			{
-				using( var entryStream = thumbnailEntry.Open() )
-				{
-					result._Thumbnail = MeshModelHelper.StreamToArray( entryStream );
-				}
-			}
+			if( thumbnailEntry == null ) return null;
 
-			// Triangulierungsdaten lesen
-			using( var binaryReader = new BinaryReader( zipFile.GetEntry( Path.Combine( subFolder, "Meshes.dat" ) ).Open() ) )
-			{
-				var meshCount = binaryReader.ReadInt32();
+			using var entryStream = thumbnailEntry.Open();
+			return MeshModelHelper.StreamToArray( entryStream );
+		}
 
-				var meshes = new List<Mesh>( meshCount );
-				for( var i = 0; i < meshCount; i++ )
-				{
-					meshes.Add( Mesh.Read( binaryReader, i, fileVersion ) );
-				}
-				result.Meshes = meshes.ToArray();
-			}
-
-			// Edgedaten lesen
-			using( var binaryReader = new BinaryReader( zipFile.GetEntry( Path.Combine( subFolder, "Edges.dat" ) ).Open() ) )
-			{
-				var edgeCount = binaryReader.ReadInt32();
-
-				var edges = new List<Edge>( edgeCount );
-				for( var i = 0; i < edgeCount; i++ )
-				{
-					edges.Add( Edge.Read( binaryReader, fileVersion ) );
-				}
-				// we don't try to create a single-point edge
-				result.Edges = edges.Where( e => e.Points?.Length > 3 ).ToArray();
-			}
-
+		private static MeshValueList[] ReadMeshValueLists( ZipArchive zipFile, MeshModelMetadata metadata, string subFolder, Version fileVersion )
+		{
 			// Datenwerte lesen
-			var meshValueList = new List<MeshValueList>( result.Metadata.MeshValueEntries?.Length ?? 0 );
-			foreach( var entry in result.Metadata.MeshValueEntries ?? new MeshValueEntry[0] )
+			var meshValueList = new List<MeshValueList>( metadata.MeshValueEntries?.Length ?? 0 );
+			foreach( var entry in metadata.MeshValueEntries ?? Array.Empty<MeshValueEntry>() )
 			{
-				using( var binaryReader = new BinaryReader( zipFile.GetEntry( Path.Combine( subFolder, entry.Filename ) ).Open() ) )
-				{
-					meshValueList.Add( MeshValueList.Read( binaryReader, entry, fileVersion ) );
-				}
+				using var binaryReader = new BinaryReader( zipFile.GetEntry( Path.Combine( subFolder, entry.Filename ) ).Open() );
+				meshValueList.Add( MeshValueList.Read( binaryReader, entry, fileVersion ) );
 			}
-			result.MeshValues = meshValueList.ToArray();
 
-			return result;
+			return meshValueList.ToArray();
+		}
+
+		private static Edge[] ReadEdges( ZipArchive zipFile, string subFolder, Version fileVersion )
+		{
+			var entry = zipFile.GetEntry( Path.Combine( subFolder, "Edges.dat" ) );
+			if( entry == null ) return Array.Empty<Edge>();
+
+			using var binaryReader = new BinaryReader( entry.Open() );
+			var edgeCount = binaryReader.ReadInt32();
+
+			var edges = new List<Edge>( edgeCount );
+			for( var i = 0; i < edgeCount; i++ )
+			{
+				edges.Add( Edge.Read( binaryReader, fileVersion ) );
+			}
+
+			// we don't try to create a single-point edge
+			return edges.Where( e => e.Points?.Length > 3 ).ToArray();
+		}
+
+		private static Mesh[] ReadMeshes( ZipArchive zipFile, string subFolder, Version fileVersion )
+		{
+			var entry = zipFile.GetEntry( Path.Combine( subFolder, "Meshes.dat" ) );
+			if( entry == null ) return Array.Empty<Mesh>();
+
+			using var binaryReader = new BinaryReader( entry.Open() );
+			var meshCount = binaryReader.ReadInt32();
+
+			var meshes = new List<Mesh>( meshCount );
+			for( var i = 0; i < meshCount; i++ )
+			{
+				meshes.Add( Mesh.Read( binaryReader, i, fileVersion ) );
+			}
+
+			return meshes.ToArray();
 		}
 
 		/// <summary>
@@ -340,19 +377,41 @@ namespace Zeiss.PiWeb.MeshModel
 
 		private void UpdateTriangulationHash()
 		{
-			using( var md5 = HashBuilder.CreateHashAlgorithm() )
-			{
-				foreach( var mesh in Meshes )
-				{
-					var indices = mesh.GetTriangleIndices();
-					var block = new byte[indices.Length * sizeof( int )];
-					Buffer.BlockCopy( indices, 0, block, 0, block.Length );
+			using var md5 = HashBuilder.CreateHashAlgorithm();
 
-					md5.TransformBlock( block, 0, block.Length, block, 0 );
+			foreach( var mesh in Meshes )
+			{
+				var indices = mesh.GetTriangleIndices();
+				foreach( var (numberOfBytes, buffer) in IterateIndizes( indices ) )
+				{
+					md5.TransformBlock( buffer, 0, numberOfBytes, null, 0 );
 				}
-				md5.TransformFinalBlock( new byte[0], 0, 0 );
-				Metadata.TriangulationHash = new Guid( md5.Hash );
 			}
+
+			md5.TransformFinalBlock( Array.Empty<byte>(), 0, 0 );
+			Metadata.TriangulationHash = new Guid( md5.Hash );
+		}
+
+		public IEnumerable<(int NumberOfBytes, byte[] Buffer)> IterateIndizes( int[] indices )
+		{
+			const int arrayLength = 8 * 1024;
+
+			var processedBytes = 0;
+			var totalBytes = sizeof( int ) * indices.Length;
+			var buffer = ArrayPool<byte>.Shared.Rent( arrayLength );
+
+			while( true )
+			{
+				var numberOfBytes = Math.Min( arrayLength, totalBytes - processedBytes );
+				if( numberOfBytes <= 0 )
+					break;
+
+				Buffer.BlockCopy( indices, processedBytes, buffer, 0, numberOfBytes );
+				yield return ( numberOfBytes, buffer );
+
+				processedBytes += numberOfBytes;
+			}
+			ArrayPool<byte>.Shared.Return( buffer );
 		}
 
 		private static int ColorOrdering( Color? color )
@@ -361,7 +420,6 @@ namespace Zeiss.PiWeb.MeshModel
 				return color.Value.A << 24 | color.Value.R << 16 | color.Value.G << 8 | color.Value.B;
 			return 0;
 		}
-
 
 		/// <summary>
 		/// Determines whether the specified <paramref name="layer"/> is currently enabled.

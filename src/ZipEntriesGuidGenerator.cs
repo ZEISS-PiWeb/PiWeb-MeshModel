@@ -23,9 +23,9 @@ namespace Zeiss.PiWeb.MeshModel
 
 	/// <summary>
 	/// Implements uuid generation for a number of zip file entries based on their internal checksum.
-	/// 
+	///
 	/// This class is internal for now because it uses private fields of datatypes defined in the zip archive library.
-	/// We can not guarantee this will still work in the future. 
+	/// We can not guarantee this will still work in the future.
 	/// </summary>
 	internal class ZipEntriesGuidGenerator : IGuidGenerator
 	{
@@ -44,7 +44,7 @@ namespace Zeiss.PiWeb.MeshModel
 		public ZipEntriesGuidGenerator( IEnumerable<ZipArchiveEntry> entries )
 		{
 			if( entries == null )
-				throw new ArgumentNullException( nameof(entries) );
+				throw new ArgumentNullException( nameof( entries ) );
 
 			_Entries = entries;
 		}
@@ -59,7 +59,7 @@ namespace Zeiss.PiWeb.MeshModel
 		public static Guid GenerateGuidStatic( IEnumerable<ZipArchiveEntry> entries )
 		{
 			var stream = new MemoryStream();
-			foreach( var entry in entries.OrderBy( x => x.Name, StringComparer.Ordinal ) )
+			foreach( var entry in entries.OrderBy( x => x.FullName, StringComparer.Ordinal ) )
 			{
 				stream.Write( BitConverter.GetBytes( entry.CompressedLength ), 0, 8 );
 				stream.Write( BitConverter.GetBytes( entry.Length ), 0, 8 );
@@ -73,7 +73,7 @@ namespace Zeiss.PiWeb.MeshModel
 		private static uint GetChecksum( ZipArchiveEntry entry )
 		{
 			var crcField = typeof( ZipArchiveEntry ).GetField( "_crc32", BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance );
-			return ( uint ) crcField.GetValue( entry );
+			return (uint)crcField.GetValue( entry );
 		}
 
 		#endregion

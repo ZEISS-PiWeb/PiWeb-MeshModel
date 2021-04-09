@@ -10,16 +10,17 @@
 
 namespace Zeiss.PiWeb.MeshModel
 {
-	#region using
+	#region usings
 
 	using System;
+	using System.Buffers;
 	using System.Collections.Generic;
 	using System.Globalization;
 	using System.IO;
 	using System.Resources;
 
 	#endregion
-	
+
 	internal static class MeshModelHelper
 	{
 		#region methods
@@ -52,6 +53,7 @@ namespace Zeiss.PiWeb.MeshModel
 					last = current;
 				}
 			}
+
 			return result.ToArray();
 		}
 
@@ -63,16 +65,20 @@ namespace Zeiss.PiWeb.MeshModel
 			if( stream == null )
 				return null;
 
-			using( var memStream = new MemoryStream( expectedSize ) )
+			using var memStream = new MemoryStream( expectedSize );
+
+			const int arrayLength = 64 * 1024;
+			var buffer = ArrayPool<byte>.Shared.Rent( arrayLength );
+
+			int count;
+			while( ( count = stream.Read( buffer, 0, arrayLength ) ) > 0 )
 			{
-				int count;
-				var buffer = new byte[ 64 * 1024 ];
-				while( ( count = stream.Read( buffer, 0, buffer.Length ) ) > 0 )
-				{
-					memStream.Write( buffer, 0, count );
-				}
-				return memStream.ToArray();
+				memStream.Write( buffer, 0, count );
 			}
+
+			ArrayPool<byte>.Shared.Return( buffer );
+
+			return memStream.ToArray();
 		}
 
 		/// <summary>
@@ -96,10 +102,7 @@ namespace Zeiss.PiWeb.MeshModel
 		internal static string FormatResource<T>( string name, params object[] args )
 		{
 			var value = new ResourceManager( typeof( T ) ).GetString( name, CultureInfo.CurrentUICulture );
-			if( string.IsNullOrEmpty( value ) )
-				return "";
-
-			return string.Format( value, args );
+			return string.IsNullOrEmpty( value ) ? "" : string.Format( value, args );
 		}
 
 		#endregion

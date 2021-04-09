@@ -22,30 +22,30 @@ namespace Zeiss.PiWeb.MeshModel
 	/// </summary>
 	/// <remarks>
 	/// Derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm.
-	/// 
+	///
 	/// Specification:
 	/// RFC1321 - The MD5 Message-Digest Algorithm
 	/// http://www.faqs.org/rfcs/rfc1321.html
-	/// 
+	///
 	/// Original license:
 	/// Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All
 	/// rights reserved.
-	/// 
+	///
 	/// License to copy and use this software is granted provided that it
 	/// is identified as the "RSA Data Security, Inc. MD5 Message-Digest
 	/// Algorithm" in all material mentioning or referencing this software
 	/// or this function.
-	/// 
+	///
 	/// License is also granted to make and use derivative works provided
 	/// that such works are identified as "derived from the RSA Data
 	/// Security, Inc. MD5 Message-Digest Algorithm" in all material
 	/// mentioning or referencing the derived work.
-	/// 
+	///
 	/// RSA Data Security, Inc. makes no representations concerning either
 	/// the merchantability of this software or the suitability of this
 	/// software for any particular purpose. It is provided "as is"
 	/// without express or implied warranty of any kind.
-	/// 
+	///
 	/// These notices must be retained in any copies of any part of this
 	/// documentation and/or software.
 	/// </remarks>
@@ -76,12 +76,16 @@ namespace Zeiss.PiWeb.MeshModel
 		#region members
 
 		private static byte[] PADDING;
+
 		// Current context
 		private readonly MD5_CTX _context = new MD5_CTX();
+
 		// Last hash result
-		private readonly byte[] _digest = new byte[16];
+		private readonly byte[] _digest = new byte[ 16 ];
+
 		// True if HashCore has been called
 		private bool _hashCoreCalled;
+
 		// True if HashFinal has been called
 		private bool _hashFinalCalled;
 
@@ -92,7 +96,7 @@ namespace Zeiss.PiWeb.MeshModel
 		[SuppressMessage( "Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "More compact this way" )]
 		static MD5Managed()
 		{
-			PADDING = new byte[64];
+			PADDING = new byte[ 64 ];
 			PADDING[ 0 ] = 0x80;
 		}
 
@@ -121,6 +125,7 @@ namespace Zeiss.PiWeb.MeshModel
 				{
 					throw new NullReferenceException();
 				}
+
 				if( !_hashFinalCalled )
 				{
 					// Note: Not CryptographicUnexpectedOperationException because that can't be instantiated on Silverlight 4
@@ -176,9 +181,10 @@ namespace Zeiss.PiWeb.MeshModel
 			{
 				throw new CryptographicException( "Hash not valid for use in specified state." );
 			}
+
 			_hashCoreCalled = true;
 
-			MD5Update( _context, array, ( uint )ibStart, ( uint )cbSize );
+			MD5Update( _context, array, (uint)ibStart, (uint)cbSize );
 		}
 
 		/// <summary>
@@ -275,13 +281,14 @@ namespace Zeiss.PiWeb.MeshModel
 			uint inputLen ) /* length of input block */
 		{
 			/* Compute number of bytes mod 64 */
-			uint index = (context.count[0] >> 3) & 0x3F;
+			uint index = ( context.count[ 0 ] >> 3 ) & 0x3F;
 
 			/* Update number of bits */
-			if( ( context.count[ 0 ] += inputLen << 3) < inputLen << 3)
+			if( ( context.count[ 0 ] += inputLen << 3 ) < inputLen << 3 )
 			{
 				context.count[ 1 ]++;
 			}
+
 			context.count[ 1 ] += inputLen >> 29;
 
 			uint partLen = 64 - index;
@@ -290,7 +297,7 @@ namespace Zeiss.PiWeb.MeshModel
 			uint i = 0;
 			if( inputLen >= partLen )
 			{
-				Buffer.BlockCopy( input, ( int )inputIndex, context.buffer, ( int )index, ( int )partLen );
+				Buffer.BlockCopy( input, (int)inputIndex, context.buffer, (int)index, (int)partLen );
 				MD5Transform( context.state, context.buffer, 0 );
 
 				for( i = partLen; i + 63 < inputLen; i += 64 )
@@ -302,7 +309,7 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 
 			/* Buffer remaining input */
-			Buffer.BlockCopy( input, ( int )( inputIndex + i ), context.buffer, ( int )index, ( int )( inputLen - i ) );
+			Buffer.BlockCopy( input, (int)( inputIndex + i ), context.buffer, (int)index, (int)( inputLen - i ) );
 		}
 
 		/* MD5 finalization. Ends an MD5 message-digest operation, writing the
@@ -311,13 +318,13 @@ namespace Zeiss.PiWeb.MeshModel
 		private static void MD5Final( byte[] digest, /* message digest */
 			MD5_CTX context ) /* context */
 		{
-			byte[] bits = new byte[8];
+			var bits = new byte[ 8 ];
 
 			/* Save number of bits */
 			Encode( bits, context.count, 8 );
 
 			/* Pad out to 56 mod 64. */
-			uint index = (context.count[0] >> 3) & 0x3f;
+			uint index = ( context.count[ 0 ] >> 3 ) & 0x3f;
 			uint padLen = ( index < 56 ) ? ( 56 - index ) : ( 120 - index );
 			MD5Update( context, PADDING, 0, padLen );
 
@@ -336,7 +343,7 @@ namespace Zeiss.PiWeb.MeshModel
 		private static void MD5Transform( uint[] state, byte[] block, uint blockIndex )
 		{
 			uint a = state[ 0 ], b = state[ 1 ], c = state[ 2 ], d = state[ 3 ];
-			uint[] x = new uint[16];
+			var x = new uint[ 16 ];
 
 			Decode( x, block, blockIndex, 64 );
 
@@ -428,10 +435,10 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			for( uint i = 0, j = 0; j < len; i++, j += 4 )
 			{
-				output[ j ] = ( byte )( input[ i ] & 0xff );
-				output[ j + 1 ] = ( byte )( ( input[ i ] >> 8 ) & 0xff );
-				output[ j + 2 ] = ( byte )( ( input[ i ] >> 16 ) & 0xff );
-				output[ j + 3 ] = ( byte )( ( input[ i ] >> 24 ) & 0xff );
+				output[ j ] = (byte)( input[ i ] & 0xff );
+				output[ j + 1 ] = (byte)( ( input[ i ] >> 8 ) & 0xff );
+				output[ j + 2 ] = (byte)( ( input[ i ] >> 16 ) & 0xff );
+				output[ j + 3 ] = (byte)( ( input[ i ] >> 24 ) & 0xff );
 			}
 		}
 
@@ -442,7 +449,7 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			for( uint i = 0, j = 0; j < len; i++, j += 4 )
 			{
-				output[ i ] = input[inputIndex + j] | ( ( ( uint )input[ inputIndex + j + 1 ] ) << 8 ) | ( ( ( uint )input[ inputIndex + j + 2 ] ) << 16 ) | ( ( ( uint )input[ inputIndex + j + 3 ] ) << 24 );
+				output[ i ] = input[ inputIndex + j ] | ( ( (uint)input[ inputIndex + j + 1 ] ) << 8 ) | ( ( (uint)input[ inputIndex + j + 2 ] ) << 16 ) | ( ( (uint)input[ inputIndex + j + 3 ] ) << 24 );
 			}
 		}
 
@@ -470,9 +477,9 @@ namespace Zeiss.PiWeb.MeshModel
 
 			public MD5_CTX()
 			{
-				state = new uint[4];
-				count = new uint[2];
-				buffer = new byte[64];
+				state = new uint[ 4 ];
+				count = new uint[ 2 ];
+				buffer = new byte[ 64 ];
 			}
 
 			#endregion

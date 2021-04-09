@@ -10,7 +10,7 @@
 
 namespace Zeiss.PiWeb.MeshModel
 {
-	#region using
+	#region usings
 
 	using System;
 	using System.Globalization;
@@ -21,16 +21,16 @@ namespace Zeiss.PiWeb.MeshModel
 	/// <summary>
 	/// Describes an entry of a <see cref="ColorScale"/>
 	/// </summary>
-	public sealed class ColorScaleEntry
+	public readonly struct ColorScaleEntry
 	{
-		#region constructor
+		#region constructors
 
 		/// <summary>
 		/// Creates a continous <see cref="ColorScaleEntry"/>.
 		/// </summary>
 		/// <param name="value">The value.</param>
 		/// <param name="color">The color.</param>
-		public ColorScaleEntry(float value, Color color)
+		public ColorScaleEntry( float value, Color color )
 		{
 			Value = value;
 
@@ -44,7 +44,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="value">The value.</param>
 		/// <param name="leftColor">Color of the left.</param>
 		/// <param name="rightColor">Color of the right.</param>
-		public ColorScaleEntry(float value, Color leftColor, Color rightColor)
+		public ColorScaleEntry( float value, Color leftColor, Color rightColor )
 		{
 			Value = value;
 
@@ -75,37 +75,35 @@ namespace Zeiss.PiWeb.MeshModel
 
 		#region methods
 
-		internal static ColorScaleEntry Read(XmlReader reader)
+		internal static ColorScaleEntry Read( XmlReader reader )
 		{
-			var valueString = reader.GetAttribute("Value");
-			if (string.IsNullOrEmpty(valueString))
-				throw new FormatException("Empty values are not allowed");
+			var valueString = reader.GetAttribute( "Value" );
+			if( string.IsNullOrEmpty( valueString ) )
+				throw new FormatException( "Empty values are not allowed" );
 
-			var value = float.Parse(valueString, CultureInfo.InvariantCulture);
+			var value = float.Parse( valueString, CultureInfo.InvariantCulture );
 
-			var leftColor = reader.ReadColorAttribute("LeftColor");
+			var leftColor = reader.ReadColorAttribute( "LeftColor" );
 			Color rightColor;
 
 			try
 			{
-				rightColor = reader.ReadColorAttribute("RightColor");
+				rightColor = reader.ReadColorAttribute( "RightColor" );
 			}
-			catch (Exception)
+			catch( Exception )
 			{
-				rightColor = reader.ReadColorAttribute("RigthColor");
+				rightColor = reader.ReadColorAttribute( "RigthColor" );
 			}
 
-			return new ColorScaleEntry(value, leftColor, rightColor);
+			return new ColorScaleEntry( value, leftColor, rightColor );
 		}
 
-
-
-		internal void Write(XmlWriter writer)
+		internal void Write( XmlWriter writer )
 		{
-			writer.WriteAttributeString("Value", Value.ToString(CultureInfo.InvariantCulture));
+			writer.WriteAttributeString( "Value", Value.ToString( CultureInfo.InvariantCulture ) );
 
-			writer.WriteColorAttribute("LeftColor", LeftColor);
-			writer.WriteColorAttribute("RightColor", RightColor);
+			writer.WriteColorAttribute( "LeftColor", LeftColor );
+			writer.WriteColorAttribute( "RightColor", RightColor );
 		}
 
 		/// <summary>

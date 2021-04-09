@@ -10,7 +10,7 @@
 
 namespace Zeiss.PiWeb.MeshModel
 {
-	#region using
+	#region usings
 
 	using System;
 	using System.IO;
@@ -22,23 +22,16 @@ namespace Zeiss.PiWeb.MeshModel
 	/// </summary>
 	public sealed class Edge
 	{
-		#region constants
+		#region members
 
-		private static readonly Version FileVersion10 = new Version( 1, 0, 0, 0 );
 		private static readonly Version FileVersion21 = new Version( 2, 1 );
 		private static readonly Version FileVersion32 = new Version( 3, 2 );
-
-		private static readonly float[] EmptyFloatArray = new float[ 0 ];
-
-		#endregion
-
-		#region members
 
 		private Rect3F? _Bounds;
 
 		#endregion
 
-		#region constructor
+		#region constructors
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Edge"/> class.
@@ -49,7 +42,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="name">The name.</param>
 		public Edge( float[] points, Color? color = null, string[] layer = null, string name = null )
 		{
-			Points = points ?? EmptyFloatArray;
+			Points = points ?? Array.Empty<float>();
 			Color = color;
 			Layer = layer;
 			Name = name;
@@ -68,12 +61,12 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Gets a value indicating whether this instance is empty (Has no points).
 		/// </summary>
 		public bool IsEmpty => Points.Length == 0;
-		
+
 		/// <summary>
 		/// Gets the points of the edge.
 		/// </summary>
 		public float[] Points { get; }
-		
+
 		/// <summary>
 		/// Gets the color of the edge.
 		/// </summary>
@@ -98,6 +91,7 @@ namespace Zeiss.PiWeb.MeshModel
 				{
 					_Bounds = Rect3F.Union( _Bounds.Value, new Point3F( Points[ i ], Points[ i + 1 ], Points[ i + 2 ] ) );
 				}
+
 				return _Bounds.Value;
 			}
 		}
@@ -108,73 +102,24 @@ namespace Zeiss.PiWeb.MeshModel
 
 		internal static Edge Read( BinaryReader binaryReader, Version fileVersion )
 		{
-			float[] positions = null;
-			string[] layer = null;
-			Color? color = null;
-			var name = string.Empty;
+			var name = fileVersion >= FileVersion21 ? binaryReader.ReadString() : "";
+			var color = binaryReader.ReadBoolean() ? binaryReader.ReadArgbColor() : default( Color? );
 
-			if( fileVersion >= FileVersion21 )
-				name = binaryReader.ReadString();
+			var positions = binaryReader.ReadConditionalFloatArray( 3, fileVersion );
+			var layer = binaryReader.ReadConditionalStringArray();
 
-			if( binaryReader.ReadBoolean() )
-				color = binaryReader.ReadArgbColor();
+			if( fileVersion < FileVersion32 )
+				positions = MeshModelHelper.RemoveDuplicatePositions( positions );
 
-			if( binaryReader.ReadBoolean() )
-			{
-				positions = fileVersion == FileVersion10
-					? binaryReader.ReadDoubleArray( 3 )
-					: binaryReader.ReadFloatArray( 3 );
-
-				if( fileVersion < FileVersion32 )
-					positions = MeshModelHelper.RemoveDuplicatePositions( positions );
-			}
-			if( binaryReader.ReadBoolean() )
-			{
-				layer = new string[binaryReader.ReadInt32()];
-				for( var l = 0; l < layer.Length; l++ )
-				{
-					layer[ l ] = binaryReader.ReadString();
-				}
-			}
 			return new Edge( positions, color, layer, name );
 		}
 
 		internal void Write( BinaryWriter binaryWriter )
 		{
 			binaryWriter.Write( Name ?? "" );
-			if (Color.HasValue)
-			{
-				binaryWriter.Write(true);
-				binaryWriter.WriteArgbColor(Color.Value);
-			}
-			else
-			{
-				binaryWriter.Write(false);
-			}
-
-			if (Points != null && Points.Length > 0)
-			{
-				binaryWriter.Write(true);
-				binaryWriter.WriteFloatArray(Points, 3);
-			}
-			else
-			{
-				binaryWriter.Write(false);
-			}
-
-			if( Layer != null && Layer.Length > 0 )
-			{
-				binaryWriter.Write( true );
-				binaryWriter.Write( Layer.Length );
-				foreach( var l in Layer )
-				{
-					binaryWriter.Write( l );
-				}
-			}
-			else
-			{
-				binaryWriter.Write( false );
-			}
+			binaryWriter.WriteConditionalColor( Color );
+			binaryWriter.WriteConditionalFloatArray( Points, 3 );
+			binaryWriter.WriteConditionalStrings( Layer );
 		}
 
 		/// <summary>

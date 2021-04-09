@@ -10,13 +10,20 @@
 
 namespace Zeiss.PiWeb.MeshModel
 {
+	#region usings
+
+	using System;
 	using System.Resources;
+
+	#endregion
 
 	/// <summary>
 	/// A collection of data types that are interpreted by PiWeb when used as <see cref="MeshValueEntry.DataType"/>.
 	/// </summary>
 	public static class WellKnownDataTypes
 	{
+		#region constants
+
 		/// <summary>
 		/// Measurement values.
 		/// </summary>
@@ -62,6 +69,10 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		public const string Cmk = "cmk";
 
+		#endregion
+
+		#region methods
+
 		/// <summary>
 		/// Returns a localized description of the datatype with the name <code>name</code>.
 		/// </summary>
@@ -79,7 +90,7 @@ namespace Zeiss.PiWeb.MeshModel
 		public static bool IsStatisticsDataType( string name )
 		{
 			// Aktuell alles außer "Deviation" als Statistikdatensatz betrachten.
-			return !string.Equals( name, Deviation, System.StringComparison.OrdinalIgnoreCase );
+			return !string.Equals( name, Deviation, StringComparison.OrdinalIgnoreCase );
 		}
 
 		/// <summary>
@@ -111,7 +122,10 @@ namespace Zeiss.PiWeb.MeshModel
 				case Cmk:
 					return 8;
 			}
+
 			return 100;
 		}
+
+		#endregion
 	}
 }

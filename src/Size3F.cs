@@ -14,6 +14,7 @@ namespace Zeiss.PiWeb.MeshModel
 	#region usings
 
 	using System;
+	using Zeiss.PiWeb.MeshModel.Common;
 
 	#endregion
 
@@ -131,10 +132,10 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </returns>
 		public static bool operator ==( Size3F size1, Size3F size2 )
 		{
-			if( size1.X == size2.X &&
-			    size1.Y == size2.Y )
-				return size1.Z == size2.Z;
-			return false;
+			return
+				size1.X.IsCloseTo( size2.X ) &&
+				size1.Y.IsCloseTo( size2.Y ) &&
+				size1.Z.IsCloseTo( size2.Z );
 		}
 
 		/// <summary>
@@ -157,9 +158,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the conversion.
 		/// </returns>
-		public static explicit operator Vector3F(Size3F size)
+		public static explicit operator Vector3F( Size3F size )
 		{
-			return new Vector3F(size.X, size.Y, size.Z);
+			return new Vector3F( size.X, size.Y, size.Z );
 		}
 
 		/// <summary>
@@ -169,9 +170,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <returns>
 		/// The result of the conversion.
 		/// </returns>
-		public static explicit operator Point3F(Size3F size)
+		public static explicit operator Point3F( Size3F size )
 		{
-			return new Point3F(size.X, size.Y, size.Z);
+			return new Point3F( size.X, size.Y, size.Z );
 		}
 
 		private static Size3F CreateEmptySize()
@@ -194,9 +195,11 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			if( size1.IsEmpty )
 				return size2.IsEmpty;
-			if( size1.X.Equals( size2.X ) && size1.Y.Equals( size2.Y ) )
-				return size1.Z.Equals( size2.Z );
-			return false;
+
+			return
+				size1.X.IsCloseTo( size2.X ) &&
+				size1.Y.IsCloseTo( size2.Y ) &&
+				size1.Z.IsCloseTo( size2.Z );
 		}
 
 		/// <summary>
@@ -210,7 +213,7 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			if( !( o is Size3F ) )
 				return false;
-			return Equals( this, ( Size3F ) o );
+			return Equals( this, (Size3F)o );
 		}
 
 		/// <summary>
@@ -227,15 +230,15 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Returns a hash code for this instance.
 		/// </summary>
 		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
 		/// </returns>
 		public override int GetHashCode()
 		{
 			unchecked
 			{
 				var hashCode = _X.GetHashCode();
-				hashCode = (hashCode * 397) ^ _Y.GetHashCode();
-				hashCode = (hashCode * 397) ^ _Z.GetHashCode();
+				hashCode = ( hashCode * 397 ) ^ _Y.GetHashCode();
+				hashCode = ( hashCode * 397 ) ^ _Z.GetHashCode();
 				return hashCode;
 			}
 		}

@@ -1,14 +1,16 @@
-﻿#region Copyright
+﻿#region copyright
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Carl Zeiss IMT (IZfM Dresden)                   */
+/* Carl Zeiss Industrielle Messtechnik GmbH        */
 /* Softwaresystem PiWeb                            */
-/* (c) Carl Zeiss 2010                             */
+/* (c) Carl Zeiss 2021                             */
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #endregion
 
-namespace Zeiss.IMT.PiWeb.MeshModel
+namespace Zeiss.PiWeb.MeshModel
 {
-	#region using
+	#region usings
 
 	using System;
 	using System.IO;
@@ -20,7 +22,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 	/// </summary>
 	public sealed class MeshValue
 	{
-		#region constructor
+		#region constructors
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MeshValue"/> class.
@@ -39,7 +41,7 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 		#endregion
 
 		#region properties
-		
+
 		/// <summary>
 		/// Gets the values. Invalid values can be marked with float.NaN.
 		/// </summary>
@@ -51,19 +53,19 @@ namespace Zeiss.IMT.PiWeb.MeshModel
 
 		internal static MeshValue Read( BinaryReader binaryReader, Version fileVersion )
 		{
-			return binaryReader.ReadBoolean()? new MeshValue(binaryReader.ReadFloatArray(1)) : null;
+			return binaryReader.ReadBoolean() ? new MeshValue( binaryReader.ReadFloatArray( 1 ) ) : null;
 		}
 
 		internal void Write( BinaryWriter binaryWriter )
 		{
-			if (Values != null && Values.Length > 0)
+			if( Values != null && Values.Length > 0 )
 			{
-				binaryWriter.Write(true);
-				binaryWriter.WriteFloatArray(Values, 1);
+				binaryWriter.Write( true );
+				binaryWriter.WriteFloatArray( Values, 1 );
 			}
 			else
 			{
-				binaryWriter.Write(false);
+				binaryWriter.Write( false );
 			}
 		}
 

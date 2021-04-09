@@ -10,8 +10,9 @@
 
 namespace Zeiss.PiWeb.MeshModel
 {
-	#region using
+	#region usings
 
+	using System;
 	using System.Xml;
 
 	#endregion
@@ -21,7 +22,13 @@ namespace Zeiss.PiWeb.MeshModel
 	/// </summary>
 	public sealed class MeshValueEntry
 	{
-		#region constructor
+		#region members
+
+		private readonly string _Unit;
+
+		#endregion
+
+		#region constructors
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MeshValueEntry"/> class.
@@ -29,11 +36,13 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="dataType">Type of the data.</param>
 		/// <param name="filename">The filename which is used during serialization.</param>
 		/// <param name="colorScale">The color scale.</param>
-		public MeshValueEntry( string dataType, string filename, ColorScale colorScale = null )
+		/// <param name="unit">The optional measurand unit of the values.</param>
+		public MeshValueEntry( string dataType, string filename, ColorScale colorScale = null, string unit = null )
 		{
 			DataType = dataType.ToLowerInvariant();
 			Filename = filename;
 			ColorScale = colorScale;
+			_Unit = unit;
 		}
 
 		#endregion
@@ -44,7 +53,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Gets the color scale.
 		/// </summary>
 		public ColorScale ColorScale { get; }
-		
+
 		/// <summary>
 		/// Gets the type of the data.
 		/// </summary>
@@ -54,9 +63,14 @@ namespace Zeiss.PiWeb.MeshModel
 		public string DataType { get; }
 
 		/// <summary>
+		/// Gets the optional measurand unit of data. Default for deviations is "mm".
+		/// </summary>
+		public string Unit => string.IsNullOrEmpty( _Unit ) && IsDeviation ? "mm" : _Unit;
+
+		/// <summary>
 		/// Gets a value indicating whether this entry marks deviations.
 		/// </summary>
-		public bool IsDeviation => string.Equals( WellKnownDataTypes.Deviation, DataType, System.StringComparison.OrdinalIgnoreCase );
+		public bool IsDeviation => string.Equals( WellKnownDataTypes.Deviation, DataType, StringComparison.OrdinalIgnoreCase );
 
 		/// <summary>
 		/// The filename within the meshmodel archive from which this entry was loaded, and to which it's serialized.
@@ -71,21 +85,26 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			var dataType = reader.GetAttribute( "DataType" );
 			var filename = reader.GetAttribute( "Filename" );
+			var unit = reader.GetAttribute( "Unit" );
 
 			ColorScale colorScale = null;
 
 			var colorScaleReader = reader.ReadSubtree();
-			while( colorScaleReader.ReadToFollowing("ColorScale") && colorScaleReader.NodeType == XmlNodeType.Element )
+			while( colorScaleReader.ReadToFollowing( "ColorScale" ) && colorScaleReader.NodeType == XmlNodeType.Element )
 			{
-				colorScale = ColorScale.Read(colorScaleReader);
+				colorScale = ColorScale.Read( colorScaleReader );
 			}
-			return new MeshValueEntry( dataType, filename, colorScale );
+
+			return new MeshValueEntry( dataType, filename, colorScale, unit );
 		}
 
 		internal void Write( XmlWriter writer )
 		{
 			writer.WriteAttributeString( "DataType", DataType );
 			writer.WriteAttributeString( "Filename", Filename );
+
+			if( !string.IsNullOrEmpty( _Unit ) )
+				writer.WriteAttributeString( "Unit", _Unit );
 
 			if( ColorScale != null )
 			{

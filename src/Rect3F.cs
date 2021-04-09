@@ -15,6 +15,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 	using System;
 	using System.Runtime.CompilerServices;
+	using Zeiss.PiWeb.MeshModel.Common;
 
 	#endregion
 
@@ -44,7 +45,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <value>
 		///   <c>true</c> if this instance is empty; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsEmpty => _SizeX < 0.0;
+		public readonly bool IsEmpty => _SizeX < 0.0;
 
 		/// <summary>
 		/// Gets or sets the location.
@@ -303,7 +304,7 @@ namespace Zeiss.PiWeb.MeshModel
 		///   <c>true</c> if [contains] [the specified point]; otherwise, <c>false</c>.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public bool Contains( Point3F point )
+		public readonly bool Contains( Point3F point )
 		{
 			return Contains( point.X, point.Y, point.Z );
 		}
@@ -318,7 +319,7 @@ namespace Zeiss.PiWeb.MeshModel
 		///   <c>true</c> if [contains] [the specified x]; otherwise, <c>false</c>.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public bool Contains( float x, float y, float z )
+		public readonly bool Contains( float x, float y, float z )
 		{
 			if( IsEmpty )
 				return false;
@@ -333,17 +334,17 @@ namespace Zeiss.PiWeb.MeshModel
 		///   <c>true</c> if [contains] [the specified rect]; otherwise, <c>false</c>.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public bool Contains( Rect3F rect )
+		public readonly bool Contains( Rect3F rect )
 		{
 			if( IsEmpty || rect.IsEmpty )
 				return false;
 
-			return _X <= rect._X && 
-			       _Y <= rect._Y && 
-			       _Z <= rect._Z && 
-			       _X + _SizeX >= rect._X + rect._SizeX &&
-			       _Y + _SizeY >= rect._Y + rect._SizeY && 
-			       _Z + _SizeZ >= rect._Z + rect._SizeZ;
+			return ( (double)_X ) <= rect._X
+					&& ( (double)_Y ) <= rect._Y
+					&& ( (double)_Z ) <= rect._Z
+					&& ( (double)( _X + _SizeX ) ) >= rect._X + rect._SizeX
+					&& ( (double)( _Y + _SizeY ) ) >= rect._Y + rect._SizeY
+					&& ( (double)( _Z + _SizeZ ) ) >= rect._Z + rect._SizeZ;
 		}
 
 		/// <summary>
@@ -352,14 +353,14 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="rect">The rect.</param>
 		/// <returns></returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public bool IntersectsWith( Rect3F rect )
+		public readonly bool IntersectsWith( Rect3F rect )
 		{
 			if( IsEmpty || rect.IsEmpty )
 				return false;
 
-			return rect._X <= _X + _SizeX && rect._X + rect._SizeX >= _X && 
-			       rect._Y <= _Y + _SizeY && rect._Y + rect._SizeY >= _Y && 
-			       rect._Z <= _Z + _SizeZ && rect._Z + rect._SizeZ >= _Z;
+			return rect.X <= _X + _SizeX && rect._X + rect._SizeX >= _X
+										&& rect._Y <= _Y + _SizeY && rect._Y + rect._SizeY >= _Y
+										&& rect._Z <= _Z + _SizeZ && rect._Z + rect._SizeZ >= _Z;
 		}
 
 		/// <summary>
@@ -457,11 +458,11 @@ namespace Zeiss.PiWeb.MeshModel
 			return rect;
 		}
 
-		private bool ContainsInternal( float x, float y, float z )
+		private readonly bool ContainsInternal( float x, float y, float z )
 		{
-			if( x >= _X && x <= _X + _SizeX && ( y >= _Y && y <= _Y + _SizeY ) && z >= _Z )
-				return z <= _Z + _SizeZ;
-			return false;
+			return x >= _X && x <= _X + _SizeX
+							&& y >= _Y && y <= _Y + _SizeY
+							&& z >= _Z && z <= _Z + _SizeZ;
 		}
 
 		private static Rect3F CreateEmptyCuboid()
@@ -488,13 +489,13 @@ namespace Zeiss.PiWeb.MeshModel
 			if( rect1.IsEmpty )
 				return rect2.IsEmpty;
 
-			if( rect1.X.Equals( rect2.X ) &&
-			    rect1.Y.Equals( rect2.Y ) &&
-			    rect1.Z.Equals( rect2.Z ) &&
-			    rect1.SizeX.Equals( rect2.SizeX ) &&
-			    rect1.SizeY.Equals( rect2.SizeY ) )
-				return rect1.SizeZ.Equals( rect2.SizeZ );
-			return false;
+			return
+				rect1.X.IsCloseTo( rect2.X ) &&
+				rect1.Y.IsCloseTo( rect2.Y ) &&
+				rect1.Z.IsCloseTo( rect2.Z ) &&
+				rect1.SizeX.IsCloseTo( rect2.SizeX ) &&
+				rect1.SizeY.IsCloseTo( rect2.SizeY ) &&
+				rect1.SizeZ.IsCloseTo( rect2.SizeZ );
 		}
 
 		/// <summary>
@@ -508,7 +509,7 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			if( !( o is Rect3F ) )
 				return false;
-			return Equals( this, ( Rect3F ) o );
+			return Equals( this, (Rect3F)o );
 		}
 
 		/// <summary>
@@ -525,7 +526,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Returns a hash code for this instance.
 		/// </summary>
 		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
 		/// </returns>
 		public override int GetHashCode()
 		{
@@ -537,6 +538,7 @@ namespace Zeiss.PiWeb.MeshModel
 				hashCode = ( hashCode * 397 ) ^ _SizeX.GetHashCode();
 				hashCode = ( hashCode * 397 ) ^ _SizeY.GetHashCode();
 				hashCode = ( hashCode * 397 ) ^ _SizeZ.GetHashCode();
+
 				return hashCode;
 			}
 		}
@@ -568,7 +570,7 @@ namespace Zeiss.PiWeb.MeshModel
 			var sY = SizeY + scaleY;
 			var sZ = SizeZ + scaleZ;
 
-			if( sX < 0 || sY < 0 || sZ < 0 )
+			if( sX < 0.0 || sY < 0.0 || sZ < 0.0 )
 				throw new ArgumentException( "A rect cannot have a negative dimension" );
 
 			// adjust rectangle

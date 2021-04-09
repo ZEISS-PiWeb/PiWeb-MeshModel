@@ -17,6 +17,7 @@ namespace Zeiss.PiWeb.MeshModel
 	using System.Linq;
 	using System.Runtime.CompilerServices;
 	using System.Xml;
+	using Zeiss.PiWeb.MeshModel.Common;
 
 	#endregion
 
@@ -49,10 +50,10 @@ namespace Zeiss.PiWeb.MeshModel
 			Name = name;
 			InvalidColor = invalidColor;
 			Interpolation = interpolation;
-			
+
 			Precision = 1;
-			
-			Entries = entries?.OrderBy( entry => entry.Value ).ToArray() ?? new ColorScaleEntry[0];
+
+			Entries = entries?.OrderBy( entry => entry.Value ).ToArray() ?? Array.Empty<ColorScaleEntry>();
 			_OrderedValueList = Entries.Select( entry => entry.Value ).ToArray();
 
 			if( _OrderedValueList.Distinct().Count() != _OrderedValueList.Length )
@@ -60,7 +61,7 @@ namespace Zeiss.PiWeb.MeshModel
 				throw new ArgumentException( "Error creating color scale: Duplicate color entries (values) are not allowed." ); //Prevents division by zero in color interpolation.
 			}
 
-			_ColorSpans = new ColorSpan[_OrderedValueList.Length - 1];
+			_ColorSpans = new ColorSpan[ _OrderedValueList.Length - 1 ];
 			_HasConstantColors = true;
 
 			for( var i = 0; i < _OrderedValueList.Length - 1; i++ )
@@ -71,6 +72,8 @@ namespace Zeiss.PiWeb.MeshModel
 
 				Precision = Math.Max( Precision, CalculatePrecision( _OrderedValueList[ i ] ) );
 			}
+
+			Precision = Math.Max( Precision, CalculatePrecision( _OrderedValueList[ _OrderedValueList.Length - 1 ] ) );
 
 			if( _OrderedValueList.Length > 0 )
 			{
@@ -119,14 +122,14 @@ namespace Zeiss.PiWeb.MeshModel
 		public ColorScaleEntry[] Entries { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether the scale is continious. (Has gradients between discrete values)
+		/// Gets a value indicating whether the scale is continuous. (Has gradients between discrete values)
 		/// </summary>
-		public bool IsContinious => !_ColorSpans.All( s => s.IsSolidColor );
+		public bool IsContinuous => !_ColorSpans.All( s => s.IsSolidColor );
 
 		/// <summary>
 		/// Gets the interpolation mode.
 		/// </summary>
-		public ColorScaleInterpolation  Interpolation { get; }
+		public ColorScaleInterpolation Interpolation { get; }
 
 		#endregion
 
@@ -145,11 +148,11 @@ namespace Zeiss.PiWeb.MeshModel
 				return InvalidColor;
 
 			// Underflow (value <= outer most left value)
-			if( value <= MinValue )
+			if( ( (double)value ) <= MinValue )
 				return Entries[ 0 ].LeftColor;
 
 			// Overflow (value >= outer most right value)
-			if( value >= MaxValue )
+			if( ( (double)value ) >= MaxValue )
 				return Entries[ Entries.Length - 1 ].RightColor;
 
 			var index = GetIndex( value );
@@ -166,7 +169,7 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			var name = reader.GetAttribute( "Name" );
 			var invalidColor = reader.ReadColorAttribute( "InvalidColor" );
-			var interpolation = reader.GetAttribute("Interpolation");
+			var interpolation = reader.GetAttribute( "Interpolation" );
 
 			var entries = new List<ColorScaleEntry>();
 
@@ -177,8 +180,8 @@ namespace Zeiss.PiWeb.MeshModel
 				entries.Add( ColorScaleEntry.Read( colorScaleReader ) );
 			}
 
-			
-			return new ColorScale( name, invalidColor, entries.ToArray(), interpolation != null ? (ColorScaleInterpolation)Enum.Parse(typeof(ColorScaleInterpolation), interpolation) : ColorScaleInterpolation.HSV);
+
+			return new ColorScale( name, invalidColor, entries.ToArray(), interpolation != null ? (ColorScaleInterpolation)Enum.Parse( typeof( ColorScaleInterpolation ), interpolation ) : ColorScaleInterpolation.HSV );
 		}
 
 		internal void Write( XmlWriter writer )
@@ -220,12 +223,11 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			value = Math.Abs( value );
 			var mag = Math.Floor( Math.Log10( value ) );
-			double precision = double.IsNaN( mag ) || double.IsInfinity( mag ) ? 0 : -( int ) mag;
+			double precision = !mag.IsFinite() ? 0 : -(int)mag;
 			precision = Math.Max( 1, precision );
 			return precision;
 		}
 
 		#endregion
-		
 	}
 }

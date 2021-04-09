@@ -1,7 +1,7 @@
 # PiWeb MeshModel
 
-<img style="display:block;margin:auto;" src="gfx/Logo.png" >
-
+| ![Zeiss IQS Logo](gfx/logo_128x128.png) | The **PiWeb MeshModel library** provides an easy to use interface for reading and especially writing PiWeb meshmodel data. |
+|-|:-|
 # Overview
 
 - [Introduction](#introduction)
@@ -11,7 +11,7 @@
 <a id="markdown-introduction" name="introduction"></a>
 # Introduction
 
-The **PiWeb MeshModel library** provides an easy to use interface for reading and especially writing PiWeb meshmodel data. PiWeb meshmodel files are zip-compressed archives, containing...
+PiWeb meshmodel files are zip-compressed archives, containing...
 
 * Positions
 * Indices
@@ -25,15 +25,34 @@ To simplify and shorten the progress of writing meshmodel files, we published th
 <a id="markdown-installation" name="installation"></a>
 # Installation
 
-The **PiWeb MeshModel library** is available via [NuGet](https://www.nuget.org/packages/Zeiss.IMT.PiWeb.MeshModel/):
+The **PiWeb MeshModel library** is available via NuGet.
 
+## Versions >= 2.0.0
+
+Get it at [NuGet.org](https://www.nuget.org/packages/Zeiss.PiWeb.MeshModel/).
+
+```cmd
+PM> Install-Package Zeiss.PiWeb.MeshModel
 ```
+
+Or compile the library by yourself. Requirements:
+
+* Microsoft Visual Studio 2019
+* Microsoft .NET Standard 2.1
+
+## Older versions
+
+Get it at [NuGet.org](https://www.nuget.org/packages/Zeiss.IMT.PiWeb.MeshModel/).
+
+```cmd
 PM> Install-Package Zeiss.IMT.PiWeb.MeshModel
 ```
+
 Or compile the library by yourself. Requirements:
 
 * Microsoft Visual Studio 2015
-* Microsoft .NET Framework v4.5
+* Microsoft .NET Framework 4.5
+
 
 <a id="markdown-usage" name="usage"></a>
 # Usage

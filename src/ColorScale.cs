@@ -1,15 +1,14 @@
-﻿#region Copyright
+﻿#region copyright
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Carl Zeiss IMT (IZfM Dresden)                   */
+/* Carl Zeiss Industrielle Messtechnik GmbH        */
 /* Softwaresystem PiWeb                            */
-/* (c) Carl Zeiss 2010                             */
+/* (c) Carl Zeiss 2021                             */
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #endregion
 
-// ReSharper disable CompareOfFloatsByEqualityOperator
-namespace Zeiss.IMT.PiWeb.MeshModel
+namespace Zeiss.PiWeb.MeshModel
 {
 	#region usings
 

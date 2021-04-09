@@ -3,7 +3,8 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable RedundantCast
-namespace Zeiss.IMT.PiWeb.MeshModel
+
+namespace Zeiss.PiWeb.MeshModel
 {
 	#region usings
 

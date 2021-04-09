@@ -5,6 +5,8 @@
     <LangVersion>8.0</LangVersion>
     <AssemblyName>PiWeb.MeshModel</AssemblyName>
     <RootNamespace>Zeiss.PiWeb.MeshModel</RootNamespace>
+    <PackageVersion>2.0.0.0</PackageVersion>
+    <Authors />
   </PropertyGroup>
 
   <ItemGroup>

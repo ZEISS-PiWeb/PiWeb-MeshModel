@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <LangVersion>9.0</LangVersion>
+        <AssemblyName>PiWeb.MeshModel.Tests</AssemblyName>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <RootNamespace>Zeiss.PiWeb.MeshModel.Tests</RootNamespace>
+        <Copyright>Copyright © 2020 Carl Zeiss Industrielle Messtechnik GmbH</Copyright>
+        <Company>Carl Zeiss Industrielle Messtechnik GmbH</Company>
+        <Authors>$(Company)</Authors>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\MeshModel\MeshModel.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="AutoFixture" Version="4.16.0" />
+        <PackageReference Include="Moq" Version="4.16.1" />
+        <PackageReference Include="NUnit" Version="3.12.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    </PropertyGroup>
+    
+</Project>

@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeiss.PiWeb.MeshModel", "MeshModel\MeshModel.csproj", "{5D1CAF58-DE11-4DBB-92A3-CEF6C14885AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeiss.PiWeb.MeshModel.Tests", "Tests\MeshModel.Tests.csproj", "{4DB73EED-AE31-44FD-9EF6-AEB2530F6791}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E3AAAAF1-9145-4978-9181-88CAE004D46E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3AAAAF1-9145-4978-9181-88CAE004D46E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3AAAAF1-9145-4978-9181-88CAE004D46E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3AAAAF1-9145-4978-9181-88CAE004D46E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D1CAF58-DE11-4DBB-92A3-CEF6C14885AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D1CAF58-DE11-4DBB-92A3-CEF6C14885AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D1CAF58-DE11-4DBB-92A3-CEF6C14885AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D1CAF58-DE11-4DBB-92A3-CEF6C14885AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DB73EED-AE31-44FD-9EF6-AEB2530F6791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DB73EED-AE31-44FD-9EF6-AEB2530F6791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DB73EED-AE31-44FD-9EF6-AEB2530F6791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DB73EED-AE31-44FD-9EF6-AEB2530F6791}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

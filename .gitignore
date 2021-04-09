@@ -2,8 +2,8 @@
 *.suo
 *.dll
 *.xml
-src/bin
-src/obj
+**/bin
+**/obj
 .vs
 *.user
 Deployment.txt

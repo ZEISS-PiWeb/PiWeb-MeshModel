@@ -1,10 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>8.0</LangVersion>
         <AssemblyName>PiWeb.MeshModel</AssemblyName>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
         <RootNamespace>Zeiss.PiWeb.MeshModel</RootNamespace>
         <Copyright>Copyright © 2020 Carl Zeiss Industrielle Messtechnik GmbH</Copyright>
         <Company>Carl Zeiss Industrielle Messtechnik GmbH</Company>
@@ -18,7 +17,6 @@
             and especially writing PiWeb meshmodel data.
         </Description>
         <PackageId>Zeiss.PiWeb.MeshModel</PackageId>
-        <PackageVersion>2.0.0.0</PackageVersion>
         <Version>2.0.0</Version>
     </PropertyGroup>
 
@@ -26,8 +24,4 @@
         <PackageReference Include="System.Buffers" Version="4.5.1" />
     </ItemGroup>
 
-    <PropertyGroup>
-        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    </PropertyGroup>
-    
 </Project>

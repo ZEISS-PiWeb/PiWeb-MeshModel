@@ -17,12 +17,11 @@ namespace Zeiss.PiWeb.MeshModel
 	using System.Linq;
 	using System.Runtime.CompilerServices;
 	using System.Xml;
-	using Zeiss.PiWeb.MeshModel.Common;
 
 	#endregion
 
 	/// <summary>
-	/// Describes value range that is represented by discrete or continous colors.
+	/// Describes value range that is represented by discrete or continuous colors.
 	/// </summary>
 	public sealed class ColorScale
 	{
@@ -223,11 +222,24 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			value = Math.Abs( value );
 			var mag = Math.Floor( Math.Log10( value ) );
-			double precision = !mag.IsFinite() ? 0 : -(int)mag;
+			double precision = !IsFinite( mag ) ? 0 : -(int)mag;
 			precision = Math.Max( 1, precision );
 			return precision;
 		}
-
+		
+		/// <summary>
+		/// Checks whether a double value is a finite number (is not NaN or Infinity).
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <returns><see langword="true"/>, if the value is a finite number; otherwise <see langword="false"/>.</returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
+		private static bool IsFinite( double value )
+		{
+			// TODO: This method is duplicated from double implementation that is available in .Net Standard 2.1 and .Net Core
+			var bits = BitConverter.DoubleToInt64Bits( value );
+			return ( bits & 0x7FFFFFFFFFFFFFFF ) < 0x7FF0000000000000;
+		}
+		
 		#endregion
 	}
 }

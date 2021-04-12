@@ -15,7 +15,6 @@ namespace Zeiss.PiWeb.MeshModel
 
 	using System;
 	using System.Runtime.CompilerServices;
-	using Zeiss.PiWeb.MeshModel.Common;
 
 	#endregion
 
@@ -489,13 +488,12 @@ namespace Zeiss.PiWeb.MeshModel
 			if( rect1.IsEmpty )
 				return rect2.IsEmpty;
 
-			return
-				rect1.X.IsCloseTo( rect2.X ) &&
-				rect1.Y.IsCloseTo( rect2.Y ) &&
-				rect1.Z.IsCloseTo( rect2.Z ) &&
-				rect1.SizeX.IsCloseTo( rect2.SizeX ) &&
-				rect1.SizeY.IsCloseTo( rect2.SizeY ) &&
-				rect1.SizeZ.IsCloseTo( rect2.SizeZ );
+			return rect1.X == rect2.X
+			       && rect1.Y == rect2.Y
+			       && rect1.Z == rect2.Z
+			       && rect1.SizeX == rect2.SizeX 
+			       && rect1.SizeY == rect2.SizeY
+			       && rect1.SizeZ == rect2.SizeZ;
 		}
 
 		/// <summary>

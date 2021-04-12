@@ -14,7 +14,6 @@ namespace Zeiss.PiWeb.MeshModel
 	#region usings
 
 	using System;
-	using Zeiss.PiWeb.MeshModel.Common;
 
 	#endregion
 
@@ -132,10 +131,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </returns>
 		public static bool operator ==( Size3F size1, Size3F size2 )
 		{
-			return
-				size1.X.IsCloseTo( size2.X ) &&
-				size1.Y.IsCloseTo( size2.Y ) &&
-				size1.Z.IsCloseTo( size2.Z );
+			return size1.Equals( size2 );
 		}
 
 		/// <summary>
@@ -196,10 +192,9 @@ namespace Zeiss.PiWeb.MeshModel
 			if( size1.IsEmpty )
 				return size2.IsEmpty;
 
-			return
-				size1.X.IsCloseTo( size2.X ) &&
-				size1.Y.IsCloseTo( size2.Y ) &&
-				size1.Z.IsCloseTo( size2.Z );
+			return size1.X == size2.X
+			       && size1.Y == size2.Y
+			       && size1.Z == size2.Z;
 		}
 
 		/// <summary>

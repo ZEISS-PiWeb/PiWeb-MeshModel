@@ -15,7 +15,6 @@ namespace Zeiss.PiWeb.MeshModel
 
 	using System;
 	using System.Runtime.CompilerServices;
-	using Zeiss.PiWeb.MeshModel.Common;
 
 	#endregion
 
@@ -226,10 +225,7 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator ==( Vector3F vector1, Vector3F vector2 )
 		{
-			return
-				vector1.X.IsCloseTo( vector2.X ) &&
-				vector1.Y.IsCloseTo( vector2.Y ) &&
-				vector1.Z.IsCloseTo( vector2.Z );
+			return vector1.Equals( vector2 );
 		}
 
 		/// <summary>
@@ -415,10 +411,9 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool Equals( Vector3F vector1, Vector3F vector2 )
 		{
-			return
-				vector1.X.IsCloseTo( vector2.X ) &&
-				vector1.Y.IsCloseTo( vector2.Y ) &&
-				vector1.Z.IsCloseTo( vector2.Z );
+			return vector1.X == vector2.X
+			       && vector1.Y == vector2.Y
+			       && vector1.Z == vector2.Z;
 		}
 
 		/// <summary>

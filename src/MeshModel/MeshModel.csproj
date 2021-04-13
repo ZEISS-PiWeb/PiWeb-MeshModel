@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>8.0</LangVersion>
+        <AssemblyName>PiWeb.MeshModel</AssemblyName>
+        <RootNamespace>Zeiss.PiWeb.MeshModel</RootNamespace>
+        <Copyright>Copyright © 2020 Carl Zeiss Industrielle Messtechnik GmbH</Copyright>
+        <Company>Carl Zeiss Industrielle Messtechnik GmbH</Company>
+        <Authors>$(Company)</Authors>
+    </PropertyGroup>
+
+    <PropertyGroup Label="NuGet package specifications">
+        <ProductName>PiWeb MeshModel Library</ProductName>
+        <Description>
+            The PiWeb MeshModel library provides an easy to use interface for reading
+            and especially writing PiWeb meshmodel data.
+        </Description>
+        <PackageId>Zeiss.PiWeb.MeshModel</PackageId>
+        <Version>2.0.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Buffers" Version="4.5.1" />
+    </ItemGroup>
+
+</Project>

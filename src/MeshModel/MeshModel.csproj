@@ -18,14 +18,21 @@
         </Description>
         <PackageId>Zeiss.PiWeb.MeshModel</PackageId>
         <Version>2.0.0</Version>
-        <PackageIcon>../../gfx/logo_128x128.png</PackageIcon>
-        <PackageLicenseFile>../../LICENSE</PackageLicenseFile>
+        <PackageIcon>logo_128x128.png</PackageIcon>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         <PackageProjectUrl>https://github.com/ZEISS-PiWeb/PiWeb-MeshModel</PackageProjectUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <RepositoryUrl>https://github.com/ZEISS-PiWeb/PiWeb-MeshModel.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="System.Buffers" Version="4.5.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="LICENSE.txt"/>
+        <None Include="..\..\gfx\logo_128x128.png" Pack="true" PackagePath="logo_128x128.png"/>
     </ItemGroup>
 
 </Project>

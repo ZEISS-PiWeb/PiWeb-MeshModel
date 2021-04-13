@@ -10,24 +10,26 @@ defaults:
 
 jobs:
   nuget-publish:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
+        source-url: https://api.nuget.org/v3/index.json
         dotnet-version: 5.0.x
-      env: ${{secrets.NUGET_TOKEN}}
+      env: 
+        NUGET_AUTH_TOKEN: ${{secrets.NUGET_TOKEN}}
+    - name: Exclude test project
+      run: dotnet sln remove Tests/
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Exclude test project
-      run: dotnet sln remove Tests/**
     - name: Publish
       run: |
         mkdir __out

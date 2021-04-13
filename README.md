@@ -9,7 +9,7 @@
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/pull/2)
+- [Contributing](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/wiki/Contributing)
 
 
 <a id="markdown-introduction" name="introduction"></a>

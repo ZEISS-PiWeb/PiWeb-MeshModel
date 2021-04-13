@@ -2,11 +2,15 @@
 
 | ![Zeiss IQS Logo](gfx/logo_128x128.png) | The **PiWeb MeshModel library** provides an easy to use interface for reading and especially writing PiWeb meshmodel data. |
 |-|:-|
+
+
 # Overview
 
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Contributing](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/pull/2)
+
 
 <a id="markdown-introduction" name="introduction"></a>
 # Introduction
@@ -27,6 +31,7 @@ To simplify and shorten the progress of writing meshmodel files, we published th
 
 The **PiWeb MeshModel library** is available via NuGet.
 
+
 ## Versions >= 2.0.0
 
 Get it at [NuGet.org](https://www.nuget.org/packages/Zeiss.PiWeb.MeshModel/).
@@ -39,6 +44,7 @@ Or compile the library by yourself. Requirements:
 
 * Microsoft Visual Studio 2019
 * Microsoft .NET Standard 2.1
+
 
 ## Older versions
 
@@ -56,6 +62,7 @@ Or compile the library by yourself. Requirements:
 
 <a id="markdown-usage" name="usage"></a>
 # Usage
+
 
 <a id="markdown-1-a-simple-cube" name="1-a-simple-cube"></a>
 ## A simple cube
@@ -114,6 +121,7 @@ var part = new MeshModelPart( new MeshModelMetadata( ), meshes );
 This will already look much better. You can improve this example further, by adding **edges**.
 
 <img style="width:100px;" src="gfx/CubeMultiMesh.png" >
+
 
 ## Models with deviation data
 

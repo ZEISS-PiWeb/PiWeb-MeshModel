@@ -31,10 +31,10 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Exclude test project
       run: dotnet sln remove Tests/**
-#    - name: Publish
-#      run: |
-#        mkdir __out
-#        dotnet  pack -c Release -o __out --no-restore
-#        dotnet nuget push "./__out/*.nupkg" --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_TOKEN}}
-#        rm -rf __out
+    - name: Publish
+      run: |
+        mkdir __out
+        dotnet  pack -c Release -o __out --no-restore
+        dotnet nuget push "./__out/*.nupkg" --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_TOKEN}}
+        rm -rf __out
         

@@ -1,0 +1,37 @@
+name: NuGet Packaging and Pushing to NuGet.org
+
+# See https://tehgm.net/blog/nuget-github-actions/ for explanations
+
+on: workflow_dispatch
+    
+defaults:
+  run:
+    working-directory: src
+
+jobs:
+  nuget-publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+      env: ${{secrets.NUGET_TOKEN}}
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Exclude test project
+      run: dotnet sln remove Tests/**
+    - name: Publish
+      run: |
+        mkdir __out
+        dotnet  pack -c Release -o __out --no-restore
+        dotnet nuget push "./__out/*.nupkg" --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_TOKEN}}
+        rm -rf __out
+        

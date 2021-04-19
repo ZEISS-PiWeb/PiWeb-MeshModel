@@ -50,18 +50,18 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="colors">The color data array.</param>
 		/// <param name="layer">The layers to which this mesh belongs.</param>
 		/// <param name="name">The name.</param>
-		public Mesh( int index, float[] positions, float[] normals, int[] triangleIndices, float[] textureCoordinates = null, Color? color = null, float[] colors = null, string[] layer = null, string name = null )
+		public Mesh( int index, Vector3F[] positions, Vector3F[] normals, int[] triangleIndices, Vector2F[] textureCoordinates = null, Color? color = null, Color[] colors = null, string[] layer = null, string name = null )
 			: this( index, positions, normals, MeshIndices.Create( triangleIndices ), textureCoordinates, color, colors, layer, name )
 		{ }
 
-		private Mesh( int index, float[] positions, float[] normals, MeshIndices triangleIndices, float[] textureCoordinates = null, Color? color = null, float[] colors = null, string[] layer = null, string name = null )
+		private Mesh( int index, Vector3F[] positions, Vector3F[] normals, MeshIndices triangleIndices, Vector2F[] textureCoordinates = null, Color? color = null, Color[] colors = null, string[] layer = null, string name = null )
 		{
 			Index = index;
-			Positions = positions ?? Array.Empty<float>();
+			Positions = positions ?? Array.Empty<Vector3F>();
 			_TriangleIndices = triangleIndices ?? EmptyMeshIndices;
 
-			Normals = normals ?? Array.Empty<float>();
-			TextureCoordinates = textureCoordinates ?? Array.Empty<float>();
+			Normals = normals ?? Array.Empty<Vector3F>();
+			TextureCoordinates = textureCoordinates ?? Array.Empty<Vector2F>();
 
 			Normals = ValidateAndRegenerateNormals( Positions, Normals, _TriangleIndices.GetIndizes() );
 
@@ -85,25 +85,14 @@ namespace Zeiss.PiWeb.MeshModel
 		#region methods
 
 		/// <summary>
-		/// Gets the vertex with the provided index.
-		/// </summary>
-		/// <param name="index">Index of the wanted vertex.</param>
-		/// <returns>The wanted index.</returns>
-		public Vertex GetVertex( int index )
-		{
-			if( index * 3 > Positions.Length ) throw new ArgumentException( $"{nameof( index )} {index} is greater than maximum index {Positions.Length / 3}." );
-
-			return new Vertex( index, this );
-		}
-
-		/// <summary>
 		/// Gets the triangle with the provided index.
 		/// </summary>
 		/// <param name="index">Index of the wanted triangle.</param>
 		/// <returns>The wanted triangle's vertices.</returns>
 		public Triangle GetTriangle( int index )
 		{
-			if( index > TriangleCount ) throw new ArgumentException( $"{nameof( index )} {index} is greater than maximum index {TriangleCount}." );
+			if( index > TriangleCount ) 
+				throw new ArgumentException( $"{nameof( index )} {index} is greater than maximum index {TriangleCount}." );
 
 			return new Triangle( index, this );
 		}
@@ -111,26 +100,23 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Generates the normals from the given positions and triangle information if needed.
 		/// </summary>
-		private static float[] ValidateAndRegenerateNormals( float[] positions, float[] normals, int[] indices )
+		private static Vector3F[] ValidateAndRegenerateNormals( Vector3F[] positions, Vector3F[] normals, int[] triangleIndices )
 		{
 			if( normals.Length == positions.Length )
 				return normals;
 
-			if( positions.Length % 3 != 0 )
-				throw new ArgumentException( "The length of the points array has to be a multiple of 3." );
-
 			var epsilon = (float)Math.Sqrt( 1.0000000116861E-07 );
 
-			normals = new float[ positions.Length ];
-			for( var i = 0; i < indices.Length; i += 3 )
+			normals = new Vector3F[ positions.Length ];
+			for( var i = 0; i < triangleIndices.Length; i += 3 )
 			{
-				var i0 = indices[ i ];
-				var i1 = indices[ i + 1 ];
-				var i2 = indices[ i + 2 ];
+				var i0 = triangleIndices[ i ];
+				var i1 = triangleIndices[ i + 1 ];
+				var i2 = triangleIndices[ i + 2 ];
 
-				var p0 = new Vector3F( positions[ i0 * 3 ], positions[ i0 * 3 + 1 ], positions[ i0 * 3 + 2 ] );
-				var p1 = new Vector3F( positions[ i1 * 3 ], positions[ i1 * 3 + 1 ], positions[ i1 * 3 + 2 ] );
-				var p2 = new Vector3F( positions[ i2 * 3 ], positions[ i2 * 3 + 1 ], positions[ i2 * 3 + 2 ] );
+				var p0 = positions[i0];
+				var p1 = positions[i1];
+				var p2 = positions[i2];
 
 				var direction = Vector3F.CrossProduct( p1 - p0, p2 - p1 );
 				var norm2 = direction.Length;
@@ -139,29 +125,17 @@ namespace Zeiss.PiWeb.MeshModel
 				{
 					direction /= norm2;
 
-					normals[ i0 * 3 + 0 ] += direction.X;
-					normals[ i0 * 3 + 1 ] += direction.Y;
-					normals[ i0 * 3 + 2 ] += direction.Z;
-
-					normals[ i1 * 3 + 0 ] += direction.X;
-					normals[ i1 * 3 + 1 ] += direction.Y;
-					normals[ i1 * 3 + 2 ] += direction.Z;
-
-					normals[ i2 * 3 + 0 ] += direction.X;
-					normals[ i2 * 3 + 1 ] += direction.Y;
-					normals[ i2 * 3 + 2 ] += direction.Z;
+					// Add direction vector to each vertex of the triangle.
+					normals[i0] += direction;
+					normals[i1] += direction;
+					normals[i2] += direction;
 				}
 			}
 
-			for( var i = 0; i < normals.Length; i += 3 )
+			// Normalize vertex normals.
+			for( var i = 0; i < normals.Length; ++i )
 			{
-				var norm2 = new Vector3F( normals[ i ], normals[ i + 1 ], normals[ i + 2 ] ).Length;
-				if( norm2 > epsilon )
-				{
-					normals[ i ] /= norm2;
-					normals[ i + 1 ] /= norm2;
-					normals[ i + 2 ] /= norm2;
-				}
+				normals[i].Normalize();
 			}
 
 			return normals;
@@ -172,14 +146,20 @@ namespace Zeiss.PiWeb.MeshModel
 			var name = fileVersion >= FileVersion21 ? binaryReader.ReadString() : "";
 			var color = binaryReader.ReadBoolean() ? binaryReader.ReadArgbColor() : default( Color? );
 
-			var positions = binaryReader.ReadConditionalFloatArray( 3, fileVersion );
-			var normals = binaryReader.ReadConditionalFloatArray( 3, fileVersion );
-			var indices =  binaryReader.ReadBoolean() ? binaryReader.ReadIndices( positions?.Length ?? 0 ) : null;
+			var positions = binaryReader.ReadConditionalFloatArrayAsVector3FArray( fileVersion );
+			var normals = binaryReader.ReadConditionalFloatArrayAsVector3FArray( fileVersion );
+			var indices =  binaryReader.ReadBoolean() 
+				? binaryReader.ReadIndices( positions?.Length ?? 0 ) 
+				: null;
 
 			var layer = binaryReader.ReadConditionalStringArray();
 
-			var textureCoordinates = fileVersion >= FileVersion22 && binaryReader.ReadBoolean() ? binaryReader.ReadFloatArray( 2 ) : null;
-			var colors = fileVersion >= FileVersion33 && binaryReader.ReadBoolean() ? binaryReader.ReadFloatArray( 4 ) : null;
+			var textureCoordinates = fileVersion >= FileVersion22 && binaryReader.ReadBoolean() 
+				? binaryReader.ReadFloatArrayAsVector2FArray() 
+				: null;
+			var colors = fileVersion >= FileVersion33 && binaryReader.ReadBoolean() 
+				? binaryReader.ReadFloatArrayAsColorArray() 
+				: null;
 
 			return new Mesh( index, positions, normals, indices, textureCoordinates, color, colors, layer, name );
 		}
@@ -188,14 +168,14 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			binaryWriter.Write( Name ?? "" );
 			binaryWriter.WriteConditionalColor( Color );
-			binaryWriter.WriteConditionalFloatArray( Positions, 3 );
-			binaryWriter.WriteConditionalFloatArray( Normals, 3 );
-
+			binaryWriter.WriteConditionalFloatArray(MeshModelHelper.AsArrayOfFloats(Positions), 3);
+			binaryWriter.WriteConditionalFloatArray(MeshModelHelper.AsArrayOfFloats(Normals), 3);
+			
 			WriteTriangleIndizes( binaryWriter );
-
+			
 			binaryWriter.WriteConditionalStrings( Layer );
-			binaryWriter.WriteConditionalFloatArray( TextureCoordinates, 2 );
-			binaryWriter.WriteConditionalFloatArray( Colors, 4 );
+			binaryWriter.WriteConditionalFloatArray(MeshModelHelper.AsArrayOfFloats(TextureCoordinates), 2);
+			binaryWriter.WriteConditionalFloatArray(MeshModelHelper.AsArrayOfFloats(Colors), 1);
 		}
 
 		private void WriteTriangleIndizes( BinaryWriter binaryWriter )
@@ -244,22 +224,18 @@ namespace Zeiss.PiWeb.MeshModel
 
 		/// <summary>
 		/// Gets the normal data array.
-		///
-		/// { [0] normalOfVector0.X, [1] normalOfVector0.Y, [2]normalOfVector0.Z, [3]normalOfVector1.X, ... }
 		/// </summary>
-		public float[] Normals { get; }
+		public Vector3F[] Normals { get; }
 
 		/// <summary>
 		/// Gets the position data array.
-		///
-		/// { [0] vector0.X, [1] vector0.Y, [2] vector0.Z, [3] vector1.X, ... }
 		/// </summary>
-		public float[] Positions { get; }
+		public Vector3F[] Positions { get; }
 
 		/// <summary>
 		/// Gets the texture data array.
 		/// </summary>
-		public float[] TextureCoordinates { get; }
+		public Vector2F[] TextureCoordinates { get; }
 
 		/// <summary>
 		/// Gets the number of triangle indices
@@ -274,7 +250,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Gets the color data array.
 		/// </summary>
-		public float[] Colors { get; }
+		public Color[] Colors { get; }
 
 		/// <summary>
 		/// Gets the layers to which this mesh belongs
@@ -291,9 +267,9 @@ namespace Zeiss.PiWeb.MeshModel
 				if( _Bounds.HasValue ) return _Bounds.Value;
 
 				var bounds = Rect3F.Empty;
-				for( var i = 0; i < Positions.Length; i += 3 )
+				for( var i = 0; i < Positions.Length; i++ )
 				{
-					bounds.Union( new Vector3F( Positions[ i ], Positions[ i + 1 ], Positions[ i + 2 ] ) );
+					bounds.Union( Positions[ i ] );
 				}
 
 				_Bounds = bounds;
@@ -537,39 +513,15 @@ namespace Zeiss.PiWeb.MeshModel
 				_Index = index;
 			}
 
-			public Vertex VertexA => _Mesh.GetVertex( _Mesh._TriangleIndices[ _Index * 3 + 0 ] );
-			public Vertex VertexB => _Mesh.GetVertex( _Mesh._TriangleIndices[ _Index * 3 + 1 ] );
-			public Vertex VertexC => _Mesh.GetVertex( _Mesh._TriangleIndices[ _Index * 3 + 2 ] );
+			public Vector3F VertexA => _Mesh.Positions[ _Mesh._TriangleIndices[ _Index * 3 + 0 ] ];
+			public Vector3F VertexB => _Mesh.Positions[ _Mesh._TriangleIndices[ _Index * 3 + 1 ] ];
+			public Vector3F VertexC => _Mesh.Positions[ _Mesh._TriangleIndices[ _Index * 3 + 2 ] ];
+			
+			public Vector3F NormalA => _Mesh.Normals[ _Mesh._TriangleIndices[ _Index * 3 + 0 ] ];
+			public Vector3F NormalB => _Mesh.Normals[ _Mesh._TriangleIndices[ _Index * 3 + 1 ] ];
+			public Vector3F NormalC => _Mesh.Normals[ _Mesh._TriangleIndices[ _Index * 3 + 2 ] ];
 
-			public Vector3F MeanNormal => new Vector3F(
-				( VertexA.NormalX + VertexB.NormalX + VertexC.NormalX ) / 3f,
-				( VertexA.NormalY + VertexB.NormalY + VertexC.NormalY ) / 3f,
-				( VertexA.NormalZ + VertexB.NormalZ + VertexC.NormalZ ) / 3f
-			);
-		}
-
-		#endregion
-
-		#region struct Vertex
-
-		public readonly struct Vertex
-		{
-			private readonly Mesh _Mesh;
-			private readonly int _Index;
-
-			public Vertex( int index, Mesh mesh )
-			{
-				_Mesh = mesh;
-				_Index = index;
-			}
-
-			public float X => _Mesh.Positions[ _Index * 3 + 0 ];
-			public float Y => _Mesh.Positions[ _Index * 3 + 1 ];
-			public float Z => _Mesh.Positions[ _Index * 3 + 2 ];
-
-			public float NormalX => _Mesh.Normals[ _Index * 3 + 0 ];
-			public float NormalY => _Mesh.Normals[ _Index * 3 + 1 ];
-			public float NormalZ => _Mesh.Normals[ _Index * 3 + 2 ];
+			public Vector3F MeanNormal => (NormalA + NormalB + NormalC) / 3f;
 		}
 
 		#endregion

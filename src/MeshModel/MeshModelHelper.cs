@@ -36,12 +36,12 @@ namespace Zeiss.PiWeb.MeshModel
 			if( positions.Length % 3 != 0 )
 				throw new InvalidOperationException( "Unable to remove duplicate positions. Position array should have a length that is a multiple of 3." );
 
-			var last = new Point3F( positions[ 0 ], positions[ 1 ], positions[ 2 ] );
+			var last = new Vector3F( positions[ 0 ], positions[ 1 ], positions[ 2 ] );
 			var result = new List<float>( positions.Length ) { positions[ 0 ], positions[ 1 ], positions[ 2 ] };
 
 			for( var i = 0; i < positions.Length; i += 3 )
 			{
-				var current = new Point3F( positions[ i ], positions[ i + 1 ], positions[ i + 2 ] );
+				var current = new Vector3F( positions[ i ], positions[ i + 1 ], positions[ i + 2 ] );
 
 				var distance = ( current - last ).LengthSquared;
 				if( distance > 0.0000001 )

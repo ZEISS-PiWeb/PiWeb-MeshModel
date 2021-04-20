@@ -78,19 +78,6 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="Vector3F"/> to <see cref="Point3F"/>.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <returns>
-		/// The result of the conversion.
-		/// </returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static explicit operator Point3F( Vector3F vector )
-		{
-			return new Point3F( vector.X, vector.Y, vector.Z );
-		}
-
-		/// <summary>
 		/// Performs an explicit conversion from <see cref="Vector3F"/> to <see cref="Size3F"/>.
 		/// </summary>
 		/// <param name="vector">The vector.</param>
@@ -142,34 +129,6 @@ namespace Zeiss.PiWeb.MeshModel
 		public static Vector3F operator -( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X - vector2.X, vector1.Y - vector2.Y, vector1.Z - vector2.Z );
-		}
-
-		/// <summary>
-		/// Implements the operator +.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="point">The point.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Point3F operator +( Vector3F vector, Point3F point )
-		{
-			return new Point3F( vector.X + point.X, vector.Y + point.Y, vector.Z + point.Z );
-		}
-
-		/// <summary>
-		/// Implements the operator -.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="point">The point.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Point3F operator -( Vector3F vector, Point3F point )
-		{
-			return new Point3F( vector.X - point.X, vector.Y - point.Y, vector.Z - point.Z );
 		}
 
 		/// <summary>
@@ -318,30 +277,6 @@ namespace Zeiss.PiWeb.MeshModel
 		public static Vector3F Subtract( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X - vector2.X, vector1.Y - vector2.Y, vector1.Z - vector2.Z );
-		}
-
-		/// <summary>
-		/// Adds the specified vector.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="point">The point.</param>
-		/// <returns></returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Point3F Add( Vector3F vector, Point3F point )
-		{
-			return new Point3F( vector.X + point.X, vector.Y + point.Y, vector.Z + point.Z );
-		}
-
-		/// <summary>
-		/// Subtracts the specified vector.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="point">The point.</param>
-		/// <returns></returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Point3F Subtract( Vector3F vector, Point3F point )
-		{
-			return new Point3F( vector.X - point.X, vector.Y - point.Y, vector.Z - point.Z );
 		}
 
 		/// <summary>

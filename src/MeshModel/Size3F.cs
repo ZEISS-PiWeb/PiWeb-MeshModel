@@ -159,18 +159,6 @@ namespace Zeiss.PiWeb.MeshModel
 			return new Vector3F( size.X, size.Y, size.Z );
 		}
 
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="Size3F"/> to <see cref="Point3F"/>.
-		/// </summary>
-		/// <param name="size">The size.</param>
-		/// <returns>
-		/// The result of the conversion.
-		/// </returns>
-		public static explicit operator Point3F( Size3F size )
-		{
-			return new Point3F( size.X, size.Y, size.Z );
-		}
-
 		private static Size3F CreateEmptySize()
 		{
 			return new Size3F

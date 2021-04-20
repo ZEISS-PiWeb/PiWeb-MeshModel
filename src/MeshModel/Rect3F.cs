@@ -53,9 +53,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// The location.
 		/// </value>
 		/// <exception cref="InvalidOperationException">An empty rect cannot be modified</exception>
-		public Point3F Location
+		public Vector3F Location
 		{
-			get { return new Point3F( _X, _Y, _Z ); }
+			get { return new Vector3F( _X, _Y, _Z ); }
 			set
 			{
 				if( IsEmpty )
@@ -215,7 +215,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		/// <param name="location">The location.</param>
 		/// <param name="size">The size.</param>
-		public Rect3F( Point3F location, Size3F size )
+		public Rect3F( Vector3F location, Size3F size )
 		{
 			if( size.IsEmpty )
 			{
@@ -259,7 +259,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		/// <param name="point1">First corner point.</param>
 		/// <param name="point2">Second corner point.</param>
-		public Rect3F( Point3F point1, Point3F point2 )
+		public Rect3F( Vector3F point1, Vector3F point2 )
 		{
 			_X = Math.Min( point1.X, point2.X );
 			_Y = Math.Min( point1.Y, point2.Y );
@@ -303,7 +303,7 @@ namespace Zeiss.PiWeb.MeshModel
 		///   <c>true</c> if [contains] [the specified point]; otherwise, <c>false</c>.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public readonly bool Contains( Point3F point )
+		public readonly bool Contains( Vector3F point )
 		{
 			return Contains( point.X, point.Y, point.Z );
 		}
@@ -437,23 +437,23 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Unions the specified point.
+		/// Unions the specified vector.
 		/// </summary>
-		/// <param name="point">The point.</param>
-		public void Union( Point3F point )
+		/// <param name="vector">The vector.</param>
+		public void Union( Vector3F vector )
 		{
-			Union( new Rect3F( point, point ) );
+			Union( new Rect3F( vector, vector ) );
 		}
 
 		/// <summary>
 		/// Unions the specified rect.
 		/// </summary>
 		/// <param name="rect">The rect.</param>
-		/// <param name="point">The point.</param>
+		/// <param name="vector">The vector.</param>
 		/// <returns></returns>
-		public static Rect3F Union( Rect3F rect, Point3F point )
+		public static Rect3F Union( Rect3F rect, Vector3F vector )
 		{
-			rect.Union( new Rect3F( point, point ) );
+			rect.Union( new Rect3F( vector, vector ) );
 			return rect;
 		}
 
@@ -544,7 +544,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return $"[{Location}] - [{new Point3F( X + SizeX, Y + SizeY, Z + SizeZ )}]";
+			return $"[{Location}] - [{new Vector3F( X + SizeX, Y + SizeY, Z + SizeZ )}]";
 		}
 
 		/// <summary>

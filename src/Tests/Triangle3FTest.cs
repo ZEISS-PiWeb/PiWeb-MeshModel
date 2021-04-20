@@ -26,9 +26,9 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 		public void NormalCalculationTest()
 		{
 			// ------------------------------------------------------------------------------ GIVEN
-			var a = new Point3F(0,0,0);
-			var b = new Point3F( 2, 0, 0 );
-			var c = new Point3F( 0, 2, 0 );
+			var a = new Vector3F(0,0,0);
+			var b = new Vector3F( 2, 0, 0 );
+			var c = new Vector3F( 0, 2, 0 );
 
 			var t = new Triangle3F( a, b, c );
 
@@ -42,9 +42,9 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 		public void AreaCalculationTest()
 		{
 			// ------------------------------------------------------------------------------ GIVEN
-			var a = new Point3F(0,0,0);
-			var b = new Point3F( 1, 0, 0 );
-			var c = new Point3F( 0, 1, 0 );
+			var a = new Vector3F(0,0,0);
+			var b = new Vector3F( 1, 0, 0 );
+			var c = new Vector3F( 0, 1, 0 );
 
 			var t = new Triangle3F( a, b, c );
 

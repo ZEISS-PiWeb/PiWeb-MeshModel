@@ -24,26 +24,18 @@ namespace Zeiss.PiWeb.MeshModel
 	/// Describes a vector with three <code>float</code> components. Adapted from the .NET Vector3D class.
 	/// </summary>
 	[StructLayout( LayoutKind.Sequential, Size = 12, Pack = 4 )]
-	public struct Vector3F
+	public struct Vector3F : IEquatable<Vector3F>
 	{
-		/// <summary>
-		/// Gets the vector's length.
-		/// </summary>
+		/// <inheritdoc cref="Vector2F.Length"/>
 		public float Length => (float)Math.Sqrt( X * X + Y * Y + Z * Z );
 
-		/// <summary>
-		/// Gets the vector's length squared.
-		/// </summary>
+		/// <inheritdoc cref="Vector2F.LengthSquared"/>
 		public float LengthSquared => X * X + Y * Y + Z * Z;
 
-		/// <summary>
-		/// Gets or sets the X component.
-		/// </summary>
+		/// <inheritdoc cref="Vector2F.X"/>
 		public float X { get; set; }
 
-		/// <summary>
-		/// Gets or sets the Y component.
-		/// </summary>
+		/// <inheritdoc cref="Vector2F.Y"/>
 		public float Y { get; set; }
 
 		/// <summary>
@@ -207,7 +199,7 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		///  Calculates the cross product.
+		/// Calculates the cross product.
 		/// </summary>
 		/// <param name="vector1">The first vector.</param>
 		/// <param name="vector2">The second vector.</param>
@@ -222,52 +214,21 @@ namespace Zeiss.PiWeb.MeshModel
 			);
 		}
 
-		/// <summary>
-		/// Equalses the specified vectors.
-		/// </summary>
-		/// <param name="vector1">The first vector.</param>
-		/// <param name="vector2">The second vector.</param>
-		/// <returns>True if the vectors can be considered equal. Otherwise false.</returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static bool Equals( Vector3F vector1, Vector3F vector2 )
-		{
-			return vector1.X == vector2.X
-			       && vector1.Y == vector2.Y
-			       && vector1.Z == vector2.Z;
-		}
-
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
-		/// </summary>
-		/// <param name="o">The <see cref="System.Object" /> to compare with this instance.</param>
-		/// <returns>
-		/// True if the specified <see cref="System.Object" /> is equal to this instance. Otherwise false.
-		/// </returns>
+		/// <inheritdoc />
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override bool Equals( object o )
 		{
-			if( !( o is Vector3F ) )
-				return false;
-			return Equals( this, (Vector3F)o );
+			return o is Vector3F v && Equals(v);
 		}
 
-		/// <summary>
-		/// Equalses the specified value.
-		/// </summary>
-		/// <param name="value">The value.</param>
-		/// <returns>True if the given value can be considered equal to this instance. Otherwise false.</returns>
+		/// <inheritdoc />
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public bool Equals( Vector3F value )
 		{
-			return Equals( this, value );
+			return X == value.X && Y == value.Y && Z == value.Z;
 		}
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-		/// </returns>
+		/// <inheritdoc />
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override int GetHashCode()
 		{
@@ -280,6 +241,7 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return $"[{X} | {Y} | {Z}]";

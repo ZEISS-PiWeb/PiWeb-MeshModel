@@ -27,42 +27,26 @@ namespace Zeiss.PiWeb.MeshModel
 	public struct Vector2F
 	{
 		/// <summary>
-		/// Gets the length.
+		/// Gets the vector's length.
 		/// </summary>
-		/// <value>
-		/// The length.
-		/// </value>
 		public float Length => (float)Math.Sqrt( LengthSquared );
 
 		/// <summary>
-		/// Gets the length squared.
+		/// Gets the vector's length squared.
 		/// </summary>
-		/// <value>
-		/// The length squared.
-		/// </value>
 		public float LengthSquared => X * X + Y * Y;
 
 		/// <summary>
-		/// Gets or sets the x.
+		/// Gets or sets the X component.
 		/// </summary>
-		/// <value>
-		/// The x.
-		/// </value>
 		public float X { get; set; }
 
 		/// <summary>
-		/// Gets or sets the y.
+		/// Gets or sets the Y component.
 		/// </summary>
-		/// <value>
-		/// The y.
-		/// </value>
 		public float Y { get; set; }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Vector2F"/> struct.
-		/// </summary>
-		/// <param name="x">The x.</param>
-		/// <param name="y">The y.</param>
+		/// <summary>Constructor.</summary>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public Vector2F( float x, float y )
 		{
@@ -70,111 +54,48 @@ namespace Zeiss.PiWeb.MeshModel
 			Y = y;
 		}
 
-		/// <summary>
-		/// Implements the operator -.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector2F operator -( Vector2F vector )
 		{
 			return new Vector2F( -vector.X, -vector.Y );
 		}
 
-		/// <summary>
-		/// Implements the operator +.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector2F operator +( Vector2F vector1, Vector2F vector2 )
 		{
 			return new Vector2F( vector1.X + vector2.X, vector1.Y + vector2.Y );
 		}
 
-		/// <summary>
-		/// Implements the operator -.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector2F operator -( Vector2F vector1, Vector2F vector2 )
 		{
 			return new Vector2F( vector1.X - vector2.X, vector1.Y - vector2.Y );
 		}
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="scalar">The scalar.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector2F operator *( Vector2F vector, float scalar )
 		{
 			return new Vector2F( vector.X * scalar, vector.Y * scalar );
 		}
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="scalar">The scalar.</param>
-		/// <param name="vector">The vector.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector2F operator *( float scalar, Vector2F vector )
 		{
 			return new Vector2F( vector.X * scalar, vector.Y * scalar );
 		}
 
-		/// <summary>
-		/// Implements the operator /.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="scalar">The scalar.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector2F operator /( Vector2F vector, float scalar )
 		{
 			return vector * ( 1.0f / scalar );
 		}
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator ==( Vector2F vector1, Vector2F vector2 )
 		{
 			return vector1.Equals( vector2 );
 		}
 
-		/// <summary>
-		/// Implements the operator !=.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator !=( Vector2F vector1, Vector2F vector2 )
 		{
@@ -193,9 +114,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Calculates the angle between the specified vectors.
 		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
+		/// <param name="vector1">The first vector.</param>
+		/// <param name="vector2">The second vector.</param>
+		/// <returns>The angle between both vectors.</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static float AngleBetween( Vector2F vector1, Vector2F vector2 )
 		{
@@ -223,11 +144,11 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Adds the specified vector1.
+		/// Adds the given vectors.
 		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
+		/// <param name="vector1">The first vector.</param>
+		/// <param name="vector2">The second vector.</param>
+		/// <returns>vector1 + vector2</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector2F Add( Vector2F vector1, Vector2F vector2 )
 		{
@@ -235,11 +156,11 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Subtracts the specified vector1.
+		/// Subtracts the given vectors.
 		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
+		/// <param name="vector1">The first vector.</param>
+		/// <param name="vector2">The second vector.</param>
+		/// <returns>vector1 - vector2</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector2F Subtract( Vector2F vector1, Vector2F vector2 )
 		{
@@ -247,11 +168,11 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Multiplies the specified vector with the specified scalar.
+		/// Multiplies the given vector with the given scalar element-wise.
 		/// </summary>
 		/// <param name="vector">The vector.</param>
 		/// <param name="scalar">The scalar.</param>
-		/// <returns></returns>
+		/// <returns>vector * scalar</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector2F Multiply( Vector2F vector, float scalar )
 		{
@@ -259,11 +180,11 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Multiplies the specified scalar.
+		/// Multiplies the given vector with the given scalar element-wise.
 		/// </summary>
 		/// <param name="scalar">The scalar.</param>
 		/// <param name="vector">The vector.</param>
-		/// <returns></returns>
+		/// <returns>scalar * vector</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector2F Multiply( float scalar, Vector2F vector )
 		{
@@ -273,15 +194,21 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Calculates the dot product.
 		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
+		/// <param name="vector1">The first vector.</param>
+		/// <param name="vector2">The second vector.</param>
+		/// <returns>vector1 * vector2</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static float DotProduct( Vector2F vector1, Vector2F vector2 )
 		{
 			return vector1.X * vector2.X + vector1.Y * vector2.Y;
 		}
 
+		/// <summary>
+		/// Calculates the dot product.
+		/// </summary>
+		/// <param name="vector1">The first vector.</param>
+		/// <param name="vector2">The second vector.</param>
+		/// <returns>vector1 * vector2</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		internal static float DotProduct( ref Vector2F vector1, ref Vector2F vector2 )
 		{
@@ -289,11 +216,11 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Equalises the specified vector1.
+		/// Equalses the specified vectors.
 		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
+		/// <param name="vector1">The first vector.</param>
+		/// <param name="vector2">The second vector.</param>
+		/// <returns>True if the vectors can be considered equal. Otherwise false.</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool Equals( Vector2F vector1, Vector2F vector2 )
 		{
@@ -306,7 +233,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		/// <param name="o">The <see cref="System.Object" /> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		/// True if the specified <see cref="System.Object" /> is equal to this instance. Otherwise false.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override bool Equals( object o )
@@ -318,7 +245,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Equalses the specified value.
 		/// </summary>
 		/// <param name="value">The value.</param>
-		/// <returns></returns>
+		/// <returns>True if the given value can be considered equal to this instance. Otherwise false.</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public bool Equals( Vector2F value )
 		{

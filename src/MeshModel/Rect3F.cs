@@ -540,13 +540,7 @@ namespace Zeiss.PiWeb.MeshModel
 				return hashCode;
 			}
 		}
-
-		/// <inheritdoc/>
-		public override string ToString()
-		{
-			return $"[{Location}] - [{new Vector3F( X + SizeX, Y + SizeY, Z + SizeZ )}]";
-		}
-
+		
 		/// <summary>
 		/// Scales the instance absolute by scaling value relative to center.
 		/// </summary>
@@ -604,6 +598,12 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			rect.ScaleAbsolute( scaleX, scaleY, scaleZ );
 			return rect;
+		}
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return $"Location: {Location}, Size: {new Vector3F( X + SizeX, Y + SizeY, Z + SizeZ )}";
 		}
 	}
 }

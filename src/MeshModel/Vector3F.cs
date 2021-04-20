@@ -119,9 +119,7 @@ namespace Zeiss.PiWeb.MeshModel
 			return !( vector1 == vector2 );
 		}
 
-		/// <summary>
-		/// Normalizes this instance.
-		/// </summary>
+		/// <inheritdoc cref="Vector2F.Normalize"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public void Normalize()
 		{
@@ -140,12 +138,7 @@ namespace Zeiss.PiWeb.MeshModel
 			this = this / (float)Math.Sqrt( X * X + Y * Y + Z * Z );
 		}
 
-		/// <summary>
-		/// Calculates the angle between the specified vectors.
-		/// </summary>
-		/// <param name="vector1">The first vector.</param>
-		/// <param name="vector2">The second vector.</param>
-		/// <returns>The angle between both vectors.</returns>
+		/// <inheritdoc cref="Vector2F.AngleBetween"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static float AngleBetween( Vector3F vector1, Vector3F vector2 )
 		{
@@ -162,9 +155,7 @@ namespace Zeiss.PiWeb.MeshModel
 			return value * 180 / (float)Math.PI;
 		}
 
-		/// <summary>
-		/// Negates this instance.
-		/// </summary>
+		/// <inheritdoc cref="Vector2F.Negate"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public void Negate()
 		{
@@ -173,72 +164,42 @@ namespace Zeiss.PiWeb.MeshModel
 			Z = -Z;
 		}
 
-		/// <summary>
-		/// Adds the given vectors.
-		/// </summary>
-		/// <param name="vector1">The first vector.</param>
-		/// <param name="vector2">The second vector.</param>
-		/// <returns>vector1 + vector2</returns>
+		/// <inheritdoc cref="Vector2F.Add"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Add( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X + vector2.X, vector1.Y + vector2.Y, vector1.Z + vector2.Z );
 		}
 
-		/// <summary>
-		/// Subtracts the given vectors.
-		/// </summary>
-		/// <param name="vector1">The first vector.</param>
-		/// <param name="vector2">The second vector.</param>
-		/// <returns>vector1 - vector2</returns>
+		/// <inheritdoc cref="Vector2F.Subtract"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Subtract( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X - vector2.X, vector1.Y - vector2.Y, vector1.Z - vector2.Z );
 		}
 
-		/// <summary>
-		/// Multiplies the given vector with the given scalar element-wise.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="scalar">The scalar.</param>
-		/// <returns>vector * scalar</returns>
+		/// <inheritdoc cref="Vector2F.Multiply(Vector2F,float)"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Multiply( Vector3F vector, float scalar )
 		{
 			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
 		}
 
-		/// <summary>
-		/// Multiplies the given vector with the given scalar element-wise.
-		/// </summary>
-		/// <param name="scalar">The scalar.</param>
-		/// <param name="vector">The vector.</param>
-		/// <returns>scalar * vector</returns>
+		/// <inheritdoc cref="Vector2F.Multiply(float,Vector2F)"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Multiply( float scalar, Vector3F vector )
 		{
 			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
 		}
 
-		/// <summary>
-		/// Calculates the dot product.
-		/// </summary>
-		/// <param name="vector1">The first vector.</param>
-		/// <param name="vector2">The second vector.</param>
-		/// <returns>vector1 * vector2</returns>
+		/// <inheritdoc cref="Vector2F.DotProduct"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static float DotProduct( Vector3F vector1, Vector3F vector2 )
 		{
 			return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
 		}
 
-		/// <summary>
-		/// Calculates the dot product.
-		/// </summary>
-		/// <param name="vector1">The first vector.</param>
-		/// <param name="vector2">The second vector.</param>
-		/// <returns>vector1 * vector2</returns>
+		/// <inheritdoc cref="Vector2F.DotProduct"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		internal static float DotProduct( ref Vector3F vector1, ref Vector3F vector2 )
 		{

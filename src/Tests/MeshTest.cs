@@ -1,9 +1,9 @@
-﻿#region Copyright
+﻿#region copyright
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Carl Zeiss IMT (IZfM Dresden)                   */
+/* Carl Zeiss Industrielle Messtechnik GmbH        */
 /* Softwaresystem PiWeb                            */
-/* (c) Carl Zeiss 2018                             */
+/* (c) Carl Zeiss 2021                             */
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #endregion
@@ -29,7 +29,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 		// 	var meshModel = MeshModel.Deserialize( file );
 		// }
 
-		private static Vector3F[] Create4Positions()
+		internal static Vector3F[] Create4Positions()
 		{
 			return new[]
 			{
@@ -40,7 +40,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			};
 		}
 		
-		private static Vector3F[] Create4Normals()
+		internal static Vector3F[] Create4Normals()
 		{
 			var normals = new[]
 			{
@@ -53,7 +53,29 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			return normals;
 		}
 
-		private static int[] Create4Triangles()
+		internal static Vector2F[] Create4UVs()
+		{
+			return new[]
+			{
+				new Vector2F( 0f, 0f ), 
+				new Vector2F( 0f, 1f ), 
+				new Vector2F( 1f, 1f ), 
+				new Vector2F( 0f, 0f )
+			};
+		}
+		
+		internal static Color[] Create4Colors()
+		{
+			return new[]
+			{
+				Color.FromArgb( 0, 100, 0, 0 ), 
+				Color.FromArgb( 10, 10, 10, 10 ), 
+				Color.FromArgb( 100, 0, 255, 0 ), 
+				Color.FromArgb( 255, 0, 50, 50 )
+			};
+		}
+
+		internal static int[] Create4Triangles()
 		{
 			return new[] { 0, 1, 2, 0, 3, 1, 0, 2, 3, 0, 3, 1 };
 		}

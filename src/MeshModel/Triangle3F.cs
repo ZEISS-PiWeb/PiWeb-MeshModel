@@ -86,7 +86,7 @@ namespace Zeiss.PiWeb.MeshModel
 					var vY = new Vector3F( C.X - A.X, C.Y - A.Y, C.Z - A.Z );
 
 					_Normal = Vector3F.CrossProduct( vX, vY );
-					_Normal = _Normal?.NormalizeExtended();
+					_Normal?.Normalize();
 				}
 
 				return _Normal.GetValueOrDefault();

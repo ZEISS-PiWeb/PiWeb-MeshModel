@@ -21,10 +21,10 @@ namespace Zeiss.PiWeb.MeshModel
 	#endregion
 
 	/// <summary>
-	/// Describes a vector with three <code>float</code> components. Adapted from the .NET Vector3D class.
+	/// Describes a vector with two <code>float</code> components. Adapted from the .NET Vector3D class.
 	/// </summary>
-	[StructLayout( LayoutKind.Sequential, Size = 12, Pack = 4 )]
-	public struct Vector3F
+	[StructLayout( LayoutKind.Sequential, Size = 8, Pack = 4 )]
+	public struct Vector2F
 	{
 		/// <summary>
 		/// Gets the length.
@@ -32,7 +32,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <value>
 		/// The length.
 		/// </value>
-		public float Length => (float)Math.Sqrt( X * X + Y * Y + Z * Z );
+		public float Length => (float)Math.Sqrt( LengthSquared );
 
 		/// <summary>
 		/// Gets the length squared.
@@ -40,7 +40,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <value>
 		/// The length squared.
 		/// </value>
-		public float LengthSquared => X * X + Y * Y + Z * Z;
+		public float LengthSquared => X * X + Y * Y;
 
 		/// <summary>
 		/// Gets or sets the x.
@@ -59,38 +59,15 @@ namespace Zeiss.PiWeb.MeshModel
 		public float Y { get; set; }
 
 		/// <summary>
-		/// Gets or sets the z.
-		/// </summary>
-		/// <value>
-		/// The z.
-		/// </value>
-		public float Z { get; set; }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Vector3F"/> struct.
+		/// Initializes a new instance of the <see cref="Vector2F"/> struct.
 		/// </summary>
 		/// <param name="x">The x.</param>
 		/// <param name="y">The y.</param>
-		/// <param name="z">The z.</param>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public Vector3F( float x, float y, float z )
+		public Vector2F( float x, float y )
 		{
 			X = x;
 			Y = y;
-			Z = z;
-		}
-
-		/// <summary>
-		/// Performs an explicit conversion from <see cref="Vector3F"/> to <see cref="Size3F"/>.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <returns>
-		/// The result of the conversion.
-		/// </returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static explicit operator Size3F( Vector3F vector )
-		{
-			return new Size3F( Math.Abs( vector.X ), Math.Abs( vector.Y ), Math.Abs( vector.Z ) );
 		}
 
 		/// <summary>
@@ -101,9 +78,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// The result of the operator.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F operator -( Vector3F vector )
+		public static Vector2F operator -( Vector2F vector )
 		{
-			return new Vector3F( -vector.X, -vector.Y, -vector.Z );
+			return new Vector2F( -vector.X, -vector.Y );
 		}
 
 		/// <summary>
@@ -115,9 +92,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// The result of the operator.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F operator +( Vector3F vector1, Vector3F vector2 )
+		public static Vector2F operator +( Vector2F vector1, Vector2F vector2 )
 		{
-			return new Vector3F( vector1.X + vector2.X, vector1.Y + vector2.Y, vector1.Z + vector2.Z );
+			return new Vector2F( vector1.X + vector2.X, vector1.Y + vector2.Y );
 		}
 
 		/// <summary>
@@ -129,9 +106,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// The result of the operator.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F operator -( Vector3F vector1, Vector3F vector2 )
+		public static Vector2F operator -( Vector2F vector1, Vector2F vector2 )
 		{
-			return new Vector3F( vector1.X - vector2.X, vector1.Y - vector2.Y, vector1.Z - vector2.Z );
+			return new Vector2F( vector1.X - vector2.X, vector1.Y - vector2.Y );
 		}
 
 		/// <summary>
@@ -143,9 +120,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// The result of the operator.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F operator *( Vector3F vector, float scalar )
+		public static Vector2F operator *( Vector2F vector, float scalar )
 		{
-			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
+			return new Vector2F( vector.X * scalar, vector.Y * scalar );
 		}
 
 		/// <summary>
@@ -157,9 +134,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// The result of the operator.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F operator *( float scalar, Vector3F vector )
+		public static Vector2F operator *( float scalar, Vector2F vector )
 		{
-			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
+			return new Vector2F( vector.X * scalar, vector.Y * scalar );
 		}
 
 		/// <summary>
@@ -171,7 +148,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// The result of the operator.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F operator /( Vector3F vector, float scalar )
+		public static Vector2F operator /( Vector2F vector, float scalar )
 		{
 			return vector * ( 1.0f / scalar );
 		}
@@ -185,7 +162,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// The result of the operator.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static bool operator ==( Vector3F vector1, Vector3F vector2 )
+		public static bool operator ==( Vector2F vector1, Vector2F vector2 )
 		{
 			return vector1.Equals( vector2 );
 		}
@@ -199,7 +176,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// The result of the operator.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static bool operator !=( Vector3F vector1, Vector3F vector2 )
+		public static bool operator !=( Vector2F vector1, Vector2F vector2 )
 		{
 			return !( vector1 == vector2 );
 		}
@@ -210,19 +187,7 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public void Normalize()
 		{
-			var num1 = Math.Abs( X );
-			var num2 = Math.Abs( Y );
-			var num3 = Math.Abs( Z );
-
-			if( num2 > num1 )
-				num1 = num2;
-			if( num3 > num1 )
-				num1 = num3;
-
-			X /= num1;
-			Y /= num1;
-			Z /= num1;
-			this = this / (float)Math.Sqrt( X * X + Y * Y + Z * Z );
+			this = this / Length;
 		}
 
 		/// <summary>
@@ -232,7 +197,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static float AngleBetween( Vector3F vector1, Vector3F vector2 )
+		public static float AngleBetween( Vector2F vector1, Vector2F vector2 )
 		{
 			vector1.Normalize();
 			vector2.Normalize();
@@ -255,7 +220,6 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			X = -X;
 			Y = -Y;
-			Z = -Z;
 		}
 
 		/// <summary>
@@ -265,9 +229,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F Add( Vector3F vector1, Vector3F vector2 )
+		public static Vector2F Add( Vector2F vector1, Vector2F vector2 )
 		{
-			return new Vector3F( vector1.X + vector2.X, vector1.Y + vector2.Y, vector1.Z + vector2.Z );
+			return new Vector2F( vector1.X + vector2.X, vector1.Y + vector2.Y );
 		}
 
 		/// <summary>
@@ -277,9 +241,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F Subtract( Vector3F vector1, Vector3F vector2 )
+		public static Vector2F Subtract( Vector2F vector1, Vector2F vector2 )
 		{
-			return new Vector3F( vector1.X - vector2.X, vector1.Y - vector2.Y, vector1.Z - vector2.Z );
+			return new Vector2F( vector1.X - vector2.X, vector1.Y - vector2.Y );
 		}
 
 		/// <summary>
@@ -289,9 +253,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="scalar">The scalar.</param>
 		/// <returns></returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F Multiply( Vector3F vector, float scalar )
+		public static Vector2F Multiply( Vector2F vector, float scalar )
 		{
-			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
+			return new Vector2F( vector.X * scalar, vector.Y * scalar );
 		}
 
 		/// <summary>
@@ -301,9 +265,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="vector">The vector.</param>
 		/// <returns></returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F Multiply( float scalar, Vector3F vector )
+		public static Vector2F Multiply( float scalar, Vector2F vector )
 		{
-			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
+			return new Vector2F( vector.X * scalar, vector.Y * scalar );
 		}
 
 		/// <summary>
@@ -313,45 +277,28 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static float DotProduct( Vector3F vector1, Vector3F vector2 )
+		public static float DotProduct( Vector2F vector1, Vector2F vector2 )
 		{
-			return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
+			return vector1.X * vector2.X + vector1.Y * vector2.Y;
 		}
 
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		internal static float DotProduct( ref Vector3F vector1, ref Vector3F vector2 )
+		internal static float DotProduct( ref Vector2F vector1, ref Vector2F vector2 )
 		{
-			return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
+			return vector1.X * vector2.X + vector1.Y * vector2.Y;
 		}
 
 		/// <summary>
-		///  Calculates the cross product.
+		/// Equalises the specified vector1.
 		/// </summary>
 		/// <param name="vector1">The vector1.</param>
 		/// <param name="vector2">The vector2.</param>
 		/// <returns></returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Vector3F CrossProduct( Vector3F vector1, Vector3F vector2 )
-		{
-			return new Vector3F(
-				vector1.Y * vector2.Z - vector1.Z * vector2.Y,
-				vector1.Z * vector2.X - vector1.X * vector2.Z,
-				vector1.X * vector2.Y - vector1.Y * vector2.X
-			);
-		}
-
-		/// <summary>
-		/// Equalses the specified vector1.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static bool Equals( Vector3F vector1, Vector3F vector2 )
+		public static bool Equals( Vector2F vector1, Vector2F vector2 )
 		{
 			return vector1.X == vector2.X
-			       && vector1.Y == vector2.Y
-			       && vector1.Z == vector2.Z;
+			       && vector1.Y == vector2.Y;
 		}
 
 		/// <summary>
@@ -364,9 +311,7 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override bool Equals( object o )
 		{
-			if( !( o is Vector3F ) )
-				return false;
-			return Equals( this, (Vector3F)o );
+			return o is Vector2F f && Equals( this, f );
 		}
 
 		/// <summary>
@@ -375,7 +320,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="value">The value.</param>
 		/// <returns></returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public bool Equals( Vector3F value )
+		public bool Equals( Vector2F value )
 		{
 			return Equals( this, value );
 		}
@@ -393,14 +338,13 @@ namespace Zeiss.PiWeb.MeshModel
 			{
 				var hashCode = X.GetHashCode();
 				hashCode = ( hashCode * 397 ) ^ Y.GetHashCode();
-				hashCode = ( hashCode * 397 ) ^ Z.GetHashCode();
 				return hashCode;
 			}
 		}
 
 		public override string ToString()
 		{
-			return $"[{X} | {Y} | {Z}]";
+			return $"[{X} | {Y}]";
 		}
 	}
 }

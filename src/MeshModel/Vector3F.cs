@@ -115,19 +115,19 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public void Normalize()
 		{
-			var num1 = Math.Abs( X );
-			var num2 = Math.Abs( Y );
-			var num3 = Math.Abs( Z );
+			var length = Length;
+			X /= length;
+			Y /= length;
+			Z /= length;
+		}
 
-			if( num2 > num1 )
-				num1 = num2;
-			if( num3 > num1 )
-				num1 = num3;
-
-			X /= num1;
-			Y /= num1;
-			Z /= num1;
-			this = this / (float)Math.Sqrt( X * X + Y * Y + Z * Z );
+		/// <inheritdoc cref="Vector2F.GetNormalized"/>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
+		public Vector3F GetNormalized()
+		{
+			var v = this;
+			v.Normalize();
+			return v;
 		}
 
 		/// <inheritdoc cref="Vector2F.AngleBetween"/>

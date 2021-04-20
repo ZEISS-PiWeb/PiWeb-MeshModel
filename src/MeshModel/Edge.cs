@@ -89,7 +89,7 @@ namespace Zeiss.PiWeb.MeshModel
 				_Bounds = Rect3F.Empty;
 				for( var i = 0; i < Points.Length; i += 3 )
 				{
-					_Bounds = Rect3F.Union( _Bounds.Value, new Point3F( Points[ i ], Points[ i + 1 ], Points[ i + 2 ] ) );
+					_Bounds = Rect3F.Union( _Bounds.Value, new Vector3F( Points[ i ], Points[ i + 1 ], Points[ i + 2 ] ) );
 				}
 
 				return _Bounds.Value;

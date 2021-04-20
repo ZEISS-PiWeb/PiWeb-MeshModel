@@ -128,9 +128,9 @@ namespace Zeiss.PiWeb.MeshModel
 				var i1 = indices[ i + 1 ];
 				var i2 = indices[ i + 2 ];
 
-				var p0 = new Point3F( positions[ i0 * 3 ], positions[ i0 * 3 + 1 ], positions[ i0 * 3 + 2 ] );
-				var p1 = new Point3F( positions[ i1 * 3 ], positions[ i1 * 3 + 1 ], positions[ i1 * 3 + 2 ] );
-				var p2 = new Point3F( positions[ i2 * 3 ], positions[ i2 * 3 + 1 ], positions[ i2 * 3 + 2 ] );
+				var p0 = new Vector3F( positions[ i0 * 3 ], positions[ i0 * 3 + 1 ], positions[ i0 * 3 + 2 ] );
+				var p1 = new Vector3F( positions[ i1 * 3 ], positions[ i1 * 3 + 1 ], positions[ i1 * 3 + 2 ] );
+				var p2 = new Vector3F( positions[ i2 * 3 ], positions[ i2 * 3 + 1 ], positions[ i2 * 3 + 2 ] );
 
 				var direction = Vector3F.CrossProduct( p1 - p0, p2 - p1 );
 				var norm2 = direction.Length;
@@ -293,7 +293,7 @@ namespace Zeiss.PiWeb.MeshModel
 				var bounds = Rect3F.Empty;
 				for( var i = 0; i < Positions.Length; i += 3 )
 				{
-					bounds.Union( new Point3F( Positions[ i ], Positions[ i + 1 ], Positions[ i + 2 ] ) );
+					bounds.Union( new Vector3F( Positions[ i ], Positions[ i + 1 ], Positions[ i + 2 ] ) );
 				}
 
 				_Bounds = bounds;

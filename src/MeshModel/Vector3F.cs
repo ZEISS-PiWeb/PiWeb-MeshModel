@@ -9,6 +9,8 @@
 #endregion
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
+using System.Runtime.InteropServices;
+
 namespace Zeiss.PiWeb.MeshModel
 {
 	#region usings
@@ -21,54 +23,27 @@ namespace Zeiss.PiWeb.MeshModel
 	/// <summary>
 	/// Describes a vector with three <code>float</code> components. Adapted from the .NET Vector3D class.
 	/// </summary>
-	public struct Vector3F
+	[StructLayout( LayoutKind.Sequential, Size = 12, Pack = 4 )]
+	public struct Vector3F : IEquatable<Vector3F>
 	{
-		/// <summary>
-		/// Gets the length.
-		/// </summary>
-		/// <value>
-		/// The length.
-		/// </value>
+		/// <inheritdoc cref="Vector2F.Length"/>
 		public float Length => (float)Math.Sqrt( X * X + Y * Y + Z * Z );
 
-		/// <summary>
-		/// Gets the length squared.
-		/// </summary>
-		/// <value>
-		/// The length squared.
-		/// </value>
+		/// <inheritdoc cref="Vector2F.LengthSquared"/>
 		public float LengthSquared => X * X + Y * Y + Z * Z;
 
-		/// <summary>
-		/// Gets or sets the x.
-		/// </summary>
-		/// <value>
-		/// The x.
-		/// </value>
+		/// <inheritdoc cref="Vector2F.X"/>
 		public float X { get; set; }
 
-		/// <summary>
-		/// Gets or sets the y.
-		/// </summary>
-		/// <value>
-		/// The y.
-		/// </value>
+		/// <inheritdoc cref="Vector2F.Y"/>
 		public float Y { get; set; }
 
 		/// <summary>
-		/// Gets or sets the z.
+		/// Gets or sets the Z component.
 		/// </summary>
-		/// <value>
-		/// The z.
-		/// </value>
 		public float Z { get; set; }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Vector3F"/> struct.
-		/// </summary>
-		/// <param name="x">The x.</param>
-		/// <param name="y">The y.</param>
-		/// <param name="z">The z.</param>
+		/// <summary>Constructor.</summary>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public Vector3F( float x, float y, float z )
 		{
@@ -78,173 +53,65 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="Vector3F"/> to <see cref="Point3F"/>.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <returns>
-		/// The result of the conversion.
-		/// </returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static explicit operator Point3F( Vector3F vector )
-		{
-			return new Point3F( vector.X, vector.Y, vector.Z );
-		}
-
-		/// <summary>
 		/// Performs an explicit conversion from <see cref="Vector3F"/> to <see cref="Size3F"/>.
 		/// </summary>
 		/// <param name="vector">The vector.</param>
-		/// <returns>
-		/// The result of the conversion.
-		/// </returns>
+		/// <returns>The result of the conversion.</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static explicit operator Size3F( Vector3F vector )
 		{
 			return new Size3F( Math.Abs( vector.X ), Math.Abs( vector.Y ), Math.Abs( vector.Z ) );
 		}
 
-		/// <summary>
-		/// Implements the operator -.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator -( Vector3F vector )
 		{
 			return new Vector3F( -vector.X, -vector.Y, -vector.Z );
 		}
 
-		/// <summary>
-		/// Implements the operator +.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator +( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X + vector2.X, vector1.Y + vector2.Y, vector1.Z + vector2.Z );
 		}
 
-		/// <summary>
-		/// Implements the operator -.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator -( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X - vector2.X, vector1.Y - vector2.Y, vector1.Z - vector2.Z );
 		}
 
-		/// <summary>
-		/// Implements the operator +.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="point">The point.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Point3F operator +( Vector3F vector, Point3F point )
-		{
-			return new Point3F( vector.X + point.X, vector.Y + point.Y, vector.Z + point.Z );
-		}
-
-		/// <summary>
-		/// Implements the operator -.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="point">The point.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Point3F operator -( Vector3F vector, Point3F point )
-		{
-			return new Point3F( vector.X - point.X, vector.Y - point.Y, vector.Z - point.Z );
-		}
-
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="scalar">The scalar.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator *( Vector3F vector, float scalar )
 		{
 			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
 		}
 
-		/// <summary>
-		/// Implements the operator *.
-		/// </summary>
-		/// <param name="scalar">The scalar.</param>
-		/// <param name="vector">The vector.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator *( float scalar, Vector3F vector )
 		{
 			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
 		}
 
-		/// <summary>
-		/// Implements the operator /.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="scalar">The scalar.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F operator /( Vector3F vector, float scalar )
 		{
 			return vector * ( 1.0f / scalar );
 		}
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator ==( Vector3F vector1, Vector3F vector2 )
 		{
 			return vector1.Equals( vector2 );
 		}
 
-		/// <summary>
-		/// Implements the operator !=.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static bool operator !=( Vector3F vector1, Vector3F vector2 )
 		{
 			return !( vector1 == vector2 );
 		}
 
-		/// <summary>
-		/// Normalizes this instance.
-		/// </summary>
+		/// <inheritdoc cref="Vector2F.Normalize"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public void Normalize()
 		{
@@ -263,12 +130,7 @@ namespace Zeiss.PiWeb.MeshModel
 			this = this / (float)Math.Sqrt( X * X + Y * Y + Z * Z );
 		}
 
-		/// <summary>
-		/// Calculates the angle between the specified vectors.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
+		/// <inheritdoc cref="Vector2F.AngleBetween"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static float AngleBetween( Vector3F vector1, Vector3F vector2 )
 		{
@@ -285,9 +147,7 @@ namespace Zeiss.PiWeb.MeshModel
 			return value * 180 / (float)Math.PI;
 		}
 
-		/// <summary>
-		/// Negates this instance.
-		/// </summary>
+		/// <inheritdoc cref="Vector2F.Negate"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public void Negate()
 		{
@@ -296,90 +156,42 @@ namespace Zeiss.PiWeb.MeshModel
 			Z = -Z;
 		}
 
-		/// <summary>
-		/// Adds the specified vector1.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
+		/// <inheritdoc cref="Vector2F.Add"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Add( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X + vector2.X, vector1.Y + vector2.Y, vector1.Z + vector2.Z );
 		}
 
-		/// <summary>
-		/// Subtracts the specified vector1.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
+		/// <inheritdoc cref="Vector2F.Subtract"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Subtract( Vector3F vector1, Vector3F vector2 )
 		{
 			return new Vector3F( vector1.X - vector2.X, vector1.Y - vector2.Y, vector1.Z - vector2.Z );
 		}
 
-		/// <summary>
-		/// Adds the specified vector.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="point">The point.</param>
-		/// <returns></returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Point3F Add( Vector3F vector, Point3F point )
-		{
-			return new Point3F( vector.X + point.X, vector.Y + point.Y, vector.Z + point.Z );
-		}
-
-		/// <summary>
-		/// Subtracts the specified vector.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="point">The point.</param>
-		/// <returns></returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static Point3F Subtract( Vector3F vector, Point3F point )
-		{
-			return new Point3F( vector.X - point.X, vector.Y - point.Y, vector.Z - point.Z );
-		}
-
-		/// <summary>
-		/// Multiplies the specified vector with the specified scalar.
-		/// </summary>
-		/// <param name="vector">The vector.</param>
-		/// <param name="scalar">The scalar.</param>
-		/// <returns></returns>
+		/// <inheritdoc cref="Vector2F.Multiply(Vector2F,float)"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Multiply( Vector3F vector, float scalar )
 		{
 			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
 		}
 
-		/// <summary>
-		/// Multiplies the specified scalar.
-		/// </summary>
-		/// <param name="scalar">The scalar.</param>
-		/// <param name="vector">The vector.</param>
-		/// <returns></returns>
+		/// <inheritdoc cref="Vector2F.Multiply(float,Vector2F)"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F Multiply( float scalar, Vector3F vector )
 		{
 			return new Vector3F( vector.X * scalar, vector.Y * scalar, vector.Z * scalar );
 		}
 
-		/// <summary>
-		/// Calculates the dot product.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
+		/// <inheritdoc cref="Vector2F.DotProduct"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static float DotProduct( Vector3F vector1, Vector3F vector2 )
 		{
 			return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
 		}
 
+		/// <inheritdoc cref="Vector2F.DotProduct"/>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		internal static float DotProduct( ref Vector3F vector1, ref Vector3F vector2 )
 		{
@@ -387,11 +199,11 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		///  Calculates the cross product.
+		/// Calculates the cross product.
 		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
+		/// <param name="vector1">The first vector.</param>
+		/// <param name="vector2">The second vector.</param>
+		/// <returns>vector1 x vector2</returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public static Vector3F CrossProduct( Vector3F vector1, Vector3F vector2 )
 		{
@@ -402,52 +214,21 @@ namespace Zeiss.PiWeb.MeshModel
 			);
 		}
 
-		/// <summary>
-		/// Equalses the specified vector1.
-		/// </summary>
-		/// <param name="vector1">The vector1.</param>
-		/// <param name="vector2">The vector2.</param>
-		/// <returns></returns>
-		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public static bool Equals( Vector3F vector1, Vector3F vector2 )
-		{
-			return vector1.X == vector2.X
-			       && vector1.Y == vector2.Y
-			       && vector1.Z == vector2.Z;
-		}
-
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
-		/// </summary>
-		/// <param name="o">The <see cref="System.Object" /> to compare with this instance.</param>
-		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
-		/// </returns>
+		/// <inheritdoc />
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override bool Equals( object o )
 		{
-			if( !( o is Vector3F ) )
-				return false;
-			return Equals( this, (Vector3F)o );
+			return o is Vector3F v && Equals(v);
 		}
 
-		/// <summary>
-		/// Equalses the specified value.
-		/// </summary>
-		/// <param name="value">The value.</param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public bool Equals( Vector3F value )
 		{
-			return Equals( this, value );
+			return X == value.X && Y == value.Y && Z == value.Z;
 		}
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-		/// </returns>
+		/// <inheritdoc />
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override int GetHashCode()
 		{
@@ -460,6 +241,7 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return $"[{X} | {Y} | {Z}]";

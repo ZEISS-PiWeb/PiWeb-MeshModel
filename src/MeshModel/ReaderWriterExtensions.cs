@@ -150,6 +150,146 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 			ArrayPool<byte>.Shared.Return( buffer );
 		}
+		
+		/// <summary>
+		/// Writes a boolean marker and an array of <see cref="Color"/> using a <see cref="BinaryWriter"/>:
+		/// <list type="bullet">
+		/// <item><term>if array is empty,</term><description>false marker will be written</description></item>
+		/// <item><term>if array is not empty,</term><description>true marker and values will be written</description></item>
+		/// </list>
+		/// </summary>
+		/// <param name="writer">To write values.</param>
+		/// <param name="colors">To be written out.</param>
+		public static void WriteConditionalColorArray(this BinaryWriter writer, Color[] colors)
+		{
+			if( colors != null && colors.Length > 0 )
+			{
+				writer.Write( true );
+				writer.WriteColorArray( colors );
+			}
+			else
+			{
+				writer.Write( false );
+			}
+		}
+
+		/// <summary>
+		/// Writes an array of <see cref="Color"/> using a <see cref="BinaryWriter"/> to the following layout:
+		///
+		/// <code>
+		/// [ArrayLength][ARGB][ARGB][ARGB]...
+		/// |4Byte      |4Byte|4Byte|4Byte|...
+		/// </code>
+		/// </summary>
+		/// <param name="writer">To write values.</param>
+		/// <param name="colors">To be written out.</param>
+		public static void WriteColorArray(this BinaryWriter writer, Color[] colors)
+		{
+			if( colors == null || colors.Length == 0 )
+			{
+				writer.Write( 0 );
+				return;
+			}
+			
+			// Write length of the array.
+			writer.Write( colors.Length );
+			
+			// We write chunks of data (8 KiB) into a buffer and write it out into the file for better performance.
+			const int arrayLength = 8 * 1024;
+			var bytesToWrite = colors.Length * 4;
+			var bytesWritten = 0;
+			var buffer = ArrayPool<byte>.Shared.Rent( arrayLength );
+			var index = 0;
+			
+			while( bytesWritten < bytesToWrite )
+			{
+				var count = Math.Min( arrayLength, bytesToWrite - bytesWritten );
+
+				for (var i = 0; i < count; i+=4, index++)
+				{
+					// We use fixed byte order, to keep things consistent across machine boundaries.
+					buffer[i] = colors[index].A;
+					buffer[i+1] = colors[index].R;
+					buffer[i+2] = colors[index].G;
+					buffer[i+3] = colors[index].B;
+				}
+				
+				writer.Write( buffer, 0, count );
+
+				bytesWritten += count;
+			}
+			ArrayPool<byte>.Shared.Return( buffer );
+		}
+		
+		/// <summary>
+		/// Writes a boolean marker and an array of <see cref="Vector2F"/> using a <see cref="BinaryWriter"/>:
+		/// <list type="bullet">
+		/// <item><term>if array is empty,</term><description>false marker will be written</description></item>
+		/// <item><term>if array is not empty,</term><description>true marker and values will be written</description></item>
+		/// </list>
+		/// </summary>
+		/// <param name="writer">To write values.</param>
+		/// <param name="vectors">To be written out.</param>
+		public static void WriteConditionalVector2FArray(this BinaryWriter writer, Vector2F[] vectors)
+		{
+			if( vectors != null && vectors.Length > 0 )
+			{
+				writer.Write( true );
+				writer.WriteVector2FArray( vectors );
+			}
+			else
+			{
+				writer.Write( false );
+			}
+		}
+
+		/// <summary>
+		/// Writes an array of <see cref="Vector2F"/> using a <see cref="BinaryWriter"/> to the following layout:
+		///
+		/// <code>
+		/// [ArrayLength][XYZ][XYZ][XYZ]...
+		/// |4B    |12B |12B |12B |...
+		/// </code>
+		/// </summary>
+		/// <param name="writer">To write values.</param>
+		/// <param name="vectors">To be written out.</param>
+		public static void WriteVector2FArray(this BinaryWriter writer, Vector2F[] vectors)
+		{
+			const int compSize = sizeof(float);
+			const int stride = compSize * 2;
+			
+			if( vectors == null || vectors.Length == 0 )
+			{
+				writer.Write( 0 );
+				return;
+			}
+			
+			// Write length of the array.
+			writer.Write( vectors.Length );
+			
+			// We write chunks of data (6 KiB) into a buffer and write it out into the file for better performance.
+			const int arrayLength = 1024 * stride;
+			var bytesToWrite = vectors.Length * stride;
+			var bytesWritten = 0;
+			var buffer = ArrayPool<byte>.Shared.Rent( arrayLength );
+			var index = 0;
+			
+			while( bytesWritten < bytesToWrite )
+			{
+				var count = Math.Min( arrayLength, bytesToWrite - bytesWritten );
+
+				for (var i = 0; i < count; i+=stride, index++)
+				{
+					Array.Copy( BitConverter.GetBytes( vectors[index].X ), 0, buffer, i, compSize );
+					Array.Copy( BitConverter.GetBytes( vectors[index].Y ), 0, buffer, i+compSize, compSize );
+				}
+
+				writer.Write( buffer, 0, count );
+
+				bytesWritten += count;
+			}
+			ArrayPool<byte>.Shared.Return( buffer );
+		}
 
 		/// <summary>
 		/// Reads a hex color value from an attribute with name <paramref name="name"/>.
@@ -207,20 +347,6 @@ namespace Zeiss.PiWeb.MeshModel
 				? binaryReader.ReadDoubleArrayAsVector3FArray()
 				: binaryReader.ReadFloatArrayAsVector3FArray();
 		}
-		
-		/// <summary>
-		/// Reads an array of floats with a condition marker and interprets it as array of Vector2F. First the marker is
-		/// read and
-		/// * if true, the float array is read and returned as array of Vector2Fs
-		/// * if false, an empty array is returned
-		/// </summary>
-		public static Vector2F[] ReadConditionalFloatArrayAsVector2FArray( this BinaryReader binaryReader )
-		{
-			if( !binaryReader.ReadBoolean() )
-				return Array.Empty<Vector2F>();
-
-			return binaryReader.ReadFloatArrayAsVector2FArray();
-		}
 
 		/// <summary>
 		/// Reads an array of strings with a condition marker. First the marker is read and
@@ -260,6 +386,57 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 			return result;
 		}
+		
+		/// <summary>
+		/// Reads an array of <see cref="Color"/> using a <see cref="BinaryReader"/>.
+		/// </summary>
+		/// <param name="reader">A <see cref="BinaryReader"/> having access to the mesh data.</param>
+		/// <returns>Array of colors.</returns>
+		public static Color[] ReadColorArray( this BinaryReader reader )
+		{
+			var length = reader.ReadInt32(); // Number of vertices
+
+			var result = new Color[ length ];
+			foreach( var (count, current, buffer) in reader.ReadByteArrays( length * 4 ) )
+			{
+				var index = current / 4;
+					
+				for (var i = 0; i < count; i += 4)
+				{
+					result[index] = Color.FromArgb(buffer[i], buffer[i+1], buffer[i+2], buffer[i+3]);
+					index++;
+				}
+			}
+			return result;
+		}
+		
+		/// <summary>
+		/// Reads an array of <see cref="Vector2F"/> using a <see cref="BinaryReader"/>.
+		/// </summary>
+		/// <param name="reader">A <see cref="BinaryReader"/> having access to the mesh data.</param>
+		/// <returns>Array of vectors.</returns>
+		public static Vector2F[] ReadVector2FArray( this BinaryReader reader )
+		{
+			const int compSize = sizeof(float);
+			const int stride = compSize * 2;
+			
+			var length = reader.ReadInt32(); // Number of vertices
+
+			var result = new Vector2F[ length ];
+			foreach( var (count, current, buffer) in reader.ReadByteArrays( length * stride ) )
+			{
+				var index = current / stride;
+					
+				for (var i = 0; i < count; i += stride)
+				{
+					result[index] = new Vector2F(
+						BitConverter.ToSingle(buffer, i),
+						BitConverter.ToSingle(buffer, i + compSize));
+					index++;
+				}
+			}
+			return result;
+		}
 
 		/// <summary>
 		/// Returns a Vector3F array representing vertices in the following format:
@@ -282,51 +459,6 @@ namespace Zeiss.PiWeb.MeshModel
 					BitConverter.ToSingle( data, j ),
 					BitConverter.ToSingle( data, j + componentSize ),
 					BitConverter.ToSingle( data, j + componentSize * 2 ));
-			}
-
-			return result;
-		}
-		
-		/// <summary>
-		/// Returns a Vector2F array representing vertices in the following format:
-		///
-		/// array = { v0, v1, v2, v3, v4, ... }
-		/// </summary>
-		/// <param name="rdr">A <see cref="BinaryReader"/> having access to the mesh data.</param>
-		/// <returns>Array of Vector3Fs: v0, v1, v2, v3, v4, ...</returns>
-		public static Vector2F[] ReadFloatArrayAsVector2FArray(this BinaryReader rdr )
-		{
-			const int componentSize = 4; // Size of one float.
-			const int vectorSize = componentSize * 2;
-			
-			var result = new Vector2F[ rdr.ReadInt32() ];
-			
-			var data = rdr.ReadBytes( result.Length * vectorSize );
-			for( int i = 0, j = 0; i < result.Length; j += vectorSize, i++ )
-			{
-				result[i] = new Vector2F(
-					BitConverter.ToSingle(data, j),
-					BitConverter.ToSingle(data, j + componentSize));
-			}
-
-			return result;
-		}
-		
-		/// <summary>
-		/// Returns a Color array representing vertices in the following format:
-		///
-		/// array = { c0, c1, c2, c3, c4, ... }
-		/// </summary>
-		/// <param name="rdr">A <see cref="BinaryReader"/> having access to the mesh data.</param>
-		/// <returns>Array of Vector3Fs: c0, c1, c2, c3, c4, ...</returns>
-		public static Color[] ReadFloatArrayAsColorArray(this BinaryReader rdr )
-		{
-			var result = new Color[ rdr.ReadInt32() ];
-
-			var data = rdr.ReadBytes( result.Length * 4 );
-			for( var i = 0; i < result.Length; ++i )
-			{
-				result[i] = Color.FromArgb(data[i*4], data[i*4 + 1], data[i*4 + 2], data[i*4 + 3]);
 			}
 
 			return result;
@@ -421,6 +553,16 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
+		/// <param name="rdr"></param>
+		/// <param name="totalBytes"></param>
+		/// <returns>
+		/// Triple of (Count, Current, buffer) where
+		/// <ol>
+		///		<li>Count ... number of bytes written into the buffer in this iteration</li>
+		///		<li>Current ... at which byte this buffer starts</li>
+		///		<li>buffer ... byte array containing as much bytes as given by "Count"</li>
+		/// </ol>
+		/// </returns>
 		private static IEnumerable<(int Count, int Current, byte[] buffer)> ReadByteArrays(this BinaryReader rdr, int totalBytes)
 		{
 			const int arrayLength = 8 * 1024;

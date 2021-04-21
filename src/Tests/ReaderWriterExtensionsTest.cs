@@ -93,13 +93,13 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryWriter = new BinaryWriter(stream );
-				binaryWriter.WriteFloatArray( MeshModelHelper.AsArrayOfFloats( vectors ), 2 );
+				binaryWriter.WriteVector2FArray( vectors );
 			}
 			
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryReader = new BinaryReader(stream);
-				readVectors = binaryReader.ReadFloatArrayAsVector2FArray();
+				readVectors = binaryReader.ReadVector2FArray();
 			}
 			
 			
@@ -120,13 +120,13 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryWriter = new BinaryWriter(stream );
-				binaryWriter.WriteFloatArray( MeshModelHelper.AsArrayOfFloats( colors ), 1 );
+				binaryWriter.WriteColorArray( colors );
 			}
 			
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryReader = new BinaryReader(stream);
-				readColors = binaryReader.ReadFloatArrayAsColorArray();
+				readColors = binaryReader.ReadColorArray();
 			}
 			
 			

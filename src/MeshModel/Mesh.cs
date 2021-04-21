@@ -155,10 +155,10 @@ namespace Zeiss.PiWeb.MeshModel
 			var layer = binaryReader.ReadConditionalStringArray();
 
 			var textureCoordinates = fileVersion >= FileVersion22 && binaryReader.ReadBoolean() 
-				? binaryReader.ReadFloatArrayAsVector2FArray() 
+				? binaryReader.ReadVector2FArray() 
 				: null;
 			var colors = fileVersion >= FileVersion33 && binaryReader.ReadBoolean() 
-				? binaryReader.ReadFloatArrayAsColorArray() 
+				? binaryReader.ReadColorArray() 
 				: null;
 
 			return new Mesh( index, positions, normals, indices, textureCoordinates, color, colors, layer, name );
@@ -174,8 +174,8 @@ namespace Zeiss.PiWeb.MeshModel
 			WriteTriangleIndizes( binaryWriter );
 			
 			binaryWriter.WriteConditionalStrings( Layer );
-			binaryWriter.WriteConditionalFloatArray(MeshModelHelper.AsArrayOfFloats(TextureCoordinates), 2);
-			binaryWriter.WriteConditionalFloatArray(MeshModelHelper.AsArrayOfFloats(Colors), 1);
+			binaryWriter.WriteConditionalVector2FArray(TextureCoordinates);
+			binaryWriter.WriteConditionalColorArray(Colors);
 		}
 
 		private void WriteTriangleIndizes( BinaryWriter binaryWriter )

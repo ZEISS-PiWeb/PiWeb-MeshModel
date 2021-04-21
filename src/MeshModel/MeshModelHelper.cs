@@ -119,44 +119,6 @@ namespace Zeiss.PiWeb.MeshModel
 
 			return floats;
 		}
-		
-		/// <summary>
-		/// Converts an array of <see cref="Vector2F"/> to a flat array of floats:
-		///
-		/// From {v0, v1, v2, ... } to {x0, y0, x1, y1, x2, y2, ... }.
-		/// </summary>
-		/// <param name="vectors">Array that will be converted.</param>
-		/// <returns>Flattened vector array.</returns>
-		internal static float[] AsArrayOfFloats(Vector2F[] vectors)
-		{
-			var floats = new float[vectors.Length * 2];
-			for ( var i = 0; i < vectors.Length; i++ )
-			{
-				floats[i * 2 + 0] = vectors[i].X;
-				floats[i * 2 + 1] = vectors[i].Y;
-			}
-
-			return floats;
-		}
-		
-		/// <summary>
-		/// Converts an array of <see cref="Color"/>s to an array of floats by encoding the four
-		/// byte components A, R, G and B into a single float.
-		/// </summary>
-		/// <param name="colors">Array that will be converted.</param>
-		/// <returns>Array of floats where each one represents all four color components.</returns>
-		internal static float[] AsArrayOfFloats( Color[] colors )
-		{
-			var floats = new float[colors.Length];
-			for ( var i = 0; i < colors.Length; i++ )
-			{
-
-				var color = colors[i];
-				floats[i] = BitConverter.ToSingle(new[] {color.A, color.R, color.G, color.B}, 0);
-			}
-
-			return floats;
-		}
 
 		#endregion
 	}

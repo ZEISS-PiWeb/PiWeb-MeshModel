@@ -45,7 +45,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryReader = new BinaryReader(stream);
-				readFloats = binaryReader.ReadFloatArray(1);
+				readFloats = binaryReader.ReadArray( FloatIo.Instance );
 			}
 			
 			
@@ -72,7 +72,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryReader = new BinaryReader(stream);
-				readVectors = binaryReader.ReadFloatArrayAsVector3FArray();
+				readVectors = binaryReader.ReadArray(Vector3FIo.Instance);
 			}
 			
 			
@@ -99,7 +99,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryReader = new BinaryReader(stream);
-				readVectors = binaryReader.ReadVector2FArray();
+				readVectors = binaryReader.ReadArray( Vector2FIo.Instance);
 			}
 			
 			
@@ -126,7 +126,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryReader = new BinaryReader(stream);
-				readColors = binaryReader.ReadColorArray();
+				readColors = binaryReader.ReadArray(ColorIo.Instance);
 			}
 			
 			

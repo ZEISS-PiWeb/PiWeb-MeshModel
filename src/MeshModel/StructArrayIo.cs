@@ -1,8 +1,18 @@
-﻿using System;
+﻿#region copyright
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * */
+/* Carl Zeiss Industrielle Messtechnik GmbH        */
+/* Softwaresystem PiWeb                            */
+/* (c) Carl Zeiss 2021                             */
+/* * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#endregion
+
+using System;
 
 namespace Zeiss.PiWeb.MeshModel
 {
-    interface IArrayIo<T>
+    interface IStructArrayIo<in T>
 		where T : struct
 	{
 		/// <summary>
@@ -19,11 +29,13 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="index">Where to start copying from the source array.</param>
 		/// <returns>Position in the source array after filling the buffer.</returns>
 		int BufferFunction( byte[] buffer, T[] source, int count, int index );
+
+		int ReadBuffer(byte[] buffer, T[] result, int count, int index);
 		
 		int Stride { get; }
 	}
 	
-	public class FloatIo : IArrayIo<float>
+	public class FloatIo : IStructArrayIo<float>
 	{
 		private FloatIo(){}
 
@@ -34,7 +46,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Specific layout:
 		/// <code>
 		/// [ArrayLength][float][float][float]...
-		/// |4B         |1B    |1B    |1B    |...
+		/// |4B         |4B    |4B    |4B    |...
 		/// </code>
 		/// </remarks>
 		public int BufferFunction( byte[] buffer, float[] source, int count, int index )
@@ -44,10 +56,16 @@ namespace Zeiss.PiWeb.MeshModel
 			return index + count;
 		}
 
+		public int ReadBuffer(byte[] buffer, float[] result, int count, int index)
+		{
+			Buffer.BlockCopy( buffer, 0, result, index*Stride, count );
+			return index + count;
+		}
+
 		public int Stride => sizeof(float);
 	}
-	
-	public class ColorIo : IArrayIo<Color>
+
+	public class ColorIo : IStructArrayIo<Color>
 	{
 		private ColorIo(){}
 
@@ -75,10 +93,21 @@ namespace Zeiss.PiWeb.MeshModel
 			return index;
 		}
 
+		public int ReadBuffer(byte[] buffer, Color[] result, int count, int index)
+		{
+			for (var i = 0; i < count; i += Stride)
+			{
+				result[index] = Color.FromArgb(buffer[i], buffer[i+1], buffer[i+2], buffer[i+3]);
+				index++;
+			}
+
+			return index;
+		}
+
 		public int Stride => Color.Stride;
 	}
 	
-	public class Vector2FIo : IArrayIo<Vector2F>
+	public class Vector2FIo : IStructArrayIo<Vector2F>
 	{
 		private Vector2FIo(){}
 
@@ -105,10 +134,23 @@ namespace Zeiss.PiWeb.MeshModel
 			return index;
 		}
 
+		public int ReadBuffer(byte[] buffer, Vector2F[] result, int count, int index)
+		{
+			for (var i = 0; i < count; i += Stride)
+			{
+				result[index] = new Vector2F(
+					BitConverter.ToSingle(buffer, i),
+					BitConverter.ToSingle(buffer, i + sizeof(float)));
+				index++;
+			}
+
+			return index;
+		}
+
 		public int Stride => Vector2F.Stride;
 	}
 	
-	public class Vector3FIo : IArrayIo<Vector3F>
+	public class Vector3FIo : IStructArrayIo<Vector3F>
 	{
 		private Vector3FIo(){}
 
@@ -133,6 +175,20 @@ namespace Zeiss.PiWeb.MeshModel
 				Array.Copy( BitConverter.GetBytes( source[index].Z ), 0, buffer, i + componentSize*2, componentSize );
 			}
 			
+			return index;
+		}
+
+		public int ReadBuffer(byte[] buffer, Vector3F[] result, int count, int index)
+		{
+			for (var i = 0; i < count; i += Stride)
+			{
+				result[index] = new Vector3F(
+					BitConverter.ToSingle(buffer, i),
+					BitConverter.ToSingle(buffer, i + sizeof(float)),
+					BitConverter.ToSingle(buffer, i + sizeof(float)*2));
+				index++;
+			}
+
 			return index;
 		}
 

@@ -53,7 +53,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 		internal static MeshValue Read( BinaryReader binaryReader, Version fileVersion )
 		{
-			return binaryReader.ReadBoolean() ? new MeshValue( binaryReader.ReadFloatArray( 1 ) ) : null;
+			return binaryReader.ReadBoolean() ? new MeshValue( binaryReader.ReadArray( FloatIo.Instance ) ) : null;
 		}
 
 		internal void Write( BinaryWriter binaryWriter )

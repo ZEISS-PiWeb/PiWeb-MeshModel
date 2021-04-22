@@ -12,7 +12,6 @@ namespace Zeiss.PiWeb.MeshModel
 {
 	#region usings
 
-	using System;
 	using System.Buffers;
 	using System.Collections.Generic;
 	using System.Globalization;
@@ -98,26 +97,6 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			var value = new ResourceManager( typeof( T ) ).GetString( name, CultureInfo.CurrentUICulture );
 			return string.IsNullOrEmpty( value ) ? "" : string.Format( value, args );
-		}
-
-		/// <summary>
-		/// Converts an array of <see cref="Vector3F"/> to a flat array of floats:
-		///
-		/// From {v0, v1, v2, ... } to {x0, y0, z0, x1, y1, z1, x2, y2, z2, ... }.
-		/// </summary>
-		/// <param name="vectors">Array that will be converted.</param>
-		/// <returns>Flattened vector array.</returns>
-		internal static float[] AsArrayOfFloats(Vector3F[] vectors)
-		{
-			var floats = new float[vectors.Length * 3];
-			for ( var i = 0; i < vectors.Length; i++ )
-			{
-				floats[i * 3 + 0] = vectors[i].X;
-				floats[i * 3 + 1] = vectors[i].Y;
-				floats[i * 3 + 2] = vectors[i].Z;
-			}
-
-			return floats;
 		}
 
 		#endregion

@@ -112,19 +112,19 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <item><term>if array is not empty,</term><description>true marker and values will be written</description></item>
 		/// </list>
 		/// </summary>
-		/// <param name="arrayIo">Specific object for buffering values of struct type T.</param>
+		/// <param name="structArrayIo">Specific object for buffering values of struct type T.</param>
 		/// <param name="writer">To write values.</param>
 		/// <param name="data">To be written out.</param>
 		public static void WriteConditionalArray<T>(
 			this BinaryWriter writer, 
-			IArrayIo<T> arrayIo,  
+			IStructArrayIo<T> structArrayIo,  
 			T[] data )
 			where T : struct
 		{
 			if( data != null && data.Length > 0 )
 			{
 				writer.Write( true );
-				writer.WriteArray( arrayIo, data );
+				writer.WriteArray( structArrayIo, data );
 			}
 			else
 			{
@@ -140,16 +140,16 @@ namespace Zeiss.PiWeb.MeshModel
 		/// |4B         |stride    |stride    |stride    |...
 		/// </code>
 		/// </summary>
-		/// <param name="arrayIo">Specific object for buffering values of struct type T.</param>
+		/// <param name="structArrayIo">Specific object for buffering values of struct type T.</param>
 		/// <param name="writer">To write values.</param>
 		/// <param name="data">To be written out.</param>
 		public static void WriteArray<T>(
 			this BinaryWriter writer, 
-			IArrayIo<T> arrayIo, 
+			IStructArrayIo<T> structArrayIo, 
 			T[] data )
 			where T : struct
 		{
-			writer.WriteArrayBuffered( arrayIo, data );
+			writer.WriteArrayBuffered( structArrayIo, data );
 		}
 
 		/// <summary>
@@ -166,13 +166,13 @@ namespace Zeiss.PiWeb.MeshModel
 		/// If the stride becomes to big it might end up on the large object heap which has worse performance.
 		/// </remarks>
 		/// <param name="writer">Writes the array into a stream.</param>
-		/// <param name="arrayIo">Fills the buffer with correct layout.</param>
+		/// <param name="structArrayIo">Fills the buffer with correct layout.</param>
 		/// <param name="elements">Will be written out.</param>
 		/// <param name="bufferSize">Length of the buffer array.</param>
 		/// <typeparam name="T">Struct type of the elements.</typeparam>
 		private static void WriteArrayBuffered<T>(
 			this BinaryWriter writer, 
-			IArrayIo<T> arrayIo,
+			IStructArrayIo<T> structArrayIo,
 			T[] elements,
 			int bufferSize = 0 )
 			where T : struct
@@ -189,9 +189,9 @@ namespace Zeiss.PiWeb.MeshModel
 			// We write chunks of data (stride * KiB) into a buffer and write it out into the file for better performance.
 			// We do not use a bigger buffer, as we don't want it to reside on the "large object heap".
 			var arrayLength = bufferSize <= 0
-				? arrayIo.Stride * KiB
+				? structArrayIo.Stride * KiB
 				: bufferSize;
-			var bytesToWrite = elements.Length * arrayIo.Stride;
+			var bytesToWrite = elements.Length * structArrayIo.Stride;
 			var bytesWritten = 0;
 			var buffer = ArrayPool<byte>.Shared.Rent( arrayLength );
 			
@@ -200,7 +200,7 @@ namespace Zeiss.PiWeb.MeshModel
 			{
 				var count = Math.Min( arrayLength, bytesToWrite - bytesWritten );
 
-				index = arrayIo.BufferFunction(buffer, elements, count, index);
+				index = structArrayIo.BufferFunction(buffer, elements, count, index);
 
 				writer.Write( buffer, 0, count );
 
@@ -245,7 +245,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 			return fileVersion == FileVersion10
 				? binaryReader.ReadDoubleArray( componentCount )
-				: binaryReader.ReadFloatArray( componentCount );
+				: binaryReader.ReadArray( FloatIo.Instance );
 		}
 		
 		/// <summary>
@@ -254,7 +254,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// * if true, the float array is read and returned as array of Vector3Fs
 		/// * if false, an empty array is returned
 		/// </summary>
-		public static Vector3F[] ReadConditionalFloatArrayAsVector3FArray( 
+		public static Vector3F[] ReadConditionalVector3FArray( 
 			this BinaryReader binaryReader,
 			Version fileVersion )
 		{
@@ -263,7 +263,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 			return fileVersion == FileVersion10
 				? binaryReader.ReadDoubleArrayAsVector3FArray()
-				: binaryReader.ReadFloatArrayAsVector3FArray();
+				: binaryReader.ReadArray( Vector3FIo.Instance );
 		}
 
 		/// <summary>
@@ -284,101 +284,18 @@ namespace Zeiss.PiWeb.MeshModel
 			return layer;
 		}
 
-		/// <summary>
-		/// Returns a float array representing vertices in the following format:
-		///
-		/// array = { x, y, z, x, y, z, x, y, z, x, y, z, ... }
-		/// </summary>
-		/// <param name="rdr">A <see cref="BinaryReader"/> having access to the mesh data.</param>
-		/// <param name="componentCount">The number of connected components.</param>
-		/// <returns>Array of floats: x, y, z, x, y, z, x, y, z, ...</returns>
-		public static float[] ReadFloatArray( this BinaryReader rdr, int componentCount )
-		{
-			var length = rdr.ReadInt32(); // Number of vertices
-			var size = length * componentCount; // Number of vertex components
-
-			var result = new float[ size ];
-			foreach( var (count, current, buffer) in rdr.ReadByteArrays( size * sizeof( float ) ) )
-			{
-				Buffer.BlockCopy( buffer, 0, result, current, count );
-			}
-			return result;
-		}
-		
-		/// <summary>
-		/// Reads an array of <see cref="Color"/> using a <see cref="BinaryReader"/>.
-		/// </summary>
-		/// <param name="reader">A <see cref="BinaryReader"/> having access to the mesh data.</param>
-		/// <returns>Array of colors.</returns>
-		public static Color[] ReadColorArray( this BinaryReader reader )
+		public static T[] ReadArray<T>(this BinaryReader reader, IStructArrayIo<T> structArrayIo )
+			where T : struct
 		{
 			var length = reader.ReadInt32(); // Number of vertices
 
-			var result = new Color[ length ];
-			foreach( var (count, current, buffer) in reader.ReadByteArrays( length * 4 ) )
+			var result = new T[ length ];
+			foreach( var (count, current, buffer) in reader.ReadByteArrays( length * structArrayIo.Stride ) )
 			{
-				var index = current / 4;
-					
-				for (var i = 0; i < count; i += 4)
-				{
-					result[index] = Color.FromArgb(buffer[i], buffer[i+1], buffer[i+2], buffer[i+3]);
-					index++;
-				}
-			}
-			return result;
-		}
-		
-		/// <summary>
-		/// Reads an array of <see cref="Vector2F"/> using a <see cref="BinaryReader"/>.
-		/// </summary>
-		/// <param name="reader">A <see cref="BinaryReader"/> having access to the mesh data.</param>
-		/// <returns>Array of vectors.</returns>
-		public static Vector2F[] ReadVector2FArray( this BinaryReader reader )
-		{
-			const int compSize = sizeof(float);
-			const int stride = compSize * 2;
-			
-			var length = reader.ReadInt32(); // Number of vertices
+				var index = current / structArrayIo.Stride;
 
-			var result = new Vector2F[ length ];
-			foreach( var (count, current, buffer) in reader.ReadByteArrays( length * stride ) )
-			{
-				var index = current / stride;
-					
-				for (var i = 0; i < count; i += stride)
-				{
-					result[index] = new Vector2F(
-						BitConverter.ToSingle(buffer, i),
-						BitConverter.ToSingle(buffer, i + compSize));
-					index++;
-				}
+				structArrayIo.ReadBuffer(buffer, result, count, index);
 			}
-			return result;
-		}
-
-		/// <summary>
-		/// Returns a Vector3F array representing vertices in the following format:
-		///
-		/// array = { v0, v1, v2, v3, v4, ... }
-		/// </summary>
-		/// <param name="rdr">A <see cref="BinaryReader"/> having access to the mesh data.</param>
-		/// <returns>Array of Vector3Fs: v0, v1, v2, v3, v4, ...</returns>
-		public static Vector3F[] ReadFloatArrayAsVector3FArray(this BinaryReader rdr )
-		{
-			const int componentSize = 4; // Size of one float.
-			const int vectorSize = componentSize * 3;
-			
-			var result = new Vector3F[ rdr.ReadInt32() ];
-			
-			var data = rdr.ReadBytes( result.Length * vectorSize );
-			for( int i = 0, j = 0; i < result.Length; j += vectorSize, i++ )
-			{
-				result[i] = new Vector3F(
-					BitConverter.ToSingle( data, j ),
-					BitConverter.ToSingle( data, j + componentSize ),
-					BitConverter.ToSingle( data, j + componentSize * 2 ));
-			}
-
 			return result;
 		}
 

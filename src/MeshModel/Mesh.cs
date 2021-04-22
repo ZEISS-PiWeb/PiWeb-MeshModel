@@ -146,8 +146,8 @@ namespace Zeiss.PiWeb.MeshModel
 			var name = fileVersion >= FileVersion21 ? binaryReader.ReadString() : "";
 			var color = binaryReader.ReadBoolean() ? binaryReader.ReadArgbColor() : default( Color? );
 
-			var positions = binaryReader.ReadConditionalFloatArrayAsVector3FArray( fileVersion );
-			var normals = binaryReader.ReadConditionalFloatArrayAsVector3FArray( fileVersion );
+			var positions = binaryReader.ReadConditionalVector3FArray( fileVersion );
+			var normals = binaryReader.ReadConditionalVector3FArray( fileVersion );
 			var indices =  binaryReader.ReadBoolean() 
 				? binaryReader.ReadIndices( positions?.Length ?? 0 ) 
 				: null;
@@ -155,10 +155,10 @@ namespace Zeiss.PiWeb.MeshModel
 			var layer = binaryReader.ReadConditionalStringArray();
 
 			var textureCoordinates = fileVersion >= FileVersion22 && binaryReader.ReadBoolean() 
-				? binaryReader.ReadVector2FArray() 
+				? binaryReader.ReadArray( Vector2FIo.Instance) 
 				: null;
 			var colors = fileVersion >= FileVersion33 && binaryReader.ReadBoolean() 
-				? binaryReader.ReadColorArray() 
+				? binaryReader.ReadArray(ColorIo.Instance) 
 				: null;
 
 			return new Mesh( index, positions, normals, indices, textureCoordinates, color, colors, layer, name );

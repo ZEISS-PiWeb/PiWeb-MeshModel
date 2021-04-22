@@ -28,27 +28,22 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Removes duplicate subsequent positions from the specified <paramref name="positions"/> array.
 		/// </summary>
-		internal static float[] RemoveDuplicatePositions( float[] positions )
+		internal static Vector3F[] RemoveDuplicatePositions( Vector3F[] positions )
 		{
 			if( positions == null || positions.Length == 0 )
 				return positions;
 
-			if( positions.Length % 3 != 0 )
-				throw new InvalidOperationException( "Unable to remove duplicate positions. Position array should have a length that is a multiple of 3." );
+			var last = positions[ 0 ];
+			var result = new List<Vector3F>( positions.Length ) { positions[ 0 ] };
 
-			var last = new Vector3F( positions[ 0 ], positions[ 1 ], positions[ 2 ] );
-			var result = new List<float>( positions.Length ) { positions[ 0 ], positions[ 1 ], positions[ 2 ] };
-
-			for( var i = 0; i < positions.Length; i += 3 )
+			for( var i = 0; i < positions.Length; i++ )
 			{
-				var current = new Vector3F( positions[ i ], positions[ i + 1 ], positions[ i + 2 ] );
+				var current = positions[ i ];
 
 				var distance = ( current - last ).LengthSquared;
 				if( distance > 0.0000001 )
 				{
-					result.Add( current.X );
-					result.Add( current.Y );
-					result.Add( current.Z );
+					result.Add( current );
 
 					last = current;
 				}
@@ -103,6 +98,64 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			var value = new ResourceManager( typeof( T ) ).GetString( name, CultureInfo.CurrentUICulture );
 			return string.IsNullOrEmpty( value ) ? "" : string.Format( value, args );
+		}
+
+		/// <summary>
+		/// Converts an array of <see cref="Vector3F"/> to a flat array of floats:
+		///
+		/// From {v0, v1, v2, ... } to {x0, y0, z0, x1, y1, z1, x2, y2, z2, ... }.
+		/// </summary>
+		/// <param name="vectors">Array that will be converted.</param>
+		/// <returns>Flattened vector array.</returns>
+		internal static float[] AsArrayOfFloats(Vector3F[] vectors)
+		{
+			var floats = new float[vectors.Length * 3];
+			for ( var i = 0; i < vectors.Length; i++ )
+			{
+				floats[i * 3 + 0] = vectors[i].X;
+				floats[i * 3 + 1] = vectors[i].Y;
+				floats[i * 3 + 2] = vectors[i].Z;
+			}
+
+			return floats;
+		}
+		
+		/// <summary>
+		/// Converts an array of <see cref="Vector2F"/> to a flat array of floats:
+		///
+		/// From {v0, v1, v2, ... } to {x0, y0, x1, y1, x2, y2, ... }.
+		/// </summary>
+		/// <param name="vectors">Array that will be converted.</param>
+		/// <returns>Flattened vector array.</returns>
+		internal static float[] AsArrayOfFloats(Vector2F[] vectors)
+		{
+			var floats = new float[vectors.Length * 2];
+			for ( var i = 0; i < vectors.Length; i++ )
+			{
+				floats[i * 2 + 0] = vectors[i].X;
+				floats[i * 2 + 1] = vectors[i].Y;
+			}
+
+			return floats;
+		}
+		
+		/// <summary>
+		/// Converts an array of <see cref="Color"/>s to an array of floats by encoding the four
+		/// byte components A, R, G and B into a single float.
+		/// </summary>
+		/// <param name="colors">Array that will be converted.</param>
+		/// <returns>Array of floats where each one represents all four color components.</returns>
+		internal static float[] AsArrayOfFloats( Color[] colors )
+		{
+			var floats = new float[colors.Length];
+			for ( var i = 0; i < colors.Length; i++ )
+			{
+
+				var color = colors[i];
+				floats[i] = BitConverter.ToSingle(new[] {color.A, color.R, color.G, color.B}, 0);
+			}
+
+			return floats;
 		}
 
 		#endregion

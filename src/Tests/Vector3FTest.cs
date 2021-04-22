@@ -1,9 +1,9 @@
-﻿#region Copyright
+﻿#region copyright
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
-/* Carl Zeiss IMT (IZfM Dresden)                   */
+/* Carl Zeiss Industrielle Messtechnik GmbH        */
 /* Softwaresystem PiWeb                            */
-/* (c) Carl Zeiss 2018                             */
+/* (c) Carl Zeiss 2021                             */
 /* * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #endregion
@@ -33,13 +33,13 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			var b = new Vector3F(0,0,4);
 			b.Normalize();
 
-			Vector3F? c = new Vector3F(0,0,4);
-			c = c?.NormalizeExtended();
+			var c = new Vector3F(0,0,4);
+			c.Normalize();
 
 			// ------------------------------------------------------------------------------- THEN
-			Assert.AreEqual( new Vector3F( 1,1,1 ) / ((float) Math.Sqrt(3)), a );
-			Assert.AreEqual( new Vector3F( 0,0,4 ) / ((float) Math.Sqrt(16)), b );
-			Assert.AreEqual( new Vector3F( 0,0,4 ) / ((float) Math.Sqrt(16)), c );
+			Assert.AreEqual( new Vector3F( 1,1,1 ) / (float) Math.Sqrt(3), a );
+			Assert.AreEqual( new Vector3F( 0,0,4 ) / (float) Math.Sqrt(16), b );
+			Assert.AreEqual( new Vector3F( 0,0,4 ) / (float) Math.Sqrt(16), c );
 		}
 
 		#endregion

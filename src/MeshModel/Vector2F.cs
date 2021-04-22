@@ -110,6 +110,18 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			this = this / Length;
 		}
+		
+		/// <summary>
+		/// Returns a new normalized vector, based on this instance.
+		/// </summary>
+		/// <returns></returns>
+		[MethodImpl( MethodImplOptions.AggressiveInlining )]
+		public Vector2F GetNormalized()
+		{
+			var v = this;
+			v.Normalize();
+			return v;
+		}
 
 		/// <summary>
 		/// Calculates the angle between the specified vectors.

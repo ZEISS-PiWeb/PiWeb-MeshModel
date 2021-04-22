@@ -118,7 +118,7 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			binaryWriter.Write( Name ?? "" );
 			binaryWriter.WriteConditionalColor( Color );
-			binaryWriter.WriteConditionalFloatArray( MeshModelHelper.AsArrayOfFloats( Points ), 3 );
+			binaryWriter.WriteConditionalVector3FArray( Points );
 			binaryWriter.WriteConditionalStrings( Layer );
 		}
 

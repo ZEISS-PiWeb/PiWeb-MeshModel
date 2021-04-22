@@ -26,6 +26,8 @@ namespace Zeiss.PiWeb.MeshModel
 	/// </summary>
 	internal static class ReaderWriterExtensions
 	{
+		private const int KiB = 1024;
+		
 		#region members
 
 		private static readonly Version FileVersion10 = new Version( 1, 0, 0, 0 );
@@ -35,9 +37,10 @@ namespace Zeiss.PiWeb.MeshModel
 		#region methods
 
 		/// <summary>
-		/// Creates an empty zip entry with the specified <paramref name="entryName"/> and the specified <paramref name="compressionLevel"/>.
-		/// The <code>LastWriteTime</code> is set to 01-01-1980 instead of the current time. By doing so, two zip archives with the same binary content
-		/// become binary identical which leads to the same hash, which makes change detection easier.
+		/// Creates an empty zip entry with the specified <paramref name="entryName"/> and the specified
+		/// <paramref name="compressionLevel"/>. The <code>LastWriteTime</code> is set to 01-01-1980 instead of the
+		/// current time. By doing so, two zip archives with the same binary content become binary identical which leads
+		/// to the same hash, which makes change detection easier.
 		/// </summary>
 		public static ZipArchiveEntry CreateNormalizedEntry( this ZipArchive zipArchive, string entryName, CompressionLevel compressionLevel )
 		{
@@ -103,54 +106,86 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Writes the float array with a boolean marker.
-		/// * If the array is empty, a <code>false</code> marker will be written
-		/// * If the array is not empty, a <code>true</code> marker will be written first and the values are written
+		/// Writes a boolean marker and an array of <see cref="float"/> using a <see cref="BinaryWriter"/>:
+		/// <list type="bullet">
+		/// <item><term>if array is empty,</term><description>false marker will be written</description></item>
+		/// <item><term>if array is not empty,</term><description>true marker and values will be written</description></item>
+		/// </list>
 		/// </summary>
-		public static void WriteConditionalFloatArray( this BinaryWriter binaryWriter, float[] values, int componentCount )
+		/// <param name="writer">To write values.</param>
+		/// <param name="data">To be written out.</param>
+		public static void WriteConditionalArray<T>(
+			this BinaryWriter writer, 
+			Func<byte[], T[], int, int, int> bufferFunction, 
+			T[] data, 
+			int stride )
+			where T : struct
 		{
-			if( values != null && values.Length > 0 )
+			if( data != null && data.Length > 0 )
 			{
-				binaryWriter.Write( true );
-				binaryWriter.WriteFloatArray( values, componentCount );
+				writer.Write( true );
+				writer.WriteArray( bufferFunction, data, stride );
 			}
 			else
 			{
-				binaryWriter.Write( false );
+				writer.Write( false );
+			}
+		}
+
+		public static void WriteArray<T>(
+			this BinaryWriter writer, 
+			Func<byte[], T[], int, int, int> bufferFunction, 
+			T[] data, 
+			int stride )
+			where T : struct
+		{
+			writer.WriteArrayBuffered( bufferFunction, data, stride );
+		}
+		
+		/// <summary>
+		/// Writes a boolean marker and an array of <see cref="float"/> using a <see cref="BinaryWriter"/>:
+		/// <list type="bullet">
+		/// <item><term>if array is empty,</term><description>false marker will be written</description></item>
+		/// <item><term>if array is not empty,</term><description>true marker and values will be written</description></item>
+		/// </list>
+		/// </summary>
+		/// <param name="writer">To write values.</param>
+		/// <param name="data">To be written out.</param>
+		public static void WriteConditionalFloatArray( this BinaryWriter writer, float[] data )
+		{
+			if( data != null && data.Length > 0 )
+			{
+				writer.Write( true );
+				writer.WriteFloatArray( data );
+			}
+			else
+			{
+				writer.Write( false );
 			}
 		}
 
 		/// <summary>
-		/// Writes the float array. The first 4 bytes indicates the number of entries. Afterwards the float array is written
-		/// as a binary stream. The <paramref name="componentCount"/> indicates the number of components (i.e. 3 for a
-		/// position/vector, 2 for uv coordinates, 4 for rgba color values).
+		/// Writes an array of <see cref="float"/> using a <see cref="BinaryWriter"/> to the following layout:
+		///
+		/// <code>
+		/// [ArrayLength][f][f][f]...
+		/// |4          |1B|1B|1B|...
+		/// </code>
 		/// </summary>
-		public static void WriteFloatArray( this BinaryWriter writer, float[] data, int componentCount )
+		/// <param name="writer">To write values.</param>
+		/// <param name="data">To be written out.</param>
+		public static void WriteFloatArray( this BinaryWriter writer, float[] data )
 		{
-			if( data == null || data.Length == 0 )
-			{
-				writer.Write( 0 );
-				return;
-			}
-
-			writer.Write( data.Length / componentCount );
-
-			const int arrayLength = 8 * 1024;
-			var bytesToWrite = data.Length * 4;
-			var bytesWritten = 0;
-			var buffer = ArrayPool<byte>.Shared.Rent( arrayLength );
-			while( bytesWritten < bytesToWrite )
-			{
-				var count = Math.Min( arrayLength, bytesToWrite - bytesWritten );
-
-				Buffer.BlockCopy( data, bytesWritten, buffer, 0, count );
-				writer.Write( buffer, 0, count );
-
-				bytesWritten += count;
-			}
-			ArrayPool<byte>.Shared.Return( buffer );
+			writer.WriteArrayBuffered( FillFloatBuffer, data, sizeof(float) );
 		}
 		
+		private static int FillFloatBuffer( byte[] buffer, float[] data, int count, int index )
+		{
+			Buffer.BlockCopy( data, index, buffer, 0, count );
+			
+			return index + count;
+		}
+
 		/// <summary>
 		/// Writes a boolean marker and an array of <see cref="Color"/> using a <see cref="BinaryWriter"/>:
 		/// <list type="bullet">
@@ -185,44 +220,25 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="colors">To be written out.</param>
 		public static void WriteColorArray(this BinaryWriter writer, Color[] colors)
 		{
-			if( colors == null || colors.Length == 0 )
+			writer.WriteArrayBuffered( FillColorBuffer, colors, Color.Stride );
+		}
+		
+		private static int FillColorBuffer( byte[] buffer, Color[] colors, int count, int index )
+		{
+			for (var i = 0; i < count; i+=Color.Stride, index++)
 			{
-				writer.Write( 0 );
-				return;
+				// We use fixed byte order, to keep things consistent across machine boundaries.
+				buffer[i] = colors[index].A;
+				buffer[i+1] = colors[index].R;
+				buffer[i+2] = colors[index].G;
+				buffer[i+3] = colors[index].B;
 			}
 			
-			// Write length of the array.
-			writer.Write( colors.Length );
-			
-			// We write chunks of data (8 KiB) into a buffer and write it out into the file for better performance.
-			const int arrayLength = 8 * 1024;
-			var bytesToWrite = colors.Length * 4;
-			var bytesWritten = 0;
-			var buffer = ArrayPool<byte>.Shared.Rent( arrayLength );
-			var index = 0;
-			
-			while( bytesWritten < bytesToWrite )
-			{
-				var count = Math.Min( arrayLength, bytesToWrite - bytesWritten );
-
-				for (var i = 0; i < count; i+=4, index++)
-				{
-					// We use fixed byte order, to keep things consistent across machine boundaries.
-					buffer[i] = colors[index].A;
-					buffer[i+1] = colors[index].R;
-					buffer[i+2] = colors[index].G;
-					buffer[i+3] = colors[index].B;
-				}
-				
-				writer.Write( buffer, 0, count );
-
-				bytesWritten += count;
-			}
-			ArrayPool<byte>.Shared.Return( buffer );
+			return index;
 		}
 		
 		/// <summary>
-		/// Writes a boolean marker and an array of <see cref="Vector2F"/> using a <see cref="BinaryWriter"/>:
+		/// Writes a boolean marker and an array of <see cref="Vector2F"/> using a <see cref="BinaryWriter"/>.
 		/// <list type="bullet">
 		/// <item><term>if array is empty,</term><description>false marker will be written</description></item>
 		/// <item><term>if array is not empty,</term><description>true marker and values will be written</description></item>
@@ -247,42 +263,132 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Writes an array of <see cref="Vector2F"/> using a <see cref="BinaryWriter"/> to the following layout:
 		///
 		/// <code>
-		/// [ArrayLength][XYZ][XYZ][XYZ]...
-		/// |4B    |12B |12B |12B |...
+		/// [ArrayLength][XY][XY][XY]...
+		/// |4B         |8B |8B |8B |...
 		/// </code>
 		/// </summary>
 		/// <param name="writer">To write values.</param>
 		/// <param name="vectors">To be written out.</param>
 		public static void WriteVector2FArray(this BinaryWriter writer, Vector2F[] vectors)
 		{
-			const int compSize = sizeof(float);
-			const int stride = compSize * 2;
+			writer.WriteArrayBuffered( FillVector2FBuffer, vectors, Vector2F.Stride );
+		}
+
+		private static int FillVector2FBuffer( byte[] buffer, Vector2F[] vectors, int count, int index )
+		{
+			const int componentSize = sizeof(float);
 			
-			if( vectors == null || vectors.Length == 0 )
+			for (var i = 0; i < count; i+=Vector2F.Stride, index++)
+			{
+				Array.Copy( BitConverter.GetBytes( vectors[index].X ), 0, buffer, i, componentSize );
+				Array.Copy( BitConverter.GetBytes( vectors[index].Y ), 0, buffer, i + componentSize, componentSize );
+			}
+			
+			return index;
+		}
+		
+		/// <summary>
+		/// Writes a boolean marker and an array of <see cref="Vector3F"/> using a <see cref="BinaryWriter"/>.
+		/// <list type="bullet">
+		/// <item><term>if array is empty,</term><description>false marker will be written</description></item>
+		/// <item><term>if array is not empty,</term><description>true marker and values will be written</description></item>
+		/// </list>
+		/// </summary>
+		/// <param name="writer">To write values.</param>
+		/// <param name="vectors">To be written out.</param>
+		public static void WriteConditionalVector3FArray(this BinaryWriter writer, Vector3F[] vectors)
+		{
+			if( vectors != null && vectors.Length > 0 )
+			{
+				writer.Write( true );
+				writer.WriteVector3FArray( vectors );
+			}
+			else
+			{
+				writer.Write( false );
+			}
+		}
+
+		/// <summary>
+		/// Writes an array of <see cref="Vector3F"/> using a <see cref="BinaryWriter"/> to the following layout:
+		///
+		/// <code>
+		/// [ArrayLength][XYZ][XYZ][XYZ]...
+		/// |4B         |12B |12B |12B |...
+		/// </code>
+		/// </summary>
+		/// <param name="writer">To write values.</param>
+		/// <param name="vectors">To be written out.</param>
+		public static void WriteVector3FArray(this BinaryWriter writer, Vector3F[] vectors)
+		{
+			writer.WriteArrayBuffered( FillVector3FBuffer, vectors, Vector3F.Stride );
+		}
+
+		private static int FillVector3FBuffer( byte[] buffer, Vector3F[] vectors, int count, int index )
+		{
+			const int componentSize = sizeof(float);
+			
+			for (var i = 0; i < count; i+=Vector3F.Stride, index++)
+			{
+				Array.Copy( BitConverter.GetBytes( vectors[index].X ), 0, buffer, i, componentSize );
+				Array.Copy( BitConverter.GetBytes( vectors[index].Y ), 0, buffer, i + componentSize, componentSize );
+				Array.Copy( BitConverter.GetBytes( vectors[index].Z ), 0, buffer, i + componentSize*2, componentSize );
+			}
+			
+			return index;
+		}
+		
+		/// <summary>
+		/// Writes an array of T using a <see cref="BinaryWriter"/> to the following layout:
+		///
+		/// <code>
+		/// [ArrayLength][T0,T1,...][T0,T1,...][T0,T1,...]...
+		/// |4B         |stride    |stride    |stride    |...
+		/// </code>
+		/// Where T0, T1, ... are the single components of the T struct.
+		/// </summary>
+		/// <remarks>
+		/// If having a stride > 10, consider to provide a custom buffer size. Default buffer size is stride * KiB.
+		/// If the stride becomes to big it might end up on the large object heap which has worse performance.
+		/// </remarks>
+		/// <param name="writer">Writes the array into a stream.</param>
+		/// /// <param name="fillBuffer">Fills the buffer with correct layout.</param>
+		/// <param name="elements">Will be written out.</param>
+		/// <param name="stride">Size in bytes of T.</param>
+		/// <param name="bufferSize">Length of the buffer array.</param>
+		/// <typeparam name="T">Struct type of the elements.</typeparam>
+		private static void WriteArrayBuffered<T>(
+			this BinaryWriter writer, 
+			Func<byte[], T[], int, int, int> fillBuffer,
+			T[] elements,
+			int stride,
+			int bufferSize = 0 )
+			where T : struct
+		{
+			if( elements == null || elements.Length == 0 )
 			{
 				writer.Write( 0 );
 				return;
 			}
 			
 			// Write length of the array.
-			writer.Write( vectors.Length );
+			writer.Write( elements.Length );
 			
-			// We write chunks of data (6 KiB) into a buffer and write it out into the file for better performance.
-			const int arrayLength = 1024 * stride;
-			var bytesToWrite = vectors.Length * stride;
+			// We write chunks of data (stride * KiB) into a buffer and write it out into the file for better performance.
+			// We do not use a bigger buffer, as we don't want it to reside on the "large object heap".
+			var arrayLength = bufferSize <= 0
+				? stride * KiB
+				: bufferSize;
+			var bytesToWrite = elements.Length * stride;
 			var bytesWritten = 0;
 			var buffer = ArrayPool<byte>.Shared.Rent( arrayLength );
-			var index = 0;
 			
+			var index = 0;
 			while( bytesWritten < bytesToWrite )
 			{
 				var count = Math.Min( arrayLength, bytesToWrite - bytesWritten );
 
-				for (var i = 0; i < count; i+=stride, index++)
-				{
-					Array.Copy( BitConverter.GetBytes( vectors[index].X ), 0, buffer, i, compSize );
-					Array.Copy( BitConverter.GetBytes( vectors[index].Y ), 0, buffer, i+compSize, compSize );
-				}
+				index = fillBuffer(buffer, elements, count, index);
 
 				writer.Write( buffer, 0, count );
 

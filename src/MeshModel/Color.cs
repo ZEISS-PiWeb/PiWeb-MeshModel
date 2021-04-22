@@ -24,9 +24,11 @@ namespace Zeiss.PiWeb.MeshModel
 	/// <remarks>
 	/// We use our own color struct, because the .net color struct is significantly slower.
 	/// </remarks>
-	[Serializable, StructLayout( LayoutKind.Sequential, Size = 4, Pack = 1 )]
+	[Serializable, StructLayout( LayoutKind.Sequential, Size = Stride, Pack = 1 )]
 	public readonly struct Color : IEquatable<Color>
 	{
+		public const int Stride = sizeof(byte) * 4;
+		
 		#region members
 		
 		/// <summary>

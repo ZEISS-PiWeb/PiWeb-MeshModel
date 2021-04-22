@@ -23,9 +23,11 @@ namespace Zeiss.PiWeb.MeshModel
 	/// <summary>
 	/// Describes a vector with three <code>float</code> components. Adapted from the .NET Vector3D class.
 	/// </summary>
-	[StructLayout( LayoutKind.Sequential, Size = 12, Pack = 4 )]
+	[StructLayout( LayoutKind.Sequential, Size = Stride, Pack = 4 )]
 	public struct Vector3F : IEquatable<Vector3F>
 	{
+		public const int Stride = sizeof(float) * 3;
+		
 		/// <inheritdoc cref="Vector2F.Length"/>
 		public float Length => (float)Math.Sqrt( X * X + Y * Y + Z * Z );
 

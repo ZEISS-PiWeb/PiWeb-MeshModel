@@ -61,7 +61,7 @@ namespace Zeiss.PiWeb.MeshModel
 			if( Values != null && Values.Length > 0 )
 			{
 				binaryWriter.Write( true );
-				binaryWriter.WriteFloatArray( Values );
+				binaryWriter.WriteArray( FloatIo.Instance, Values );
 			}
 			else
 			{

@@ -168,14 +168,14 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			binaryWriter.Write( Name ?? "" );
 			binaryWriter.WriteConditionalColor( Color );
-			binaryWriter.WriteConditionalVector3FArray( Positions );
-			binaryWriter.WriteConditionalVector3FArray( Normals );
+			binaryWriter.WriteConditionalArray(Vector3FIo.Instance, Positions);
+			binaryWriter.WriteConditionalArray(Vector3FIo.Instance, Normals);
 			
 			WriteTriangleIndizes( binaryWriter );
 			
 			binaryWriter.WriteConditionalStrings( Layer );
-			binaryWriter.WriteConditionalVector2FArray( TextureCoordinates );
-			binaryWriter.WriteConditionalColorArray( Colors );
+			binaryWriter.WriteConditionalArray( Vector2FIo.Instance, TextureCoordinates );
+			binaryWriter.WriteConditionalArray( ColorIo.Instance, Colors );
 		}
 
 		private void WriteTriangleIndizes( BinaryWriter binaryWriter )

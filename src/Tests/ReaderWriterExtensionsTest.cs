@@ -39,7 +39,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryWriter = new BinaryWriter(stream );
-				binaryWriter.WriteFloatArray( floats );
+				binaryWriter.WriteArray( FloatIo.Instance, floats );
 			}
 			
 			using(var stream = new MemoryStream(bytes))
@@ -66,7 +66,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryWriter = new BinaryWriter(stream );
-				binaryWriter.WriteVector3FArray( vectors );
+				binaryWriter.WriteArray( Vector3FIo.Instance, vectors );
 			}
 			
 			using(var stream = new MemoryStream(bytes))
@@ -93,7 +93,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryWriter = new BinaryWriter(stream );
-				binaryWriter.WriteVector2FArray( vectors );
+				binaryWriter.WriteArray( Vector2FIo.Instance, vectors );
 			}
 			
 			using(var stream = new MemoryStream(bytes))
@@ -120,7 +120,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryWriter = new BinaryWriter(stream );
-				binaryWriter.WriteColorArray( colors );
+				binaryWriter.WriteArray( ColorIo.Instance, colors );
 			}
 			
 			using(var stream = new MemoryStream(bytes))

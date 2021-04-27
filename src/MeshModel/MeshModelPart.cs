@@ -50,6 +50,9 @@ namespace Zeiss.PiWeb.MeshModel
 
 		private MeshModelPart( MeshModelMetadata metaData, Mesh[] meshes, Edge[] edges, MeshValueList[] meshValueLists, byte[] thumbnail, bool updateTriangulationHash )
 		{
+			if (metaData.PartCount > 1)
+				throw new ArgumentException($"A MeshModelPart may have only 1 part.", nameof(metaData));
+
 			Meshes = meshes;
 			Edges = edges;
 			Metadata = metaData;
@@ -313,7 +316,7 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 
 			// we don't try to create a single-point edge
-			return edges.Where( e => e.Points?.Length > 3 ).ToArray();
+			return edges.Where( e => e.Points?.Length > 1 ).ToArray();
 		}
 
 		private static Mesh[] ReadMeshes( ZipArchive zipFile, string subFolder, Version fileVersion )

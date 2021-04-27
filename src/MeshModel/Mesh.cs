@@ -200,7 +200,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		public override string ToString()
 		{
-			return $"Mesh [{Name}] ({Positions.Length / 3} points, {TriangleIndicesCount} triangle indices)";
+			return $"Mesh [{Name}] ({Positions.Length} points, {TriangleIndicesCount} triangle indices)";
 		}
 
 		#endregion

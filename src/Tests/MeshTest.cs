@@ -16,6 +16,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 {
 	#region usings
 
+	using System.Diagnostics;
 	using NUnit.Framework;
 	using Zeiss.PiWeb.MeshModel;
 
@@ -177,8 +178,19 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			{
 				using( var fsReWritten = reWrittenInfo.OpenWrite() )
 				{
+					var stopwatch = new Stopwatch();
+
+					stopwatch.Start();
 					var meshModel = MeshModel.Deserialize( fsOriginal );
+					stopwatch.Stop();
+					var stopwatchElapsed = stopwatch.Elapsed;
+					TestContext.Out.WriteLine($"Deserialization: {Convert.ToInt32(stopwatchElapsed.TotalMilliseconds)} ms");
+
+					stopwatch.Start();
 					meshModel.Serialize( fsReWritten );
+					stopwatch.Stop();
+					stopwatchElapsed = stopwatch.Elapsed;
+					TestContext.Out.WriteLine($"Serialization: {Convert.ToInt32(stopwatchElapsed.TotalMilliseconds)} ms");
 				}
 			}
 

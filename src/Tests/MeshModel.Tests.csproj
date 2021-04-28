@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <LangVersion>9.0</LangVersion>
+        <LangVersion>8.0</LangVersion>
         <AssemblyName>PiWeb.MeshModel.Tests</AssemblyName>
         <RootNamespace>Zeiss.PiWeb.MeshModel.Tests</RootNamespace>
         <Copyright>Copyright © 2020 Carl Zeiss Industrielle Messtechnik GmbH</Copyright>
@@ -27,5 +27,13 @@
     <PropertyGroup>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\*.meshModel" />
+    </ItemGroup>
     
 </Project>

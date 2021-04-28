@@ -39,13 +39,13 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryWriter = new BinaryWriter(stream );
-				binaryWriter.WriteFloatArray( floats, 3 );
+				binaryWriter.WriteArray( FloatIo.Instance, floats );
 			}
 			
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryReader = new BinaryReader(stream);
-				readFloats = binaryReader.ReadFloatArray(3);
+				readFloats = binaryReader.ReadArray( FloatIo.Instance );
 			}
 			
 			
@@ -66,13 +66,13 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryWriter = new BinaryWriter(stream );
-				binaryWriter.WriteFloatArray( MeshModelHelper.AsArrayOfFloats( vectors ), 3 );
+				binaryWriter.WriteArray( Vector3FIo.Instance, vectors );
 			}
 			
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryReader = new BinaryReader(stream);
-				readVectors = binaryReader.ReadFloatArrayAsVector3FArray();
+				readVectors = binaryReader.ReadArray(Vector3FIo.Instance);
 			}
 			
 			
@@ -93,13 +93,13 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryWriter = new BinaryWriter(stream );
-				binaryWriter.WriteFloatArray( MeshModelHelper.AsArrayOfFloats( vectors ), 2 );
+				binaryWriter.WriteArray( Vector2FIo.Instance, vectors );
 			}
 			
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryReader = new BinaryReader(stream);
-				readVectors = binaryReader.ReadFloatArrayAsVector2FArray();
+				readVectors = binaryReader.ReadArray( Vector2FIo.Instance);
 			}
 			
 			
@@ -120,13 +120,13 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryWriter = new BinaryWriter(stream );
-				binaryWriter.WriteFloatArray( MeshModelHelper.AsArrayOfFloats( colors ), 1 );
+				binaryWriter.WriteArray( ColorIo.Instance, colors );
 			}
 			
 			using(var stream = new MemoryStream(bytes))
 			{
 				using var binaryReader = new BinaryReader(stream);
-				readColors = binaryReader.ReadFloatArrayAsColorArray();
+				readColors = binaryReader.ReadArray(ColorIo.Instance);
 			}
 			
 			

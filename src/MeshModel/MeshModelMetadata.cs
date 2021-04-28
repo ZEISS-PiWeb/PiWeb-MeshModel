@@ -50,12 +50,14 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="format">The source format.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="layers">The layers to which this model or part belongs.</param>
-		public MeshModelMetadata( Version fileVersion = null, string format = "", string name = "", string[] layers = null )
+		/// <param name="partCount">Number of parts in this model.</param>
+		public MeshModelMetadata( Version fileVersion = null, string format = "", string name = "", string[] layers = null, int partCount = 1 )
 		{
 			FileVersion = fileVersion ?? MeshModel.MeshModelFileVersion;
 			SourceFormat = format;
 			Name = name;
 			Layer = layers ?? Array.Empty<string>();
+			PartCount = partCount;
 		}
 
 		#endregion
@@ -90,12 +92,12 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Gets the number of parts in the model.
 		/// </summary>
-		public int PartCount { get; private set; } = 1;
+		public int PartCount { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the layers that exist in the model.
 		/// </summary>
-		public string[] Layer { get; set; } = Array.Empty<string>();
+		public string[] Layer { get; set; }
 
 		/// <summary>
 		/// Gets the names of the source models, in case this is a combined model
@@ -118,7 +120,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Combines the specified <paramref name="metadatas"/> and sets the name of the combined <see cref="MeshModelMetadata"/>.
 		/// </summary>
 		/// <param name="name">The name.</param>
-		/// <param name="metadatas">The metadatas.</param>
+		/// <param name="metadatas">The meta data list.</param>
 		/// <returns></returns>
 		public static MeshModelMetadata CreateCombined( string name, params MeshModelMetadata[] metadatas )
 		{

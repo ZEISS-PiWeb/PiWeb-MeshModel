@@ -105,7 +105,7 @@ namespace Zeiss.PiWeb.MeshModel
 			var name = fileVersion >= FileVersion21 ? binaryReader.ReadString() : "";
 			var color = binaryReader.ReadBoolean() ? binaryReader.ReadArgbColor() : default( Color? );
 
-			var positions = binaryReader.ReadConditionalFloatArrayAsVector3FArray( fileVersion );
+			var positions = binaryReader.ReadConditionalVector3FArray( fileVersion );
 			var layer = binaryReader.ReadConditionalStringArray();
 
 			if( fileVersion < FileVersion32 )
@@ -118,7 +118,7 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			binaryWriter.Write( Name ?? "" );
 			binaryWriter.WriteConditionalColor( Color );
-			binaryWriter.WriteConditionalFloatArray( MeshModelHelper.AsArrayOfFloats( Points ), 3 );
+			binaryWriter.WriteConditionalArray( Vector3FIo.Instance, Points );
 			binaryWriter.WriteConditionalStrings( Layer );
 		}
 

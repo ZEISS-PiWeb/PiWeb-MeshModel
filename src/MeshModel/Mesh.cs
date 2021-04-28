@@ -146,8 +146,8 @@ namespace Zeiss.PiWeb.MeshModel
 			var name = fileVersion >= FileVersion21 ? binaryReader.ReadString() : "";
 			var color = binaryReader.ReadBoolean() ? binaryReader.ReadArgbColor() : default( Color? );
 
-			var positions = binaryReader.ReadConditionalFloatArrayAsVector3FArray( fileVersion );
-			var normals = binaryReader.ReadConditionalFloatArrayAsVector3FArray( fileVersion );
+			var positions = binaryReader.ReadConditionalVector3FArray( fileVersion );
+			var normals = binaryReader.ReadConditionalVector3FArray( fileVersion );
 			var indices =  binaryReader.ReadBoolean() 
 				? binaryReader.ReadIndices( positions?.Length ?? 0 ) 
 				: null;
@@ -155,10 +155,10 @@ namespace Zeiss.PiWeb.MeshModel
 			var layer = binaryReader.ReadConditionalStringArray();
 
 			var textureCoordinates = fileVersion >= FileVersion22 && binaryReader.ReadBoolean() 
-				? binaryReader.ReadFloatArrayAsVector2FArray() 
+				? binaryReader.ReadArray( Vector2FIo.Instance) 
 				: null;
 			var colors = fileVersion >= FileVersion33 && binaryReader.ReadBoolean() 
-				? binaryReader.ReadFloatArrayAsColorArray() 
+				? binaryReader.ReadArray(ColorIo.Instance) 
 				: null;
 
 			return new Mesh( index, positions, normals, indices, textureCoordinates, color, colors, layer, name );
@@ -168,14 +168,14 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			binaryWriter.Write( Name ?? "" );
 			binaryWriter.WriteConditionalColor( Color );
-			binaryWriter.WriteConditionalFloatArray(MeshModelHelper.AsArrayOfFloats(Positions), 3);
-			binaryWriter.WriteConditionalFloatArray(MeshModelHelper.AsArrayOfFloats(Normals), 3);
+			binaryWriter.WriteConditionalArray(Vector3FIo.Instance, Positions);
+			binaryWriter.WriteConditionalArray(Vector3FIo.Instance, Normals);
 			
 			WriteTriangleIndizes( binaryWriter );
 			
 			binaryWriter.WriteConditionalStrings( Layer );
-			binaryWriter.WriteConditionalFloatArray(MeshModelHelper.AsArrayOfFloats(TextureCoordinates), 2);
-			binaryWriter.WriteConditionalFloatArray(MeshModelHelper.AsArrayOfFloats(Colors), 1);
+			binaryWriter.WriteConditionalArray( Vector2FIo.Instance, TextureCoordinates );
+			binaryWriter.WriteConditionalArray( ColorIo.Instance, Colors );
 		}
 
 		private void WriteTriangleIndizes( BinaryWriter binaryWriter )

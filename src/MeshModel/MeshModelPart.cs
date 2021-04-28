@@ -46,10 +46,13 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="thumbnail">The thumbnail.</param>
 		public MeshModelPart( MeshModelMetadata metaData, IEnumerable<Mesh> meshes, IEnumerable<Edge> edges = null, IEnumerable<MeshValueList> meshValueLists = null, byte[] thumbnail = null )
 			: this( metaData, SortMeshes( meshes ), SortEdges( edges ), meshValueLists?.ToArray() ?? Array.Empty<MeshValueList>(), thumbnail, false )
-		{  }
+		{ }
 
 		private MeshModelPart( MeshModelMetadata metaData, Mesh[] meshes, Edge[] edges, MeshValueList[] meshValueLists, byte[] thumbnail, bool updateTriangulationHash )
 		{
+			if( metaData.PartCount > 1 )
+				throw new ArgumentException( $"A MeshModelPart may have only 1 part.", nameof( metaData ) );
+
 			Meshes = meshes;
 			Edges = edges;
 			Metadata = metaData;
@@ -62,22 +65,6 @@ namespace Zeiss.PiWeb.MeshModel
 
 			Metadata.MeshValueEntries = MeshValues.Select( m => m.Entry ).ToArray();
 			Thumbnail = thumbnail != null && thumbnail.Length > 0 ? thumbnail : null;
-		}
-
-		private static Mesh[] SortMeshes( IEnumerable<Mesh> meshes )
-		{
-			return ( meshes ?? Array.Empty<Mesh>() )
-				.Where( m => m.Positions != null && m.Positions.Length > 0 )
-				.OrderBy( m => ColorOrdering( m.Color ) )
-				.ToArray();
-		}
-
-		private static Edge[] SortEdges( IEnumerable<Edge> edges )
-		{
-			return ( edges ?? Array.Empty<Edge>() )
-				.Where( e => e.Points != null && e.Points.Length > 0 )
-				.OrderBy( e => ColorOrdering( e.Color ) )
-				.ToArray();
 		}
 
 		#endregion
@@ -147,6 +134,22 @@ namespace Zeiss.PiWeb.MeshModel
 		#endregion
 
 		#region methods
+
+		private static Mesh[] SortMeshes( IEnumerable<Mesh> meshes )
+		{
+			return ( meshes ?? Array.Empty<Mesh>() )
+				.Where( m => m.Positions != null && m.Positions.Length > 0 )
+				.OrderBy( m => ColorOrdering( m.Color ) )
+				.ToArray();
+		}
+
+		private static Edge[] SortEdges( IEnumerable<Edge> edges )
+		{
+			return ( edges ?? Array.Empty<Edge>() )
+				.Where( e => e.Points != null && e.Points.Length > 0 )
+				.OrderBy( e => ColorOrdering( e.Color ) )
+				.ToArray();
+		}
 
 		/// <summary>
 		/// Create a clone of this mpdel with the new thumbnail <paramref name="thumbnail"/>.
@@ -258,7 +261,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 			var metadata = MeshModelMetadata.ExtractFrom( zipFile, subFolder );
 
-			if (metadata.TriangulationHash != baseModelPart.Metadata.TriangulationHash)
+			if( metadata.TriangulationHash != baseModelPart.Metadata.TriangulationHash )
 				throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "TriangulationMismatch_ErrorText" ) );
 
 			// Versionschecks
@@ -313,7 +316,7 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 
 			// we don't try to create a single-point edge
-			return edges.Where( e => e.Points?.Length > 3 ).ToArray();
+			return edges.Where( e => e.Points?.Length > 1 ).ToArray();
 		}
 
 		private static Mesh[] ReadMeshes( ZipArchive zipFile, string subFolder, Version fileVersion )
@@ -411,6 +414,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 				processedBytes += numberOfBytes;
 			}
+
 			ArrayPool<byte>.Shared.Return( buffer );
 		}
 

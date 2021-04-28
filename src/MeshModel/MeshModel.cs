@@ -42,9 +42,10 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		public static readonly Version MeshModelFileVersion = new Version( 5, 1, 0, 0 );
 
+		private readonly List<MeshModelPart> _Parts;
+
 		private Rect3F? _Bounds;
 		private byte[] _Thumbnail;
-		private readonly List<MeshModelPart> _Parts;
 
 		#endregion
 
@@ -78,6 +79,9 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			_Parts = new List<MeshModelPart>( parts );
 			Metadata = metaData;
+
+			if( metaData.PartCount != _Parts.Count )
+				throw new ArgumentException( "Part count in meta data is different from actual part count.", nameof( metaData ) );
 		}
 
 		/// <summary>
@@ -87,9 +91,8 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="thumbnail">The thumbnail image.</param>
 		/// <param name="parts">The parts.</param>
 		public MeshModel( MeshModelMetadata metadata, byte[] thumbnail, IEnumerable<MeshModelPart> parts )
+			: this( metadata, parts )
 		{
-			_Parts = new List<MeshModelPart>( parts );
-			Metadata = metadata;
 			Thumbnail = thumbnail;
 		}
 
@@ -98,11 +101,8 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		/// <param name="part">The part.</param>
 		private MeshModel( MeshModelPart part )
-		{
-			_Parts = new List<MeshModelPart> { part };
-			Metadata = part.Metadata;
-			Thumbnail = part.Thumbnail;
-		}
+			: this( part.Metadata, part.Thumbnail, new List<MeshModelPart> { part } )
+		{ }
 
 		#endregion
 
@@ -391,7 +391,7 @@ namespace Zeiss.PiWeb.MeshModel
 			var parts = new List<MeshModelPart>( partCount );
 			for( var i = 0; i < partCount; i += 1 )
 			{
-				parts.Add( MeshModelPart.DeserializeValues( baseModel.Parts[i], zipFile, i.ToString() ) );
+				parts.Add( MeshModelPart.DeserializeValues( baseModel.Parts[ i ], zipFile, i.ToString() ) );
 			}
 
 			return new MeshModel( metadata, baseModel.Thumbnail, parts.ToArray() );

@@ -22,9 +22,9 @@ namespace Zeiss.PiWeb.MeshModel
 	/// </summary>
 	public struct Triangle3F : IEquatable<Triangle3F>
 	{
-		private Point3F _A;
-		private Point3F _B;
-		private Point3F _C;
+		private Vector3F _A;
+		private Vector3F _B;
+		private Vector3F _C;
 
 		private float? _Area;
 
@@ -86,7 +86,7 @@ namespace Zeiss.PiWeb.MeshModel
 					var vY = new Vector3F( C.X - A.X, C.Y - A.Y, C.Z - A.Z );
 
 					_Normal = Vector3F.CrossProduct( vX, vY );
-					_Normal = _Normal?.NormalizeExtended();
+					_Normal = _Normal?.GetNormalized();
 				}
 
 				return _Normal.GetValueOrDefault();
@@ -97,7 +97,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Gets or sets the coordinate A.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">An empty triangle cannot be modified</exception>
-		public Point3F A
+		public Vector3F A
 		{
 			get => _A;
 			set
@@ -114,7 +114,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Gets or sets the coordinate B.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">An empty triangle cannot be modified</exception>
-		public Point3F B
+		public Vector3F B
 		{
 			get => _B;
 			set
@@ -131,7 +131,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Gets or sets the coordinate C.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">An empty triangle cannot be modified</exception>
-		public Point3F C
+		public Vector3F C
 		{
 			get => _C;
 			set
@@ -144,7 +144,7 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
-		public void Initialize( Point3F a, Point3F b, Point3F c )
+		public void Initialize( Vector3F a, Vector3F b, Vector3F c )
 		{
 			A = a;
 			B = b;
@@ -154,7 +154,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Triangle3F"/> struct.
 		/// </summary>
-		public Triangle3F( Point3F a, Point3F b, Point3F c )
+		public Triangle3F( Vector3F a, Vector3F b, Vector3F c )
 		{
 			if( float.IsNaN( a.X )
 				|| float.IsNaN( a.Y )
@@ -183,9 +183,9 @@ namespace Zeiss.PiWeb.MeshModel
 			:
 			this
 			(
-				new Point3F( aX, aY, aZ ),
-				new Point3F( aX, aY, aZ ),
-				new Point3F( aX, aY, aZ )
+				new Vector3F( aX, aY, aZ ),
+				new Vector3F( aX, aY, aZ ),
+				new Vector3F( aX, aY, aZ )
 			)
 		{ }
 
@@ -329,9 +329,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="scaleZ">Absolute value to scale in z dimension.</param>
 		public void ScaleAbsolute( float scaleX, float scaleY, float scaleZ )
 		{
-			A = new Point3F( A.X * scaleX, A.Y * scaleY, A.Z * scaleZ );
-			B = new Point3F( B.X * scaleX, B.Y * scaleY, B.Z * scaleZ );
-			C = new Point3F( C.X * scaleX, C.Y * scaleY, C.Z * scaleZ );
+			A = new Vector3F( A.X * scaleX, A.Y * scaleY, A.Z * scaleZ );
+			B = new Vector3F( B.X * scaleX, B.Y * scaleY, B.Z * scaleZ );
+			C = new Vector3F( C.X * scaleX, C.Y * scaleY, C.Z * scaleZ );
 		}
 
 		/// <summary>

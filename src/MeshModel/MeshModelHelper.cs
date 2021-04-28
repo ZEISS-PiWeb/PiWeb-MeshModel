@@ -12,7 +12,6 @@ namespace Zeiss.PiWeb.MeshModel
 {
 	#region usings
 
-	using System;
 	using System.Buffers;
 	using System.Collections.Generic;
 	using System.Globalization;
@@ -28,27 +27,22 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Removes duplicate subsequent positions from the specified <paramref name="positions"/> array.
 		/// </summary>
-		internal static float[] RemoveDuplicatePositions( float[] positions )
+		internal static Vector3F[] RemoveDuplicatePositions( Vector3F[] positions )
 		{
 			if( positions == null || positions.Length == 0 )
 				return positions;
 
-			if( positions.Length % 3 != 0 )
-				throw new InvalidOperationException( "Unable to remove duplicate positions. Position array should have a length that is a multiple of 3." );
+			var last = positions[ 0 ];
+			var result = new List<Vector3F>( positions.Length ) { positions[ 0 ] };
 
-			var last = new Point3F( positions[ 0 ], positions[ 1 ], positions[ 2 ] );
-			var result = new List<float>( positions.Length ) { positions[ 0 ], positions[ 1 ], positions[ 2 ] };
-
-			for( var i = 0; i < positions.Length; i += 3 )
+			for( var i = 0; i < positions.Length; i++ )
 			{
-				var current = new Point3F( positions[ i ], positions[ i + 1 ], positions[ i + 2 ] );
+				var current = positions[ i ];
 
 				var distance = ( current - last ).LengthSquared;
 				if( distance > 0.0000001 )
 				{
-					result.Add( current.X );
-					result.Add( current.Y );
-					result.Add( current.Z );
+					result.Add( current );
 
 					last = current;
 				}

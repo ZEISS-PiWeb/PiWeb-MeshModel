@@ -35,17 +35,17 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Gets the normal data array.
 		/// </summary>
-		float[] Normals { get; }
+		Vector3F[] Normals { get; }
 
 		/// <summary>
 		///Gets the position data array.
 		/// </summary>
-		float[] Positions { get; }
+		Vector3F[] Positions { get; }
 
 		/// <summary>
 		/// Gets the texture data array.
 		/// </summary>
-		float[] TextureCoordinates { get; }
+		Vector2F[] TextureCoordinates { get; }
 
 		/// <summary>
 		/// Gets the number of triangle indices
@@ -60,7 +60,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Gets the color data array.
 		/// </summary>
-		float[] Colors { get; }
+		Color[] Colors { get; }
 
 		/// <summary>
 		/// Gets the layers to which this mesh belongs

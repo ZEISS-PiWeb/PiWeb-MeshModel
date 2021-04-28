@@ -8,6 +8,8 @@
 
 #endregion
 
+using System.Runtime.InteropServices;
+
 namespace Zeiss.PiWeb.MeshModel
 {
 	#region usings
@@ -22,14 +24,12 @@ namespace Zeiss.PiWeb.MeshModel
 	/// <remarks>
 	/// We use our own color struct, because the .net color struct is significantly slower.
 	/// </remarks>
+	[Serializable, StructLayout( LayoutKind.Sequential, Size = Stride, Pack = 1 )]
 	public readonly struct Color : IEquatable<Color>
 	{
-		#region members
+		public const int Stride = sizeof( byte ) * 4;
 
-		/// <summary>
-		/// Alpha channel.
-		/// </summary>
-		public readonly byte A;
+		#region members
 
 		/// <summary>
 		/// Red channel.
@@ -45,6 +45,11 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Blue channel.
 		/// </summary>
 		public readonly byte B;
+
+		/// <summary>
+		/// Alpha channel.
+		/// </summary>
+		public readonly byte A;
 
 		#endregion
 
@@ -91,6 +96,15 @@ namespace Zeiss.PiWeb.MeshModel
 		public static Color FromArgb( byte a, byte r, byte g, byte b )
 		{
 			return new Color( a, r, g, b );
+		}
+
+		/// <summary>
+		/// Gets the R, G, B and A bytes of this struct packed into a 32 Bit float value.
+		/// </summary>
+		/// <returns></returns>
+		public float ToPackedArgb()
+		{
+			return BitConverter.ToSingle( new[] { A, R, G, B }, 0 );
 		}
 
 		/// <summary>

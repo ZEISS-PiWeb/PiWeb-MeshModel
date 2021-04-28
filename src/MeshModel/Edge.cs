@@ -40,9 +40,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="color">The color.</param>
 		/// <param name="layer">The layer.</param>
 		/// <param name="name">The name.</param>
-		public Edge( float[] points, Color? color = null, string[] layer = null, string name = null )
+		public Edge( Vector3F[] points, Color? color = null, string[] layer = null, string name = null )
 		{
-			Points = points ?? Array.Empty<float>();
+			Points = points ?? Array.Empty<Vector3F>();
 			Color = color;
 			Layer = layer;
 			Name = name;
@@ -65,7 +65,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Gets the points of the edge.
 		/// </summary>
-		public float[] Points { get; }
+		public Vector3F[] Points { get; }
 
 		/// <summary>
 		/// Gets the color of the edge.
@@ -87,9 +87,9 @@ namespace Zeiss.PiWeb.MeshModel
 				if( _Bounds.HasValue ) return _Bounds.Value;
 
 				_Bounds = Rect3F.Empty;
-				for( var i = 0; i < Points.Length; i += 3 )
+				for( var i = 0; i < Points.Length; i++ )
 				{
-					_Bounds = Rect3F.Union( _Bounds.Value, new Point3F( Points[ i ], Points[ i + 1 ], Points[ i + 2 ] ) );
+					_Bounds = Rect3F.Union( _Bounds.Value, Points[ i ] );
 				}
 
 				return _Bounds.Value;
@@ -105,7 +105,7 @@ namespace Zeiss.PiWeb.MeshModel
 			var name = fileVersion >= FileVersion21 ? binaryReader.ReadString() : "";
 			var color = binaryReader.ReadBoolean() ? binaryReader.ReadArgbColor() : default( Color? );
 
-			var positions = binaryReader.ReadConditionalFloatArray( 3, fileVersion );
+			var positions = binaryReader.ReadConditionalVector3FArray( fileVersion );
 			var layer = binaryReader.ReadConditionalStringArray();
 
 			if( fileVersion < FileVersion32 )
@@ -118,7 +118,7 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			binaryWriter.Write( Name ?? "" );
 			binaryWriter.WriteConditionalColor( Color );
-			binaryWriter.WriteConditionalFloatArray( Points, 3 );
+			binaryWriter.WriteConditionalArray( Vector3FIo.Instance, Points );
 			binaryWriter.WriteConditionalStrings( Layer );
 		}
 

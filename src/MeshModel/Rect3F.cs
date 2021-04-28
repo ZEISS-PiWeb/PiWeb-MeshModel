@@ -33,29 +33,20 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Gets the an empty rect.
 		/// </summary>
-		/// <value>
-		/// An empty rect.
-		/// </value>
 		public static Rect3F Empty { get; } = CreateEmptyCuboid();
 
 		/// <summary>
 		/// Gets a value indicating whether this instance is empty.
 		/// </summary>
-		/// <value>
-		///   <c>true</c> if this instance is empty; otherwise, <c>false</c>.
-		/// </value>
 		public readonly bool IsEmpty => _SizeX < 0.0;
 
 		/// <summary>
 		/// Gets or sets the location.
 		/// </summary>
-		/// <value>
-		/// The location.
-		/// </value>
 		/// <exception cref="InvalidOperationException">An empty rect cannot be modified</exception>
-		public Point3F Location
+		public Vector3F Location
 		{
-			get { return new Point3F( _X, _Y, _Z ); }
+			get => new Vector3F( _X, _Y, _Z );
 			set
 			{
 				if( IsEmpty )
@@ -75,7 +66,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <exception cref="InvalidOperationException">An empty rect cannot be modified</exception>
 		public Size3F Size
 		{
-			get { return IsEmpty ? Size3F.Empty : new Size3F( _SizeX, _SizeY, _SizeZ ); }
+			get => IsEmpty ? Size3F.Empty : new Size3F( _SizeX, _SizeY, _SizeZ );
 			set
 			{
 				if( value.IsEmpty )
@@ -103,7 +94,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <exception cref="ArgumentException">A rect cannot have a negative dimension</exception>
 		public float SizeX
 		{
-			get { return _SizeX; }
+			get => _SizeX;
 			set
 			{
 				if( IsEmpty )
@@ -124,7 +115,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <exception cref="ArgumentException">A rect cannot have a negative dimension</exception>
 		public float SizeY
 		{
-			get { return _SizeY; }
+			get => _SizeY;
 			set
 			{
 				if( IsEmpty )
@@ -145,7 +136,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <exception cref="ArgumentException">A rect cannot have a negative dimension</exception>
 		public float SizeZ
 		{
-			get { return _SizeZ; }
+			get => _SizeZ;
 			set
 			{
 				if( IsEmpty )
@@ -165,7 +156,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <exception cref="InvalidOperationException">An empty rect cannot be modified</exception>
 		public float X
 		{
-			get { return _X; }
+			get => _X;
 			set
 			{
 				if( IsEmpty )
@@ -183,7 +174,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <exception cref="InvalidOperationException">An empty rect cannot be modified</exception>
 		public float Y
 		{
-			get { return _Y; }
+			get => _Y;
 			set
 			{
 				if( IsEmpty )
@@ -201,7 +192,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <exception cref="InvalidOperationException">An empty rect cannot be modified</exception>
 		public float Z
 		{
-			get { return _Z; }
+			get => _Z;
 			set
 			{
 				if( IsEmpty )
@@ -210,12 +201,8 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Rect3F"/> struct.
-		/// </summary>
-		/// <param name="location">The location.</param>
-		/// <param name="size">The size.</param>
-		public Rect3F( Point3F location, Size3F size )
+		/// <summary>Constructor.</summary>
+		public Rect3F( Vector3F location, Size3F size )
 		{
 			if( size.IsEmpty )
 			{
@@ -232,15 +219,7 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Rect3F"/> struct.
-		/// </summary>
-		/// <param name="x">The x.</param>
-		/// <param name="y">The y.</param>
-		/// <param name="z">The z.</param>
-		/// <param name="sizeX">The size x.</param>
-		/// <param name="sizeY">The size y.</param>
-		/// <param name="sizeZ">The size z.</param>
+		/// <summary>Constructor.</summary>
 		/// <exception cref="ArgumentException">A rect cannot have a negative dimension</exception>
 		public Rect3F( float x, float y, float z, float sizeX, float sizeY, float sizeZ )
 		{
@@ -254,42 +233,22 @@ namespace Zeiss.PiWeb.MeshModel
 			_SizeZ = sizeZ;
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Rect3F"/> struct using two opposite corner points.
-		/// </summary>
-		/// <param name="point1">First corner point.</param>
-		/// <param name="point2">Second corner point.</param>
-		public Rect3F( Point3F point1, Point3F point2 )
+		/// <summary>Constructor.</summary>
+		public Rect3F( Vector3F corner1, Vector3F corner2 )
 		{
-			_X = Math.Min( point1.X, point2.X );
-			_Y = Math.Min( point1.Y, point2.Y );
-			_Z = Math.Min( point1.Z, point2.Z );
-			_SizeX = Math.Abs( point2.X - point1.X );
-			_SizeY = Math.Abs( point2.Y - point1.Y );
-			_SizeZ = Math.Abs( point2.Z - point1.Z );
+			_X = Math.Min( corner1.X, corner2.X );
+			_Y = Math.Min( corner1.Y, corner2.Y );
+			_Z = Math.Min( corner1.Z, corner2.Z );
+			_SizeX = Math.Abs( corner2.X - corner1.X );
+			_SizeY = Math.Abs( corner2.Y - corner1.Y );
+			_SizeZ = Math.Abs( corner2.Z - corner1.Z );
 		}
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="rect1">The rect1.</param>
-		/// <param name="rect2">The rect2.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		public static bool operator ==( Rect3F rect1, Rect3F rect2 )
 		{
 			return rect1.Equals( rect2 );
 		}
 
-		/// <summary>
-		/// Implements the operator !=.
-		/// </summary>
-		/// <param name="rect1">The rect1.</param>
-		/// <param name="rect2">The rect2.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
 		public static bool operator !=( Rect3F rect1, Rect3F rect2 )
 		{
 			return !( rect1 == rect2 );
@@ -303,7 +262,7 @@ namespace Zeiss.PiWeb.MeshModel
 		///   <c>true</c> if [contains] [the specified point]; otherwise, <c>false</c>.
 		/// </returns>
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
-		public readonly bool Contains( Point3F point )
+		public readonly bool Contains( Vector3F point )
 		{
 			return Contains( point.X, point.Y, point.Z );
 		}
@@ -338,12 +297,12 @@ namespace Zeiss.PiWeb.MeshModel
 			if( IsEmpty || rect.IsEmpty )
 				return false;
 
-			return ( (double)_X ) <= rect._X
-					&& ( (double)_Y ) <= rect._Y
-					&& ( (double)_Z ) <= rect._Z
-					&& ( (double)( _X + _SizeX ) ) >= rect._X + rect._SizeX
-					&& ( (double)( _Y + _SizeY ) ) >= rect._Y + rect._SizeY
-					&& ( (double)( _Z + _SizeZ ) ) >= rect._Z + rect._SizeZ;
+			return (double)_X <= rect._X
+					&& (double)_Y <= rect._Y
+					&& (double)_Z <= rect._Z
+					&& (double)( _X + _SizeX ) >= rect._X + rect._SizeX
+					&& (double)( _Y + _SizeY ) >= rect._Y + rect._SizeY
+					&& (double)( _Z + _SizeZ ) >= rect._Z + rect._SizeZ;
 		}
 
 		/// <summary>
@@ -437,23 +396,23 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Unions the specified point.
+		/// Unions the specified vector.
 		/// </summary>
-		/// <param name="point">The point.</param>
-		public void Union( Point3F point )
+		/// <param name="vector">The vector.</param>
+		public void Union( Vector3F vector )
 		{
-			Union( new Rect3F( point, point ) );
+			Union( new Rect3F( vector, vector ) );
 		}
 
 		/// <summary>
 		/// Unions the specified rect.
 		/// </summary>
 		/// <param name="rect">The rect.</param>
-		/// <param name="point">The point.</param>
+		/// <param name="vector">The vector.</param>
 		/// <returns></returns>
-		public static Rect3F Union( Rect3F rect, Point3F point )
+		public static Rect3F Union( Rect3F rect, Vector3F vector )
 		{
-			rect.Union( new Rect3F( point, point ) );
+			rect.Union( new Rect3F( vector, vector ) );
 			return rect;
 		}
 
@@ -475,76 +434,6 @@ namespace Zeiss.PiWeb.MeshModel
 				_SizeY = float.NegativeInfinity,
 				_SizeZ = float.NegativeInfinity
 			};
-		}
-
-		/// <summary>
-		/// Equalses the specified rect1.
-		/// </summary>
-		/// <param name="rect1">The rect1.</param>
-		/// <param name="rect2">The rect2.</param>
-		/// <returns></returns>
-		public static bool Equals( Rect3F rect1, Rect3F rect2 )
-		{
-			if( rect1.IsEmpty )
-				return rect2.IsEmpty;
-
-			return rect1.X == rect2.X
-			       && rect1.Y == rect2.Y
-			       && rect1.Z == rect2.Z
-			       && rect1.SizeX == rect2.SizeX 
-			       && rect1.SizeY == rect2.SizeY
-			       && rect1.SizeZ == rect2.SizeZ;
-		}
-
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
-		/// </summary>
-		/// <param name="o">The <see cref="System.Object" /> to compare with this instance.</param>
-		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
-		/// </returns>
-		public override bool Equals( object o )
-		{
-			if( !( o is Rect3F ) )
-				return false;
-			return Equals( this, (Rect3F)o );
-		}
-
-		/// <summary>
-		/// Equalses the specified value.
-		/// </summary>
-		/// <param name="value">The value.</param>
-		/// <returns></returns>
-		public bool Equals( Rect3F value )
-		{
-			return Equals( this, value );
-		}
-
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-		/// </returns>
-		public override int GetHashCode()
-		{
-			unchecked
-			{
-				var hashCode = _X.GetHashCode();
-				hashCode = ( hashCode * 397 ) ^ _Y.GetHashCode();
-				hashCode = ( hashCode * 397 ) ^ _Z.GetHashCode();
-				hashCode = ( hashCode * 397 ) ^ _SizeX.GetHashCode();
-				hashCode = ( hashCode * 397 ) ^ _SizeY.GetHashCode();
-				hashCode = ( hashCode * 397 ) ^ _SizeZ.GetHashCode();
-
-				return hashCode;
-			}
-		}
-
-		/// <inheritdoc/>
-		public override string ToString()
-		{
-			return $"[{Location}] - [{new Point3F( X + SizeX, Y + SizeY, Z + SizeZ )}]";
 		}
 
 		/// <summary>
@@ -604,6 +493,48 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			rect.ScaleAbsolute( scaleX, scaleY, scaleZ );
 			return rect;
+		}
+
+		/// <inheritdoc />
+		public override bool Equals( object o )
+		{
+			return o is Rect3F r && Equals( r );
+		}
+
+		/// <inheritdoc />
+		public bool Equals( Rect3F value )
+		{
+			if( IsEmpty )
+				return value.IsEmpty;
+
+			return X == value.X
+					&& Y == value.Y
+					&& Z == value.Z
+					&& SizeX == value.SizeX
+					&& SizeY == value.SizeY
+					&& SizeZ == value.SizeZ;
+		}
+
+		/// <inheritdoc />
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = _X.GetHashCode();
+				hashCode = ( hashCode * 397 ) ^ _Y.GetHashCode();
+				hashCode = ( hashCode * 397 ) ^ _Z.GetHashCode();
+				hashCode = ( hashCode * 397 ) ^ _SizeX.GetHashCode();
+				hashCode = ( hashCode * 397 ) ^ _SizeY.GetHashCode();
+				hashCode = ( hashCode * 397 ) ^ _SizeZ.GetHashCode();
+
+				return hashCode;
+			}
+		}
+
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return $"Location: {Location}, Size: {new Vector3F( X + SizeX, Y + SizeY, Z + SizeZ )}";
 		}
 	}
 }

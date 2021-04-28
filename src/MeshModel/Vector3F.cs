@@ -26,8 +26,8 @@ namespace Zeiss.PiWeb.MeshModel
 	[StructLayout( LayoutKind.Sequential, Size = Stride, Pack = 4 )]
 	public struct Vector3F : IEquatable<Vector3F>
 	{
-		public const int Stride = sizeof(float) * 3;
-		
+		public const int Stride = sizeof( float ) * 3;
+
 		/// <inheritdoc cref="Vector2F.Length"/>
 		public float Length => (float)Math.Sqrt( X * X + Y * Y + Z * Z );
 
@@ -220,7 +220,7 @@ namespace Zeiss.PiWeb.MeshModel
 		[MethodImpl( MethodImplOptions.AggressiveInlining )]
 		public override bool Equals( object o )
 		{
-			return o is Vector3F v && Equals(v);
+			return o is Vector3F v && Equals( v );
 		}
 
 		/// <inheritdoc />

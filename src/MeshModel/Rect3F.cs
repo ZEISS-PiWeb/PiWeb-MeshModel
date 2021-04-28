@@ -494,11 +494,11 @@ namespace Zeiss.PiWeb.MeshModel
 			rect.ScaleAbsolute( scaleX, scaleY, scaleZ );
 			return rect;
 		}
-		
+
 		/// <inheritdoc />
 		public override bool Equals( object o )
 		{
-			return o is Rect3F r && Equals(r);
+			return o is Rect3F r && Equals( r );
 		}
 
 		/// <inheritdoc />
@@ -508,11 +508,11 @@ namespace Zeiss.PiWeb.MeshModel
 				return value.IsEmpty;
 
 			return X == value.X
-			       && Y == value.Y
-			       && Z == value.Z
-			       && SizeX == value.SizeX 
-			       && SizeY == value.SizeY
-			       && SizeZ == value.SizeZ;
+					&& Y == value.Y
+					&& Z == value.Z
+					&& SizeX == value.SizeX
+					&& SizeY == value.SizeY
+					&& SizeZ == value.SizeZ;
 		}
 
 		/// <inheritdoc />
@@ -530,7 +530,7 @@ namespace Zeiss.PiWeb.MeshModel
 				return hashCode;
 			}
 		}
-		
+
 		/// <inheritdoc/>
 		public override string ToString()
 		{

@@ -135,7 +135,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <inheritdoc />
 		public override bool Equals( object o )
 		{
-			return o is Size3F s && Equals(s);
+			return o is Size3F s && Equals( s );
 		}
 
 		/// <inheritdoc />

@@ -22,11 +22,11 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 	{
 		#region methods
 
-		[Test, Description("Checks if normal is calculated correctly.")]
+		[Test, Description( "Checks if normal is calculated correctly." )]
 		public void NormalCalculationTest()
 		{
 			// ------------------------------------------------------------------------------ GIVEN
-			var a = new Vector3F(0,0,0);
+			var a = new Vector3F( 0, 0, 0 );
 			var b = new Vector3F( 2, 0, 0 );
 			var c = new Vector3F( 0, 2, 0 );
 
@@ -38,11 +38,11 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			Assert.AreEqual( new Vector3F( 0, 0, 1 ), t.Normal );
 		}
 
-		[Test, Description("Checks if normal is calculated correctly.")]
+		[Test, Description( "Checks if normal is calculated correctly." )]
 		public void AreaCalculationTest()
 		{
 			// ------------------------------------------------------------------------------ GIVEN
-			var a = new Vector3F(0,0,0);
+			var a = new Vector3F( 0, 0, 0 );
 			var b = new Vector3F( 1, 0, 0 );
 			var c = new Vector3F( 0, 1, 0 );
 

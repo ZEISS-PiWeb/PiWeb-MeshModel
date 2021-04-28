@@ -91,7 +91,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <returns>The wanted triangle's vertices.</returns>
 		public Triangle GetTriangle( int index )
 		{
-			if( index > TriangleCount ) 
+			if( index > TriangleCount )
 				throw new ArgumentException( $"{nameof( index )} {index} is greater than maximum index {TriangleCount}." );
 
 			return new Triangle( index, this );
@@ -114,9 +114,9 @@ namespace Zeiss.PiWeb.MeshModel
 				var i1 = triangleIndices[ i + 1 ];
 				var i2 = triangleIndices[ i + 2 ];
 
-				var p0 = positions[i0];
-				var p1 = positions[i1];
-				var p2 = positions[i2];
+				var p0 = positions[ i0 ];
+				var p1 = positions[ i1 ];
+				var p2 = positions[ i2 ];
 
 				var direction = Vector3F.CrossProduct( p1 - p0, p2 - p1 );
 				var norm2 = direction.Length;
@@ -126,16 +126,16 @@ namespace Zeiss.PiWeb.MeshModel
 					direction /= norm2;
 
 					// Add direction vector to each vertex of the triangle.
-					normals[i0] += direction;
-					normals[i1] += direction;
-					normals[i2] += direction;
+					normals[ i0 ] += direction;
+					normals[ i1 ] += direction;
+					normals[ i2 ] += direction;
 				}
 			}
 
 			// Normalize vertex normals.
 			for( var i = 0; i < normals.Length; ++i )
 			{
-				normals[i].Normalize();
+				normals[ i ].Normalize();
 			}
 
 			return normals;
@@ -148,17 +148,17 @@ namespace Zeiss.PiWeb.MeshModel
 
 			var positions = binaryReader.ReadConditionalVector3FArray( fileVersion );
 			var normals = binaryReader.ReadConditionalVector3FArray( fileVersion );
-			var indices =  binaryReader.ReadBoolean() 
-				? binaryReader.ReadIndices( positions?.Length ?? 0 ) 
+			var indices = binaryReader.ReadBoolean()
+				? binaryReader.ReadIndices( positions?.Length ?? 0 )
 				: null;
 
 			var layer = binaryReader.ReadConditionalStringArray();
 
-			var textureCoordinates = fileVersion >= FileVersion22 && binaryReader.ReadBoolean() 
-				? binaryReader.ReadArray( Vector2FIo.Instance) 
+			var textureCoordinates = fileVersion >= FileVersion22 && binaryReader.ReadBoolean()
+				? binaryReader.ReadArray( Vector2FIo.Instance )
 				: null;
-			var colors = fileVersion >= FileVersion33 && binaryReader.ReadBoolean() 
-				? binaryReader.ReadArray(ColorIo.Instance) 
+			var colors = fileVersion >= FileVersion33 && binaryReader.ReadBoolean()
+				? binaryReader.ReadArray( ColorIo.Instance )
 				: null;
 
 			return new Mesh( index, positions, normals, indices, textureCoordinates, color, colors, layer, name );
@@ -168,11 +168,11 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			binaryWriter.Write( Name ?? "" );
 			binaryWriter.WriteConditionalColor( Color );
-			binaryWriter.WriteConditionalArray(Vector3FIo.Instance, Positions);
-			binaryWriter.WriteConditionalArray(Vector3FIo.Instance, Normals);
-			
+			binaryWriter.WriteConditionalArray( Vector3FIo.Instance, Positions );
+			binaryWriter.WriteConditionalArray( Vector3FIo.Instance, Normals );
+
 			WriteTriangleIndizes( binaryWriter );
-			
+
 			binaryWriter.WriteConditionalStrings( Layer );
 			binaryWriter.WriteConditionalArray( Vector2FIo.Instance, TextureCoordinates );
 			binaryWriter.WriteConditionalArray( ColorIo.Instance, Colors );
@@ -200,7 +200,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		public override string ToString()
 		{
-			return $"Mesh [{Name}] ({Positions.Length / 3 } points, {TriangleIndicesCount} triangle indices)";
+			return $"Mesh [{Name}] ({Positions.Length / 3} points, {TriangleIndicesCount} triangle indices)";
 		}
 
 		#endregion
@@ -516,12 +516,12 @@ namespace Zeiss.PiWeb.MeshModel
 			public Vector3F VertexA => _Mesh.Positions[ _Mesh._TriangleIndices[ _Index * 3 + 0 ] ];
 			public Vector3F VertexB => _Mesh.Positions[ _Mesh._TriangleIndices[ _Index * 3 + 1 ] ];
 			public Vector3F VertexC => _Mesh.Positions[ _Mesh._TriangleIndices[ _Index * 3 + 2 ] ];
-			
+
 			public Vector3F NormalA => _Mesh.Normals[ _Mesh._TriangleIndices[ _Index * 3 + 0 ] ];
 			public Vector3F NormalB => _Mesh.Normals[ _Mesh._TriangleIndices[ _Index * 3 + 1 ] ];
 			public Vector3F NormalC => _Mesh.Normals[ _Mesh._TriangleIndices[ _Index * 3 + 2 ] ];
 
-			public Vector3F MeanNormal => (NormalA + NormalB + NormalC) / 3f;
+			public Vector3F MeanNormal => ( NormalA + NormalB + NormalC ) / 3f;
 		}
 
 		#endregion

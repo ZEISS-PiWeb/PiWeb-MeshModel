@@ -26,12 +26,16 @@ namespace Zeiss.PiWeb.MeshModel
 	/// </summary>
 	internal static class ReaderWriterExtensions
 	{
+		#region constants
+
 		private const int KiB = 1024;
-		
+
+		#endregion
+
 		#region members
 
 		private static readonly Version FileVersion10 = new Version( 1, 0, 0, 0 );
-		
+
 		#endregion
 
 		#region methods
@@ -48,7 +52,7 @@ namespace Zeiss.PiWeb.MeshModel
 			entry.LastWriteTime = new DateTime( 1980, 1, 1 );
 			return entry;
 		}
-		
+
 		/// <summary>
 		/// Writes the string array with a boolean marker.
 		/// * If the array is empty, a <code>false</code> marker will be written
@@ -104,7 +108,7 @@ namespace Zeiss.PiWeb.MeshModel
 				binaryWriter.Write( false );
 			}
 		}
-		
+
 		/// <summary>
 		/// Writes a boolean marker and an array of struct type T using a <see cref="BinaryWriter"/>:
 		/// <list type="bullet">
@@ -116,8 +120,8 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="writer">To write values.</param>
 		/// <param name="data">To be written out.</param>
 		public static void WriteConditionalArray<T>(
-			this BinaryWriter writer, 
-			IStructArrayIo<T> structArrayIo,  
+			this BinaryWriter writer,
+			IStructArrayIo<T> structArrayIo,
 			T[] data )
 			where T : struct
 		{
@@ -144,8 +148,8 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="writer">To write values.</param>
 		/// <param name="data">To be written out.</param>
 		public static void WriteArray<T>(
-			this BinaryWriter writer, 
-			IStructArrayIo<T> structArrayIo, 
+			this BinaryWriter writer,
+			IStructArrayIo<T> structArrayIo,
 			T[] data )
 			where T : struct
 		{
@@ -171,7 +175,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="bufferSize">Length of the buffer array.</param>
 		/// <typeparam name="T">Struct type of the elements.</typeparam>
 		private static void WriteArrayBuffered<T>(
-			this BinaryWriter writer, 
+			this BinaryWriter writer,
 			IStructArrayIo<T> structArrayIo,
 			T[] elements,
 			int bufferSize = 0 )
@@ -182,10 +186,10 @@ namespace Zeiss.PiWeb.MeshModel
 				writer.Write( 0 );
 				return;
 			}
-			
+
 			// Write length of the array.
 			writer.Write( elements.Length );
-			
+
 			// We write chunks of data (stride * KiB) into a buffer and write it out into the file for better performance.
 			// We do not use a bigger buffer, as we don't want it to reside on the "large object heap".
 			var arrayLength = bufferSize <= 0
@@ -194,18 +198,19 @@ namespace Zeiss.PiWeb.MeshModel
 			var bytesToWrite = elements.Length * structArrayIo.Stride;
 			var bytesWritten = 0;
 			var buffer = ArrayPool<byte>.Shared.Rent( arrayLength );
-			
+
 			var index = 0;
 			while( bytesWritten < bytesToWrite )
 			{
 				var count = Math.Min( arrayLength, bytesToWrite - bytesWritten );
 
-				index = structArrayIo.BufferFunction(buffer, elements, count, index);
+				index = structArrayIo.BufferFunction( buffer, elements, count, index );
 
 				writer.Write( buffer, 0, count );
 
 				bytesWritten += count;
 			}
+
 			ArrayPool<byte>.Shared.Return( buffer );
 		}
 
@@ -247,14 +252,14 @@ namespace Zeiss.PiWeb.MeshModel
 				? binaryReader.ReadDoubleArray( componentCount )
 				: binaryReader.ReadArray( FloatIo.Instance );
 		}
-		
+
 		/// <summary>
 		/// Reads an array of floats with a condition marker and interprets it as array of Vector3F. First the marker is
 		/// read and
 		/// * if true, the float array is read and returned as array of Vector3Fs
 		/// * if false, an empty array is returned
 		/// </summary>
-		public static Vector3F[] ReadConditionalVector3FArray( 
+		public static Vector3F[] ReadConditionalVector3FArray(
 			this BinaryReader binaryReader,
 			Version fileVersion )
 		{
@@ -281,10 +286,11 @@ namespace Zeiss.PiWeb.MeshModel
 			{
 				layer[ l ] = binaryReader.ReadString();
 			}
+
 			return layer;
 		}
 
-		public static T[] ReadArray<T>(this BinaryReader reader, IStructArrayIo<T> structArrayIo )
+		public static T[] ReadArray<T>( this BinaryReader reader, IStructArrayIo<T> structArrayIo )
 			where T : struct
 		{
 			var length = reader.ReadInt32(); // Number of vertices
@@ -294,8 +300,9 @@ namespace Zeiss.PiWeb.MeshModel
 			{
 				var index = current / structArrayIo.Stride;
 
-				structArrayIo.ReadBuffer(buffer, result, count, index);
+				structArrayIo.ReadBuffer( buffer, result, count, index );
 			}
+
 			return result;
 		}
 
@@ -319,7 +326,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 			return result;
 		}
-		
+
 		/// <summary>
 		/// Returns a Vector3F array representing vertices in the following format:
 		///
@@ -334,10 +341,10 @@ namespace Zeiss.PiWeb.MeshModel
 			var data = rdr.ReadBytes( result.Length * 8 * 3 );
 			for( int i = 0, j = 0; i < result.Length; j += 24, i++ )
 			{
-				result[i] = new Vector3F(
+				result[ i ] = new Vector3F(
 					(float)BitConverter.ToDouble( data, j ),
-					(float)BitConverter.ToDouble( data, j+8 ),
-					(float)BitConverter.ToDouble( data, j+16 ));
+					(float)BitConverter.ToDouble( data, j + 8 ),
+					(float)BitConverter.ToDouble( data, j + 16 ) );
 			}
 
 			return result;
@@ -398,7 +405,7 @@ namespace Zeiss.PiWeb.MeshModel
 		///		<li>buffer ... byte array containing as much bytes as given by "Count"</li>
 		/// </ol>
 		/// </returns>
-		private static IEnumerable<(int Count, int Current, byte[] buffer)> ReadByteArrays(this BinaryReader rdr, int totalBytes)
+		private static IEnumerable<(int Count, int Current, byte[] buffer)> ReadByteArrays( this BinaryReader rdr, int totalBytes )
 		{
 			const int arrayLength = 8 * 1024;
 
@@ -416,6 +423,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 				current += count;
 			}
+
 			ArrayPool<byte>.Shared.Return( buffer );
 		}
 

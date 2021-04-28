@@ -296,7 +296,7 @@ namespace Zeiss.PiWeb.MeshModel
 			var length = reader.ReadInt32(); // Number of vertices
 
 			var result = new T[ length ];
-			foreach( var (count, current, buffer) in reader.ReadByteArrays( length * structArrayIo.Stride, structArrayIo.Stride ) )
+			foreach( var (count, current, buffer) in reader.ReadByteArrays( length, structArrayIo.Stride ) )
 			{
 				var index = current / structArrayIo.Stride;
 
@@ -351,19 +351,21 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Reads triangle indices. The <paramref name="pointCount"/> is used to estimate the largest triangle indice and create
-		/// a memory efficient storage type to store the indices.
+		/// Reads triangle indices. The <paramref name="pointCount"/> is used to estimate the largest triangle index and
+		/// create a memory efficient storage type to store the indices.
 		/// </summary>
 		public static Mesh.MeshIndices ReadIndices( this BinaryReader rdr, int pointCount )
 		{
+			const int indexStride = sizeof( int );
+
 			var indexCount = rdr.ReadInt32();
 
 			if( pointCount < byte.MaxValue )
 			{
-				var data = rdr.ReadBytes( indexCount * 4 );
+				var data = rdr.ReadBytes( indexCount * indexStride );
 				var triangleIndices = new byte[ indexCount ];
 
-				for( int i = 0, j = 0; i < triangleIndices.Length; j += 4, i++ )
+				for( int i = 0, j = 0; i < triangleIndices.Length; j += indexStride, i++ )
 				{
 					triangleIndices[ i ] = (byte)BitConverter.ToInt32( data, j );
 				}
@@ -373,10 +375,10 @@ namespace Zeiss.PiWeb.MeshModel
 
 			if( pointCount < short.MaxValue )
 			{
-				var data = rdr.ReadBytes( indexCount * 4 );
+				var data = rdr.ReadBytes( indexCount * indexStride );
 				var triangleIndices = new short[ indexCount ];
 
-				for( int i = 0, j = 0; i < triangleIndices.Length; j += 4, i++ )
+				for( int i = 0, j = 0; i < triangleIndices.Length; j += indexStride, i++ )
 				{
 					triangleIndices[ i ] = (short)BitConverter.ToInt32( data, j );
 				}
@@ -386,7 +388,7 @@ namespace Zeiss.PiWeb.MeshModel
 			else
 			{
 				var triangleIndices = new int[ indexCount ];
-				foreach( var (count, current, buffer) in rdr.ReadByteArrays( indexCount * sizeof( int ), sizeof(int) ) )
+				foreach( var (count, current, buffer) in rdr.ReadByteArrays( indexCount, indexStride ) )
 				{
 					Buffer.BlockCopy( buffer, 0, triangleIndices, current, count );
 				}
@@ -403,8 +405,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// 		<li>buffer ... byte array containing as much bytes as given by "Count"</li>
 		///  </ol>
 		///  </returns>
-		private static IEnumerable<(int Count, int Current, byte[] buffer)> ReadByteArrays( this BinaryReader rdr, int totalBytes, int stride )
+		private static IEnumerable<(int Count, int Current, byte[] buffer)> ReadByteArrays( this BinaryReader rdr, int elementCount, int stride )
 		{
+			var totalBytes = elementCount * stride;
 			var arrayLength = stride * 1024;
 
 			var current = 0;

@@ -216,12 +216,14 @@ namespace Zeiss.PiWeb.MeshModel
 		public int WriteBuffer( byte[] buffer, Vector3F[] source, int count, int index )
 		{
 			const int componentSize = sizeof( float );
+			const int yOffset = componentSize;
+			const int zOffset = componentSize * 2;
 
 			for( var i = 0; i < count; i += Stride, index++ )
 			{
 				Array.Copy( BitConverter.GetBytes( source[ index ].X ), 0, buffer, i, componentSize );
-				Array.Copy( BitConverter.GetBytes( source[ index ].Y ), 0, buffer, i + componentSize, componentSize );
-				Array.Copy( BitConverter.GetBytes( source[ index ].Z ), 0, buffer, i + componentSize * 2, componentSize );
+				Array.Copy( BitConverter.GetBytes( source[ index ].Y ), 0, buffer, i + yOffset, componentSize );
+				Array.Copy( BitConverter.GetBytes( source[ index ].Z ), 0, buffer, i + zOffset, componentSize );
 			}
 
 			return index;
@@ -229,12 +231,15 @@ namespace Zeiss.PiWeb.MeshModel
 
 		public void ReadBuffer( byte[] buffer, Vector3F[] result, int count, int index )
 		{
+			const int yOffset = sizeof( float );
+			const int zOffset = sizeof( float ) * 2;
+
 			for( var i = 0; i < count; i += Stride )
 			{
 				result[ index ] = new Vector3F(
 					BitConverter.ToSingle( buffer, i ),
-					BitConverter.ToSingle( buffer, i + sizeof( float ) ),
-					BitConverter.ToSingle( buffer, i + sizeof( float ) * 2 ) );
+					BitConverter.ToSingle( buffer, i + yOffset ),
+					BitConverter.ToSingle( buffer, i + zOffset ));
 				index++;
 			}
 		}

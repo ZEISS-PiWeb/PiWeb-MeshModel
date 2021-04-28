@@ -296,7 +296,7 @@ namespace Zeiss.PiWeb.MeshModel
 			var length = reader.ReadInt32(); // Number of vertices
 
 			var result = new T[ length ];
-			foreach( var (count, current, buffer) in reader.ReadByteArrays( length * structArrayIo.Stride ) )
+			foreach( var (count, current, buffer) in reader.ReadByteArrays( length * structArrayIo.Stride, structArrayIo.Stride ) )
 			{
 				var index = current / structArrayIo.Stride;
 
@@ -386,7 +386,7 @@ namespace Zeiss.PiWeb.MeshModel
 			else
 			{
 				var triangleIndices = new int[ indexCount ];
-				foreach( var (count, current, buffer) in rdr.ReadByteArrays( indexCount * sizeof( int ) ) )
+				foreach( var (count, current, buffer) in rdr.ReadByteArrays( indexCount * sizeof( int ), sizeof(int) ) )
 				{
 					Buffer.BlockCopy( buffer, 0, triangleIndices, current, count );
 				}
@@ -395,19 +395,17 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
-		/// <param name="rdr"></param>
-		/// <param name="totalBytes"></param>
-		/// <returns>
-		/// Triple of (Count, Current, buffer) where
-		/// <ol>
-		///		<li>Count ... number of bytes written into the buffer in this iteration</li>
-		///		<li>Current ... at which byte this buffer starts</li>
-		///		<li>buffer ... byte array containing as much bytes as given by "Count"</li>
-		/// </ol>
-		/// </returns>
-		private static IEnumerable<(int Count, int Current, byte[] buffer)> ReadByteArrays( this BinaryReader rdr, int totalBytes )
+		///  <returns>
+		///  Triple of (Count, Current, buffer) where
+		///  <ol>
+		/// 		<li>Count ... number of bytes written into the buffer in this iteration</li>
+		/// 		<li>Current ... at which byte this buffer starts</li>
+		/// 		<li>buffer ... byte array containing as much bytes as given by "Count"</li>
+		///  </ol>
+		///  </returns>
+		private static IEnumerable<(int Count, int Current, byte[] buffer)> ReadByteArrays( this BinaryReader rdr, int totalBytes, int stride )
 		{
-			const int arrayLength = 8 * 1024;
+			var arrayLength = stride * 1024;
 
 			var current = 0;
 			var buffer = ArrayPool<byte>.Shared.Rent( arrayLength );

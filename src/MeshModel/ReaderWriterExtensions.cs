@@ -204,7 +204,7 @@ namespace Zeiss.PiWeb.MeshModel
 			{
 				var count = Math.Min( arrayLength, bytesToWrite - bytesWritten );
 
-				index = structArrayIo.BufferFunction( buffer, elements, count, index );
+				index = structArrayIo.WriteBuffer( buffer, elements, count, index );
 
 				writer.Write( buffer, 0, count );
 

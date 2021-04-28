@@ -25,7 +25,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 		/// <summary>
 		/// Fills the given buffer array with the given number of elements, applying a specific layout:
-		/// 
+		///
 		/// <code>
 		/// [ArrayLength][T0,T1,...][T0,T1,...][T0,T1,...]...
 		/// |4B         |stride    |stride    |stride    |...
@@ -36,9 +36,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="count">Number of items to take from the source array.</param>
 		/// <param name="index">Where to start copying from the source array.</param>
 		/// <returns>Position in the source array after filling the buffer.</returns>
-		int BufferFunction( byte[] buffer, T[] source, int count, int index );
+		int WriteBuffer( byte[] buffer, T[] source, int count, int index );
 
-		int ReadBuffer( byte[] buffer, T[] result, int count, int index );
+		void ReadBuffer( byte[] buffer, T[] result, int count, int index );
 
 		#endregion
 	}
@@ -67,17 +67,16 @@ namespace Zeiss.PiWeb.MeshModel
 		/// |4B         |4B    |4B    |4B    |...
 		/// </code>
 		/// </remarks>
-		public int BufferFunction( byte[] buffer, float[] source, int count, int index )
+		public int WriteBuffer( byte[] buffer, float[] source, int count, int index )
 		{
 			Buffer.BlockCopy( source, index, buffer, 0, count );
 
 			return index + count;
 		}
 
-		public int ReadBuffer( byte[] buffer, float[] result, int count, int index )
+		public void ReadBuffer( byte[] buffer, float[] result, int count, int index )
 		{
 			Buffer.BlockCopy( buffer, 0, result, index * Stride, count );
-			return index + count;
 		}
 
 		public int Stride => sizeof( float );
@@ -109,7 +108,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// |4B         |4B   |4B   |4B   |...
 		/// </code>
 		/// </remarks>
-		public int BufferFunction( byte[] buffer, Color[] source, int count, int index )
+		public int WriteBuffer( byte[] buffer, Color[] source, int count, int index )
 		{
 			for( var i = 0; i < count; i += Stride, index++ )
 			{
@@ -123,15 +122,13 @@ namespace Zeiss.PiWeb.MeshModel
 			return index;
 		}
 
-		public int ReadBuffer( byte[] buffer, Color[] result, int count, int index )
+		public void ReadBuffer( byte[] buffer, Color[] result, int count, int index )
 		{
 			for( var i = 0; i < count; i += Stride )
 			{
 				result[ index ] = Color.FromArgb( buffer[ i ], buffer[ i + 1 ], buffer[ i + 2 ], buffer[ i + 3 ] );
 				index++;
 			}
-
-			return index;
 		}
 
 		public int Stride => Color.Stride;
@@ -163,7 +160,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// |4B         |8B |8B |8B |...
 		/// </code>
 		/// </remarks>
-		public int BufferFunction( byte[] buffer, Vector2F[] source, int count, int index )
+		public int WriteBuffer( byte[] buffer, Vector2F[] source, int count, int index )
 		{
 			const int componentSize = sizeof( float );
 
@@ -176,7 +173,7 @@ namespace Zeiss.PiWeb.MeshModel
 			return index;
 		}
 
-		public int ReadBuffer( byte[] buffer, Vector2F[] result, int count, int index )
+		public void ReadBuffer( byte[] buffer, Vector2F[] result, int count, int index )
 		{
 			for( var i = 0; i < count; i += Stride )
 			{
@@ -185,8 +182,6 @@ namespace Zeiss.PiWeb.MeshModel
 					BitConverter.ToSingle( buffer, i + sizeof( float ) ) );
 				index++;
 			}
-
-			return index;
 		}
 
 		public int Stride => Vector2F.Stride;
@@ -218,7 +213,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// |4B         |12B |12B |12B |...
 		/// </code>
 		/// </remarks>
-		public int BufferFunction( byte[] buffer, Vector3F[] source, int count, int index )
+		public int WriteBuffer( byte[] buffer, Vector3F[] source, int count, int index )
 		{
 			const int componentSize = sizeof( float );
 
@@ -232,7 +227,7 @@ namespace Zeiss.PiWeb.MeshModel
 			return index;
 		}
 
-		public int ReadBuffer( byte[] buffer, Vector3F[] result, int count, int index )
+		public void ReadBuffer( byte[] buffer, Vector3F[] result, int count, int index )
 		{
 			for( var i = 0; i < count; i += Stride )
 			{
@@ -242,8 +237,6 @@ namespace Zeiss.PiWeb.MeshModel
 					BitConverter.ToSingle( buffer, i + sizeof( float ) * 2 ) );
 				index++;
 			}
-
-			return index;
 		}
 
 		public int Stride => Vector3F.Stride;

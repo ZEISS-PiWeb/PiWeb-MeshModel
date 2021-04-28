@@ -29,17 +29,17 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 		{
 			var positions = new[]
 			{
-				new Vector3F( 0f, 0f, 0f ), 
-				new Vector3F(0f, 1f, 0f), 
-				new Vector3F(1f, 1f, 0f), 
-				new Vector3F(0f, 0f, 1f)
+				new Vector3F( 0f, 0f, 0f ),
+				new Vector3F( 0f, 1f, 0f ),
+				new Vector3F( 1f, 1f, 0f ),
+				new Vector3F( 0f, 0f, 1f )
 			};
 			var normals = new[]
 			{
-				new Vector3F(-1f, -1f, -1f), 
-				new Vector3F(0f, 1f, 0f), 
-				new Vector3F(1f, 1f, 0f), 
-				new Vector3F(0f, 0f, 1f)
+				new Vector3F( -1f, -1f, -1f ),
+				new Vector3F( 0f, 1f, 0f ),
+				new Vector3F( 1f, 1f, 0f ),
+				new Vector3F( 0f, 0f, 1f )
 			};
 			var triangleIndices1 = new[] { 0, 1, 2, 0, 3, 1, 0, 2, 3, 0, 3, 1 };
 			var triangleIndices2 = new[] { 3, 1, 2, 1, 2, 1, 0, 2, 1, 0, 3, 2 };
@@ -60,17 +60,17 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 		{
 			var positions = new[]
 			{
-				new Vector3F( 0f, 0f, 0f ), 
-				new Vector3F(0f, 1f, 0f), 
-				new Vector3F(1f, 1f, 0f), 
-				new Vector3F(0f, 0f, 1f)
+				new Vector3F( 0f, 0f, 0f ),
+				new Vector3F( 0f, 1f, 0f ),
+				new Vector3F( 1f, 1f, 0f ),
+				new Vector3F( 0f, 0f, 1f )
 			};
 			var normals = new[]
 			{
-				new Vector3F(-1f, -1f, -1f), 
-				new Vector3F(0f, 1f, 0f), 
-				new Vector3F(1f, 1f, 0f), 
-				new Vector3F(0f, 0f, 1f)
+				new Vector3F( -1f, -1f, -1f ),
+				new Vector3F( 0f, 1f, 0f ),
+				new Vector3F( 1f, 1f, 0f ),
+				new Vector3F( 0f, 0f, 1f )
 			};
 			var triangleIndices = new[] { 0, 1, 2, 0, 3, 1, 0, 2, 3, 0, 3, 1 };
 			var largeTriangleList = Enumerable.Range( 0, 10 * 1024 ).SelectMany( _ => triangleIndices ).ToArray();
@@ -86,31 +86,31 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 		{
 			var positions1 = new[]
 			{
-				new Vector3F( 0f, 0f, 0f ), 
-				new Vector3F(0f, 1f, 0f), 
-				new Vector3F(1f, 1f, 0f), 
-				new Vector3F(0f, 0f, 1f)
+				new Vector3F( 0f, 0f, 0f ),
+				new Vector3F( 0f, 1f, 0f ),
+				new Vector3F( 1f, 1f, 0f ),
+				new Vector3F( 0f, 0f, 1f )
 			};
 			var normals1 = new[]
 			{
-				new Vector3F(-1f, -1f, -1f), 
-				new Vector3F(0f, 1f, 0f), 
-				new Vector3F(1f, 1f, 0f), 
-				new Vector3F(0f, 0f, 1f)
+				new Vector3F( -1f, -1f, -1f ),
+				new Vector3F( 0f, 1f, 0f ),
+				new Vector3F( 1f, 1f, 0f ),
+				new Vector3F( 0f, 0f, 1f )
 			};
 			var positions2 = new[]
 			{
-				new Vector3F( 0f, 0f, 0f ), 
-				new Vector3F(0f, 1f, 0f), 
-				new Vector3F(1f, 1f, 0f), 
-				new Vector3F(0f, 0f, 1f)
+				new Vector3F( 0f, 0f, 0f ),
+				new Vector3F( 0f, 1f, 0f ),
+				new Vector3F( 1f, 1f, 0f ),
+				new Vector3F( 0f, 0f, 1f )
 			};
 			var normals2 = new[]
 			{
-				new Vector3F(-1f, -1f, -1f), 
-				new Vector3F(0f, 1f, 0f), 
-				new Vector3F(1f, 1f, 0f), 
-				new Vector3F(0f, 0f, 1f)
+				new Vector3F( -1f, -1f, -1f ),
+				new Vector3F( 0f, 1f, 0f ),
+				new Vector3F( 1f, 1f, 0f ),
+				new Vector3F( 0f, 0f, 1f )
 			};
 			var triangleIndices = new[] { 0, 1, 2, 0, 3, 1, 0, 2, 3, 0, 3, 1 };
 
@@ -135,17 +135,17 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 		{
 			var positions = new[]
 			{
-				new Vector3F( 0f, 0f, 0f ), 
-				new Vector3F(0f, 1f, 0f), 
-				new Vector3F(1f, 1f, 0f), 
-				new Vector3F(0f, 0f, 1f)
+				new Vector3F( 0f, 0f, 0f ),
+				new Vector3F( 0f, 1f, 0f ),
+				new Vector3F( 1f, 1f, 0f ),
+				new Vector3F( 0f, 0f, 1f )
 			};
 			var normals = new[]
 			{
-				new Vector3F(-1f, -1f, -1f), 
-				new Vector3F(0f, 1f, 0f), 
-				new Vector3F(1f, 1f, 0f), 
-				new Vector3F(0f, 0f, 1f)
+				new Vector3F( -1f, -1f, -1f ),
+				new Vector3F( 0f, 1f, 0f ),
+				new Vector3F( 1f, 1f, 0f ),
+				new Vector3F( 0f, 0f, 1f )
 			};
 			var triangleIndices1 = new[] { 0, 1, 2, 0, 3, 1, 0, 2, 3, 0, 3, 1 };
 			var triangleIndices2 = new[] { 3, 1, 2, 1, 3, 1, 0, 2, 3, 0, 3, 1 };

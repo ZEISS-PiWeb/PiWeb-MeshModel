@@ -12,9 +12,17 @@ using System;
 
 namespace Zeiss.PiWeb.MeshModel
 {
-    interface IStructArrayIo<in T>
+	interface IStructArrayIo<in T>
 		where T : struct
 	{
+		#region properties
+
+		int Stride { get; }
+
+		#endregion
+
+		#region methods
+
 		/// <summary>
 		/// Fills the given buffer array with the given number of elements, applying a specific layout:
 		/// 
@@ -30,17 +38,27 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <returns>Position in the source array after filling the buffer.</returns>
 		int BufferFunction( byte[] buffer, T[] source, int count, int index );
 
-		int ReadBuffer(byte[] buffer, T[] result, int count, int index);
-		
-		int Stride { get; }
+		int ReadBuffer( byte[] buffer, T[] result, int count, int index );
+
+		#endregion
 	}
-	
+
 	public class FloatIo : IStructArrayIo<float>
 	{
-		private FloatIo(){}
+		#region constructors
+
+		private FloatIo() { }
+
+		#endregion
+
+		#region properties
 
 		public static FloatIo Instance { get; } = new FloatIo();
-		
+
+		#endregion
+
+		#region interface IStructArrayIo<float>
+
 		/// <inheritdoc />
 		/// <remarks>
 		/// Specific layout:
@@ -52,25 +70,37 @@ namespace Zeiss.PiWeb.MeshModel
 		public int BufferFunction( byte[] buffer, float[] source, int count, int index )
 		{
 			Buffer.BlockCopy( source, index, buffer, 0, count );
-			
+
 			return index + count;
 		}
 
-		public int ReadBuffer(byte[] buffer, float[] result, int count, int index)
+		public int ReadBuffer( byte[] buffer, float[] result, int count, int index )
 		{
-			Buffer.BlockCopy( buffer, 0, result, index*Stride, count );
+			Buffer.BlockCopy( buffer, 0, result, index * Stride, count );
 			return index + count;
 		}
 
-		public int Stride => sizeof(float);
+		public int Stride => sizeof( float );
+
+		#endregion
 	}
 
 	public class ColorIo : IStructArrayIo<Color>
 	{
-		private ColorIo(){}
+		#region constructors
+
+		private ColorIo() { }
+
+		#endregion
+
+		#region properties
 
 		public static ColorIo Instance { get; } = new ColorIo();
-		
+
+		#endregion
+
+		#region interface IStructArrayIo<Color>
+
 		/// <inheritdoc />
 		/// <remarks>
 		/// Specific layout:
@@ -81,23 +111,23 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </remarks>
 		public int BufferFunction( byte[] buffer, Color[] source, int count, int index )
 		{
-			for (var i = 0; i < count; i+=Stride, index++)
+			for( var i = 0; i < count; i += Stride, index++ )
 			{
 				// We use fixed byte order, to keep things consistent across machine boundaries.
-				buffer[i] = source[index].A;
-				buffer[i+1] = source[index].R;
-				buffer[i+2] = source[index].G;
-				buffer[i+3] = source[index].B;
+				buffer[ i ] = source[ index ].A;
+				buffer[ i + 1 ] = source[ index ].R;
+				buffer[ i + 2 ] = source[ index ].G;
+				buffer[ i + 3 ] = source[ index ].B;
 			}
-			
+
 			return index;
 		}
 
-		public int ReadBuffer(byte[] buffer, Color[] result, int count, int index)
+		public int ReadBuffer( byte[] buffer, Color[] result, int count, int index )
 		{
-			for (var i = 0; i < count; i += Stride)
+			for( var i = 0; i < count; i += Stride )
 			{
-				result[index] = Color.FromArgb(buffer[i], buffer[i+1], buffer[i+2], buffer[i+3]);
+				result[ index ] = Color.FromArgb( buffer[ i ], buffer[ i + 1 ], buffer[ i + 2 ], buffer[ i + 3 ] );
 				index++;
 			}
 
@@ -105,14 +135,26 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		public int Stride => Color.Stride;
+
+		#endregion
 	}
-	
+
 	public class Vector2FIo : IStructArrayIo<Vector2F>
 	{
-		private Vector2FIo(){}
+		#region constructors
+
+		private Vector2FIo() { }
+
+		#endregion
+
+		#region properties
 
 		public static Vector2FIo Instance { get; } = new Vector2FIo();
-		
+
+		#endregion
+
+		#region interface IStructArrayIo<Vector2F>
+
 		/// <inheritdoc />
 		/// <remarks>
 		/// Specific layout:
@@ -123,24 +165,24 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </remarks>
 		public int BufferFunction( byte[] buffer, Vector2F[] source, int count, int index )
 		{
-			const int componentSize = sizeof(float);
-			
-			for (var i = 0; i < count; i+=Stride, index++)
+			const int componentSize = sizeof( float );
+
+			for( var i = 0; i < count; i += Stride, index++ )
 			{
-				Array.Copy( BitConverter.GetBytes( source[index].X ), 0, buffer, i, componentSize );
-				Array.Copy( BitConverter.GetBytes( source[index].Y ), 0, buffer, i + componentSize, componentSize );
+				Array.Copy( BitConverter.GetBytes( source[ index ].X ), 0, buffer, i, componentSize );
+				Array.Copy( BitConverter.GetBytes( source[ index ].Y ), 0, buffer, i + componentSize, componentSize );
 			}
-			
+
 			return index;
 		}
 
-		public int ReadBuffer(byte[] buffer, Vector2F[] result, int count, int index)
+		public int ReadBuffer( byte[] buffer, Vector2F[] result, int count, int index )
 		{
-			for (var i = 0; i < count; i += Stride)
+			for( var i = 0; i < count; i += Stride )
 			{
-				result[index] = new Vector2F(
-					BitConverter.ToSingle(buffer, i),
-					BitConverter.ToSingle(buffer, i + sizeof(float)));
+				result[ index ] = new Vector2F(
+					BitConverter.ToSingle( buffer, i ),
+					BitConverter.ToSingle( buffer, i + sizeof( float ) ) );
 				index++;
 			}
 
@@ -148,14 +190,26 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		public int Stride => Vector2F.Stride;
+
+		#endregion
 	}
-	
+
 	public class Vector3FIo : IStructArrayIo<Vector3F>
 	{
-		private Vector3FIo(){}
+		#region constructors
+
+		private Vector3FIo() { }
+
+		#endregion
+
+		#region properties
 
 		public static Vector3FIo Instance { get; } = new Vector3FIo();
-		
+
+		#endregion
+
+		#region interface IStructArrayIo<Vector3F>
+
 		/// <inheritdoc />
 		/// <remarks>
 		/// Specific layout:
@@ -166,26 +220,26 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </remarks>
 		public int BufferFunction( byte[] buffer, Vector3F[] source, int count, int index )
 		{
-			const int componentSize = sizeof(float);
-			
-			for (var i = 0; i < count; i+=Stride, index++)
+			const int componentSize = sizeof( float );
+
+			for( var i = 0; i < count; i += Stride, index++ )
 			{
-				Array.Copy( BitConverter.GetBytes( source[index].X ), 0, buffer, i, componentSize );
-				Array.Copy( BitConverter.GetBytes( source[index].Y ), 0, buffer, i + componentSize, componentSize );
-				Array.Copy( BitConverter.GetBytes( source[index].Z ), 0, buffer, i + componentSize*2, componentSize );
+				Array.Copy( BitConverter.GetBytes( source[ index ].X ), 0, buffer, i, componentSize );
+				Array.Copy( BitConverter.GetBytes( source[ index ].Y ), 0, buffer, i + componentSize, componentSize );
+				Array.Copy( BitConverter.GetBytes( source[ index ].Z ), 0, buffer, i + componentSize * 2, componentSize );
 			}
-			
+
 			return index;
 		}
 
-		public int ReadBuffer(byte[] buffer, Vector3F[] result, int count, int index)
+		public int ReadBuffer( byte[] buffer, Vector3F[] result, int count, int index )
 		{
-			for (var i = 0; i < count; i += Stride)
+			for( var i = 0; i < count; i += Stride )
 			{
-				result[index] = new Vector3F(
-					BitConverter.ToSingle(buffer, i),
-					BitConverter.ToSingle(buffer, i + sizeof(float)),
-					BitConverter.ToSingle(buffer, i + sizeof(float)*2));
+				result[ index ] = new Vector3F(
+					BitConverter.ToSingle( buffer, i ),
+					BitConverter.ToSingle( buffer, i + sizeof( float ) ),
+					BitConverter.ToSingle( buffer, i + sizeof( float ) * 2 ) );
 				index++;
 			}
 
@@ -193,5 +247,7 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		public int Stride => Vector3F.Stride;
+
+		#endregion
 	}
 }

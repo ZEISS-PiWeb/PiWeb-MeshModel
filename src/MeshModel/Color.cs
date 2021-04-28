@@ -27,10 +27,10 @@ namespace Zeiss.PiWeb.MeshModel
 	[Serializable, StructLayout( LayoutKind.Sequential, Size = Stride, Pack = 1 )]
 	public readonly struct Color : IEquatable<Color>
 	{
-		public const int Stride = sizeof(byte) * 4;
-		
+		public const int Stride = sizeof( byte ) * 4;
+
 		#region members
-		
+
 		/// <summary>
 		/// Red channel.
 		/// </summary>
@@ -45,7 +45,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Blue channel.
 		/// </summary>
 		public readonly byte B;
-		
+
 		/// <summary>
 		/// Alpha channel.
 		/// </summary>
@@ -104,9 +104,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <returns></returns>
 		public float ToPackedArgb()
 		{
-			return BitConverter.ToSingle(new[] {A, R, G, B}, 0);
+			return BitConverter.ToSingle( new[] { A, R, G, B }, 0 );
 		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Color"/> struct from a hex string in the form of '#AARRGGBB' or 'AARRGGBB'.
 		/// </summary>

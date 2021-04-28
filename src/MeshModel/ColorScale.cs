@@ -226,7 +226,7 @@ namespace Zeiss.PiWeb.MeshModel
 			precision = Math.Max( 1, precision );
 			return precision;
 		}
-		
+
 		/// <summary>
 		/// Checks whether a double value is a finite number (is not NaN or Infinity).
 		/// </summary>
@@ -239,7 +239,7 @@ namespace Zeiss.PiWeb.MeshModel
 			var bits = BitConverter.DoubleToInt64Bits( value );
 			return ( bits & 0x7FFFFFFFFFFFFFFF ) < 0x7FF0000000000000;
 		}
-		
+
 		#endregion
 	}
 }

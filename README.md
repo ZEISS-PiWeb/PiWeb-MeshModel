@@ -72,15 +72,14 @@ To get started, let's create a very basic shape with only a few points and a sin
 ```csharp
 var positions = new[]
 {
-	new Vector3F(),
     new Vector3F(0.0f, 0.0f, 0.0f),
-	new Vector3F(1.0f, 0.0f, 0.0f),
-	new Vector3F(1.0f, 1.0f, 0.0f),
-	new Vector3F(0.0f, 1.0f, 0.0f),
+    new Vector3F(1.0f, 0.0f, 0.0f),
+    new Vector3F(1.0f, 1.0f, 0.0f),
+    new Vector3F(0.0f, 1.0f, 0.0f),
     new Vector3F(0.0f, 0.0f, 1.0f),
-	new Vector3F(1.0f, 0.0f, 1.0f),
-	new Vector3F(1.0f, 1.0f, 1.0f),
-	new Vector3F(0.0f, 1.0f, 1.0f)
+    new Vector3F(1.0f, 0.0f, 1.0f),
+    new Vector3F(1.0f, 1.0f, 1.0f),
+    new Vector3F(0.0f, 1.0f, 1.0f)
 };
 
 var indices = new[]

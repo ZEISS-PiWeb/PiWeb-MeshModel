@@ -15,7 +15,7 @@
     <ItemGroup>
         <ProjectReference Include="..\MeshModel\MeshModel.csproj" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="AutoFixture" Version="4.16.0" />
         <PackageReference Include="Moq" Version="4.16.1" />
@@ -35,5 +35,5 @@
     <ItemGroup>
         <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\*.meshModel" />
     </ItemGroup>
-    
+
 </Project>

@@ -1,3 +1,6 @@
+[![master](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/dotnet.yml)
+[![NuGet](https://img.shields.io/nuget/v/Zeiss.PiWeb.MeshModel?logo=nuget)](https://www.nuget.org/packages/Zeiss.PiWeb.MeshModel/)
+
 # PiWeb MeshModel
 
 | ![Zeiss IQS Logo](gfx/logo_128x128.png) | The **PiWeb MeshModel library** provides an easy to use interface for reading and especially writing PiWeb meshmodel data. |
@@ -43,7 +46,7 @@ PM> Install-Package Zeiss.PiWeb.MeshModel
 Or compile the library by yourself. Requirements:
 
 * Microsoft Visual Studio 2019
-* Microsoft .NET Standard 2.1
+* Microsoft .NET Standard 2.0
 
 
 ## Older versions
@@ -72,8 +75,14 @@ To get started, let's create a very basic shape with only a few points and a sin
 ```csharp
 var positions = new[]
 {
-    0.0f, 0.0f, 0.0f,    1.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f,    0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 1.0f,    1.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,    0.0f, 1.0f, 1.0f
+    new Vector3F(0.0f, 0.0f, 0.0f),
+    new Vector3F(1.0f, 0.0f, 0.0f),
+    new Vector3F(1.0f, 1.0f, 0.0f),
+    new Vector3F(0.0f, 1.0f, 0.0f),
+    new Vector3F(0.0f, 0.0f, 1.0f),
+    new Vector3F(1.0f, 0.0f, 1.0f),
+    new Vector3F(1.0f, 1.0f, 1.0f),
+    new Vector3F(0.0f, 1.0f, 1.0f)
 };
 
 var indices = new[]
@@ -96,16 +105,19 @@ When we display the model in PiWeb, the result will look like this:
 This isn't very nice, because every vertex has only one normal, and it points to none of the sides, since the adjacent triangles are orthogonal to each other. You could improve this by duplicating points and specifying precalculated normals, but there's an easier way: just create a single **mesh** for **every side** of the cube:
 
 ```csharp
-static Mesh CreateSquare( Point3F p1, Point3F p2, Point3F p3, Point3F p4)
+static Mesh CreateSquare( Vector3F p1, Vector3F p2, Vector3F p3, Vector3F p4)
 {   
     return new Mesh( 0, 
-        new [] { p1.X, p1.Y, p1.Z, p2.X, p2.Y, p2.Z , p3.X, p3.Y, p3.Z , p4.X, p4.Y, p4.Z }, null, 
-        new []{ 0, 1, 2, 2, 3, 0 }, null, Color.FromRgb( 71, 186, 255 ) );
+        new [] { p1, p2, p3, p4 },
+		null, 
+        new []{ 0, 1, 2, 2, 3, 0 },
+		null,
+		Color.FromRgb( 71, 186, 255 ) );
 }
 
 var points = new[]
 {
-    new Point3F( 0.0f, 0.0f, 0.0f ),
+    new Vector3F( 0.0f, 0.0f, 0.0f ),
     // ...Seven more points
 };
 
@@ -137,7 +149,7 @@ var meshvalues = new MeshValue[meshes.length];
 for (var i = 0; i < meshes.Length; i++)
 {
     var mesh = meshes[ i ];
-    var values = new float[ mesh.Positions.Length / 3];
+    var values = new float[ mesh.Positions.Length ];
         
     // The number of values must be equal to the number of vertices  
     for (var j = 0; j < values.Length; j++ )

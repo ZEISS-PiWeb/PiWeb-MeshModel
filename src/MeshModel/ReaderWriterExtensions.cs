@@ -24,7 +24,7 @@ namespace Zeiss.PiWeb.MeshModel
 	/// <summary>
 	/// Helper class for reading and writing data into xml files or binary streams.
 	/// </summary>
-	internal static class ReaderWriterExtensions
+	public static class ReaderWriterExtensions
 	{
 		#region constants
 
@@ -46,7 +46,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// current time. By doing so, two zip archives with the same binary content become binary identical which leads
 		/// to the same hash, which makes change detection easier.
 		/// </summary>
-		public static ZipArchiveEntry CreateNormalizedEntry( this ZipArchive zipArchive, string entryName, CompressionLevel compressionLevel )
+		internal static ZipArchiveEntry CreateNormalizedEntry( this ZipArchive zipArchive, string entryName, CompressionLevel compressionLevel )
 		{
 			var entry = zipArchive.CreateEntry( entryName, compressionLevel );
 			entry.LastWriteTime = new DateTime( 1980, 1, 1 );
@@ -58,7 +58,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// * If the array is empty, a <code>false</code> marker will be written
 		/// * If the array is not empty, a <code>true</code> marker will be written first and the values are written
 		/// </summary>
-		public static void WriteConditionalStrings( this BinaryWriter binaryWriter, string[] values )
+		internal static void WriteConditionalStrings( this BinaryWriter binaryWriter, string[] values )
 		{
 			if( values != null && values.Length > 0 )
 			{
@@ -78,7 +78,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Writes the <paramref name="color"/> as an hex string at an attribute named <paramref name="name"/>.
 		/// </summary>
-		public static void WriteColorAttribute( this XmlWriter writer, string name, Color color )
+		internal static void WriteColorAttribute( this XmlWriter writer, string name, Color color )
 		{
 			writer.WriteAttributeString( name, $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}" );
 		}
@@ -86,7 +86,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Writes the color value as an integer value.
 		/// </summary>
-		public static void WriteArgbColor( this BinaryWriter writer, Color color )
+		internal static void WriteArgbColor( this BinaryWriter writer, Color color )
 		{
 			writer.Write( color.A << 24 | color.R << 16 | color.G << 8 | color.B );
 		}
@@ -96,7 +96,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// * If the color is null, a <code>false</code> marker will be written
 		/// * If the color is not null, a <code>true</code> marker will be written first and the color is written
 		/// </summary>
-		public static void WriteConditionalColor( this BinaryWriter binaryWriter, Color? color )
+		internal static void WriteConditionalColor( this BinaryWriter binaryWriter, Color? color )
 		{
 			if( color.HasValue )
 			{
@@ -119,7 +119,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="structArrayIo">Specific object for buffering values of struct type T.</param>
 		/// <param name="writer">To write values.</param>
 		/// <param name="data">To be written out.</param>
-		public static void WriteConditionalArray<T>(
+		internal static void WriteConditionalArray<T>(
 			this BinaryWriter writer,
 			IStructArrayIo<T> structArrayIo,
 			T[] data )
@@ -147,7 +147,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="structArrayIo">Specific object for buffering values of struct type T.</param>
 		/// <param name="writer">To write values.</param>
 		/// <param name="data">To be written out.</param>
-		public static void WriteArray<T>(
+		internal static void WriteArray<T>(
 			this BinaryWriter writer,
 			IStructArrayIo<T> structArrayIo,
 			T[] data )
@@ -239,27 +239,12 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Reads an array of floats with a condition marker. First the marker is read and
-		/// * if true, the float array is read and returned
-		/// * if false, an empty array is returned
-		/// </summary>
-		public static float[] ReadConditionalFloatArray( this BinaryReader binaryReader, int componentCount, Version fileVersion )
-		{
-			if( !binaryReader.ReadBoolean() )
-				return Array.Empty<float>();
-
-			return fileVersion == FileVersion10
-				? binaryReader.ReadDoubleArray( componentCount )
-				: binaryReader.ReadArray( FloatIo.Instance );
-		}
-
-		/// <summary>
 		/// Reads an array of floats with a condition marker and interprets it as array of Vector3F. First the marker is
 		/// read and
 		/// * if true, the float array is read and returned as array of Vector3Fs
 		/// * if false, an empty array is returned
 		/// </summary>
-		public static Vector3F[] ReadConditionalVector3FArray(
+		internal static Vector3F[] ReadConditionalVector3FArray(
 			this BinaryReader binaryReader,
 			Version fileVersion )
 		{
@@ -268,7 +253,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 			return fileVersion == FileVersion10
 				? binaryReader.ReadDoubleArrayAsVector3FArray()
-				: binaryReader.ReadArray( Vector3FIo.Instance );
+				: binaryReader.ReadLengthAndArray( Vector3FIo.Instance );
 		}
 
 		/// <summary>
@@ -276,7 +261,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// * if true, the string array is read and returned
 		/// * if false, an empty array is returned
 		/// </summary>
-		public static string[] ReadConditionalStringArray( this BinaryReader binaryReader )
+		internal static string[] ReadConditionalStringArray( this BinaryReader binaryReader )
 		{
 			if( !binaryReader.ReadBoolean() )
 				return Array.Empty<string>();
@@ -290,38 +275,43 @@ namespace Zeiss.PiWeb.MeshModel
 			return layer;
 		}
 
-		public static T[] ReadArray<T>( this BinaryReader reader, IStructArrayIo<T> structArrayIo )
+		/// <summary>
+		/// Reads the given number of <see cref="Vector3F"/> from a <see cref="BinaryReader"/>.
+		/// </summary>
+		/// <param name="reader">To read binary stream.</param>
+		/// <param name="numberOfElements">To know where to stop reading.</param>
+		/// <returns>Array of vectors.</returns>
+		/// <exception cref="T:System.ArgumentOutOfRangeException">If <paramref name="numberOfElements">numberOfElements</paramref> exceeds the remaining length of the buffer or is &lt; 0.</exception>
+		public static Vector3F[] ReadVector3FArray( this BinaryReader reader, int numberOfElements )
+		{
+			if( numberOfElements < 0
+				|| reader.BaseStream.Length - reader.BaseStream.Position < numberOfElements * Vector3F.Stride )
+			{
+				throw new ArgumentOutOfRangeException(
+					nameof( numberOfElements ),
+					$"The given {nameof(numberOfElements)} is out of the bounds [0,<remaining buffer length / element stride>]." );
+			}
+
+			return reader.ReadArray( Vector3FIo.Instance, numberOfElements );
+		}
+
+		internal static T[] ReadLengthAndArray<T>( this BinaryReader reader, IStructArrayIo<T> structArrayIo )
 			where T : struct
 		{
 			var length = reader.ReadInt32(); // Number of vertices
 
-			var result = new T[ length ];
-			foreach( var (count, current, buffer) in reader.ReadByteArrays( length, structArrayIo.Stride ) )
+			return reader.ReadArray( structArrayIo, length );
+		}
+
+		internal static T[] ReadArray<T>( this BinaryReader reader, IStructArrayIo<T> structArrayIo, int numberOfElements )
+			where T : struct
+		{
+			var result = new T[ numberOfElements ];
+			foreach( var (count, current, buffer) in reader.ReadByteArrays( numberOfElements, structArrayIo.Stride ) )
 			{
 				var index = current / structArrayIo.Stride;
 
 				structArrayIo.ReadBuffer( buffer, result, count, index );
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Returns a double array representing vertices in the following format:
-		///
-		/// array = { x, y, z, x, y, z, x, y, z, x, y, z, ... }
-		/// </summary>
-		/// <param name="rdr">A <see cref="BinaryReader"/> having access to the mesh data.</param>
-		/// <param name="componentCount">The number of connected components.</param>
-		/// <returns>Array of doubles: x, y, z, x, y, z, x, y, z, ...</returns>
-		public static float[] ReadDoubleArray( this BinaryReader rdr, int componentCount )
-		{
-			var result = new float[ rdr.ReadInt32() * componentCount ];
-
-			var data = rdr.ReadBytes( result.Length * 8 );
-			for( int i = 0, j = 0; i < result.Length; j += 8, i++ )
-			{
-				result[ i ] = (float)BitConverter.ToDouble( data, j );
 			}
 
 			return result;
@@ -334,7 +324,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		/// <param name="rdr">A <see cref="BinaryReader"/> having access to the mesh data.</param>
 		/// <returns>Array of Vector3Fs: v0, v1, v2, v3, v4, ...</returns>
-		public static Vector3F[] ReadDoubleArrayAsVector3FArray( this BinaryReader rdr )
+		internal static Vector3F[] ReadDoubleArrayAsVector3FArray( this BinaryReader rdr )
 		{
 			var result = new Vector3F[ rdr.ReadInt32() ];
 
@@ -354,7 +344,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Reads triangle indices. The <paramref name="pointCount"/> is used to estimate the largest triangle index and
 		/// create a memory efficient storage type to store the indices.
 		/// </summary>
-		public static Mesh.MeshIndices ReadIndices( this BinaryReader rdr, int pointCount )
+		internal static Mesh.MeshIndices ReadIndices( this BinaryReader rdr, int pointCount )
 		{
 			const int indexStride = sizeof( int );
 
@@ -397,14 +387,16 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
-		///  <returns>
-		///  Triple of (Count, Current, buffer) where
-		///  <ol>
-		/// 		<li>Count ... number of bytes written into the buffer in this iteration</li>
-		/// 		<li>Current ... at which byte this buffer starts</li>
-		/// 		<li>buffer ... byte array containing as much bytes as given by "Count"</li>
-		///  </ol>
-		///  </returns>
+		/// <summary>
+		/// Reads byte arrays in an enumerable way, yielding buffered parts of it.
+		///
+		/// <list type="bullet">
+		/// <item><term>Count:</term><description>number of bytes written into the buffer in this iteration</description></item>
+		/// <item><term>Current:</term><description>at which byte this buffer starts</description></item>
+		/// <item><term>buffer:</term><description>byte array containing as much bytes as given by "Count"</description></item>
+		/// </list>
+		/// </summary>
+		/// <returns>Triple of (Count, Current, buffer).</returns>
 		private static IEnumerable<(int Count, int Current, byte[] buffer)> ReadByteArrays( this BinaryReader rdr, int elementCount, int stride )
 		{
 			var totalBytes = elementCount * stride;

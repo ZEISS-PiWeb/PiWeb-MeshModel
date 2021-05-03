@@ -9,13 +9,13 @@
         <Company>Carl Zeiss Industrielle Messtechnik GmbH</Company>
         <Authors>$(Company)</Authors>
         <IsPackable>false</IsPackable>
-        <Version>3.0.0</Version>
+        <Version>3.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\MeshModel\MeshModel.csproj" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="AutoFixture" Version="4.16.0" />
         <PackageReference Include="Moq" Version="4.16.1" />
@@ -35,5 +35,5 @@
     <ItemGroup>
         <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\*.meshModel" />
     </ItemGroup>
-    
+
 </Project>

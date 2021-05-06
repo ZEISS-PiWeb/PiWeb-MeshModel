@@ -62,7 +62,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		/// <param name="stream">The stream.</param>
 		/// <param name="entry">Entry as specified in the metadata.</param>
-		/// <param name="fileVersion">Fileversion as specified in the metadata.</param>
+		/// <param name="fileVersion">File version as specified in the metadata.</param>
 		public static MeshValueList Load( Stream stream, MeshValueEntry entry, Version fileVersion )
 		{
 			using var reader = new BinaryReader( stream, Encoding.Unicode, true );

@@ -87,7 +87,7 @@ namespace Zeiss.PiWeb.MeshModel
 		public Edge[] Edges { get; }
 
 		/// <summary>
-		/// Gets the metadata.
+		/// Gets this <see cref="MeshModelPart"/>'s metadata.
 		/// </summary>
 		public MeshModelMetadata Metadata { get; }
 
@@ -112,18 +112,14 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
-
 		/// <summary>
 		/// Gets a value indicating whether this instance has thumbnail.
 		/// </summary>
 		public bool HasThumbnail => Thumbnail != null;
 
 		/// <summary>
-		/// Gets or sets the thumbnail of this <see cref="MeshModelPart"/>.
+		/// Gets or sets a byte array containing the thumbnail of this <see cref="MeshModelPart" />.
 		/// </summary>
-		/// <value>
-		/// A byte array containing image data.
-		/// </value>
 		public byte[] Thumbnail { get; }
 
 		/// <summary>
@@ -152,8 +148,10 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Create a clone of this mpdel with the new thumbnail <paramref name="thumbnail"/>.
+		/// Create a clone of this <see cref="MeshModelPart"/> with the new thumbnail <paramref name="thumbnail"/>.
 		/// </summary>
+		/// <param name="thumbnail">New thumbnail.</param>
+		/// <returns>A new <see cref="MeshModelPart" />.</returns>
 		public MeshModelPart CreateModelWithThumbnail( byte[] thumbnail )
 		{
 			if( ( thumbnail ?? Array.Empty<byte>() ).SequenceEqual( Thumbnail ?? Array.Empty<byte>() ) )
@@ -170,14 +168,17 @@ namespace Zeiss.PiWeb.MeshModel
 			foreach( var meshValue in MeshValues )
 			{
 				if( meshValue.MeshValues.Length != Meshes.Length )
-					throw new ArgumentException( $"When specifiying a MeshValueList, every MeshValue must be exactly as long as the {nameof( Meshes )}" );
+					throw new ArgumentException( $"When specifying a MeshValueList, every MeshValue must be exactly as long as the {nameof( Meshes )}" );
 			}
 		}
 
 		/// <summary>
-		/// Creates the specified <paramref name="subFolder"/> in the specified <paramref name="zipFile"/> and writes the serialized data into it.
-		/// If the <paramref name="subFolder"/> is null or empty, the data will be serialized into the root directory of the zip archive .
+		/// Creates the specified <paramref name="subFolder"/> in the specified <paramref name="zipFile"/> and writes the serialized data
+		/// into it. If the <paramref name="subFolder"/> is null or empty, the data will be serialized into the root directory of the zip
+		/// archive .
 		/// </summary>
+		/// <param name="zipFile">Target archive of serialized object.</param>
+		/// <param name="subFolder">Target folder of serialized object.</param>
 		public void Serialize( ZipArchive zipFile, string subFolder = "" )
 		{
 			Metadata.MeshValueEntries = MeshValues.Select( v => v.Entry ).ToArray();
@@ -187,14 +188,14 @@ namespace Zeiss.PiWeb.MeshModel
 				Metadata.WriteTo( entryStream, true );
 			}
 
-			// Vorschaubild
+			// Preview image.
 			if( HasThumbnail )
 			{
 				using var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, "PreviewImage.png" ), CompressionLevel.NoCompression ).Open();
 				entryStream.Write( Thumbnail, 0, Thumbnail.Length );
 			}
 
-			// Triangulierungsdaten schreiben
+			// Write triangulation data.
 			using( var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, "Meshes.dat" ), CompressionLevel.Fastest ).Open() )
 			{
 				using var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true );
@@ -205,7 +206,7 @@ namespace Zeiss.PiWeb.MeshModel
 				}
 			}
 
-			// Edgedaten schreiben
+			// Write edge data.
 			using( var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, "Edges.dat" ), CompressionLevel.Fastest ).Open() )
 			{
 				using var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true );
@@ -216,7 +217,7 @@ namespace Zeiss.PiWeb.MeshModel
 				}
 			}
 
-			// Datenwerte schreiben
+			// Write data values.
 			foreach( var entry in MeshValues )
 			{
 				using var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, entry.Entry.Filename ), CompressionLevel.Fastest ).Open();
@@ -229,13 +230,15 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Reads the data from the specified <paramref name="subFolder"/> in the specified <paramref name="zipFile"/> and deserializes the data found in it.
 		/// If no <paramref name="subFolder"/> is specified, the method deserializes the data in the <paramref name="zipFile"/>s root directory.
 		/// </summary>
+		/// <param name="zipFile">Source archive of serialized object.</param>
+		/// <param name="subFolder">Source folder of serialized object.</param>
 		public static MeshModelPart Deserialize( ZipArchive zipFile, string subFolder = "" )
 		{
 			var fileVersion10 = new Version( 1, 0, 0, 0 );
 
 			var metadata = MeshModelMetadata.ExtractFrom( zipFile, subFolder );
 
-			// Versionschecks
+			// Check file format version.
 			var fileVersion = metadata.FileVersion;
 			if( fileVersion < fileVersion10 )
 				throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
@@ -255,6 +258,9 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Reads the values from the specified <paramref name="subFolder"/> in the specified <paramref name="zipFile"/> and deserializes the data found in it.
 		/// If no <paramref name="subFolder"/> is specified, the method deserializes the data in the <paramref name="zipFile"/>s root directory.
 		/// </summary>
+		/// <param name="baseModelPart">The part the new part will be based on.</param>
+		/// <param name="zipFile">Source archive of serialized object.</param>
+		/// <param name="subFolder">Source folder of serialized object.</param>
 		public static MeshModelPart DeserializeValues( MeshModelPart baseModelPart, ZipArchive zipFile, string subFolder = "" )
 		{
 			var fileVersion10 = new Version( 1, 0, 0, 0 );
@@ -264,7 +270,7 @@ namespace Zeiss.PiWeb.MeshModel
 			if( metadata.TriangulationHash != baseModelPart.Metadata.TriangulationHash )
 				throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "TriangulationMismatch_ErrorText" ) );
 
-			// Versionschecks
+			// Check file format version.
 			var fileVersion = metadata.FileVersion;
 			if( fileVersion < fileVersion10 )
 				throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
@@ -290,7 +296,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 		private static MeshValueList[] ReadMeshValueLists( ZipArchive zipFile, MeshModelMetadata metadata, string subFolder, Version fileVersion )
 		{
-			// Datenwerte lesen
+			// Read data values.
 			var meshValueList = new List<MeshValueList>( metadata.MeshValueEntries?.Length ?? 0 );
 			foreach( var entry in metadata.MeshValueEntries ?? Array.Empty<MeshValueEntry>() )
 			{
@@ -315,7 +321,7 @@ namespace Zeiss.PiWeb.MeshModel
 				edges.Add( Edge.Read( binaryReader, fileVersion ) );
 			}
 
-			// we don't try to create a single-point edge
+			// We don't try to create a single-point edge.
 			return edges.Where( e => e.Points?.Length > 1 ).ToArray();
 		}
 
@@ -337,7 +343,8 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Determines whether the <see cref="MeshValues"/> of this instance contain an entry with the specified <paramref name="dataType"/>.
+		/// Determines whether the <see cref="MeshValues"/> of this instance contain an entry with the specified
+		/// <paramref name="dataType"/>.
 		/// </summary>
 		/// <param name="dataType">Type of the data.</param>
 		public bool ContainsMeshValueList( string dataType )
@@ -351,10 +358,12 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </summary>
 		/// <param name="dataType">Type of the data.</param>
 		/// <param name="dataSetIndex">Index of the data set.</param>
-		/// <returns></returns>
+		/// <returns>A dataset matching the given criteria.</returns>
 		public MeshValueList GetMeshValueList( string dataType, int dataSetIndex = -1 )
 		{
-			var meshValueList = MeshValues.Where( list => list.Entry.DataType == dataType ).ToArray();
+			var meshValueList = MeshValues
+				.Where( list => list.Entry.DataType == dataType )
+				.ToArray();
 
 			if( meshValueList.Length == 0 )
 				return null;
@@ -362,7 +371,7 @@ namespace Zeiss.PiWeb.MeshModel
 			if( dataSetIndex < 0 )
 				return meshValueList[ 0 ];
 
-			if( meshValueList.Length > 0 && dataSetIndex >= 0 && dataSetIndex < meshValueList.Length )
+			if( meshValueList.Length > 0 && dataSetIndex < meshValueList.Length )
 				return meshValueList[ dataSetIndex ];
 
 			return null;
@@ -372,10 +381,12 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Returns all <see cref="MeshValueList" /> with the specified <paramref name="dataType" />.
 		/// </summary>
 		/// <param name="dataType">Type of the data.</param>
-		/// <returns></returns>
+		/// <returns>All datasets matching the given criteria.</returns>
 		public MeshValueList[] GetMeshValueLists( string dataType )
 		{
-			return MeshValues.Where( list => string.Equals( list.Entry.DataType, dataType, StringComparison.OrdinalIgnoreCase ) ).ToArray();
+			return MeshValues
+				.Where( list => string.Equals( list.Entry.DataType, dataType, StringComparison.OrdinalIgnoreCase ) )
+				.ToArray();
 		}
 
 		private void UpdateTriangulationHash()
@@ -385,7 +396,7 @@ namespace Zeiss.PiWeb.MeshModel
 			foreach( var mesh in Meshes )
 			{
 				var indices = mesh.GetTriangleIndices();
-				foreach( var (numberOfBytes, buffer) in IterateIndizes( indices ) )
+				foreach( var (numberOfBytes, buffer) in IterateIndices( indices ) )
 				{
 					md5.TransformBlock( buffer, 0, numberOfBytes, null, 0 );
 				}
@@ -395,7 +406,19 @@ namespace Zeiss.PiWeb.MeshModel
 			Metadata.TriangulationHash = new Guid( md5.Hash );
 		}
 
-		public IEnumerable<(int NumberOfBytes, byte[] Buffer)> IterateIndizes( int[] indices )
+		/// <inheritdoc cref="MeshModelPart.IterateIndices"/>
+		[Obsolete("Will be removed in a future release. Use MeshModelPart::IterateIndices instead.")]
+		public static IEnumerable<(int NumberOfBytes, byte[] Buffer)> IterateIndizes( int[] indices )
+		{
+			return IterateIndices( indices );
+		}
+
+		/// <summary>
+		/// Iterates over a list of indices and yields it in 8 or less KiB byte buffers.
+		/// </summary>
+		/// <param name="indices">Array of indices.</param>
+		/// <returns>The number of written bytes and the byte array containing them.</returns>
+		public static IEnumerable<(int NumberOfBytes, byte[] Buffer)> IterateIndices( int[] indices )
 		{
 			const int arrayLength = 8 * 1024;
 
@@ -434,7 +457,6 @@ namespace Zeiss.PiWeb.MeshModel
 			return !_DisabledLayers.Contains( layer ?? "" );
 		}
 
-
 		/// <summary>
 		/// Enables the specified <paramref name="layer"/>.
 		/// </summary>
@@ -456,15 +478,13 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Creates a <see cref="MeshModel"/> that contains only this instance as <see cref="MeshModel.Parts"/>
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>A new <see cref="MeshModel"/> created from this <see cref="MeshModelPart"/>.</returns>
 		public MeshModel ToMeshModel()
 		{
 			return MeshModel.FromMeshModelPart( this );
 		}
 
-		/// <summary>
-		/// Returns a string that represents the current object.
-		/// </summary>
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return $"CAD '{Metadata.Name}' ({Metadata.SourceFormat})";

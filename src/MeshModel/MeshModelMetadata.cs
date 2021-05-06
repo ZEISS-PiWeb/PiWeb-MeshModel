@@ -148,12 +148,11 @@ namespace Zeiss.PiWeb.MeshModel
 			return new MeshModelMetadata { Name = name, SourceFormat = format, Layer = layer.ToArray(), PartCount = metadatas.Length, SourceModels = sourceModels.ToArray() };
 		}
 
-
 		/// <summary>
 		/// Extracts the <see cref="MeshModelMetadata"/> from the specified <paramref name="stream"/>.
 		/// </summary>
 		/// <remarks>
-		/// The stream must contain a meshmodel file which has been created with the <see cref="MeshModel.Serialize(Stream)"/> method.
+		/// The stream must contain a MeshModel file which has been created with the <see cref="MeshModel.Serialize(Stream)"/> method.
 		/// </remarks>
 		public static MeshModelMetadata ExtractFrom( Stream stream, string subFolder = "" )
 		{
@@ -170,7 +169,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Extracts the <see cref="MeshModelMetadata"/> from the specified archive.
 		/// </summary>
 		/// <remarks>
-		/// The stream must contain a meshmodel file which has been created with the <see cref="MeshModel.Serialize(Stream)"/> method.
+		/// The stream must contain a MeshModel file which has been created with the <see cref="MeshModel.Serialize(Stream)"/> method.
 		/// </remarks>
 		public static MeshModelMetadata ExtractFrom( ZipArchive archive, string subFolder = "" )
 		{
@@ -191,7 +190,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Extracts a hash for comparison from the <see cref="MeshModelMetadata"/> within the specified <paramref name="stream"/>.
 		/// </summary>
 		/// <remarks>
-		/// The stream must contain a meshmodel file which has been created with the <see cref="MeshModel.Serialize(Stream)"/> method.
+		/// The stream must contain a MeshModel file which has been created with the <see cref="MeshModel.Serialize(Stream)"/> method.
 		/// </remarks>
 		/// <param name="stream">The stream containing the meshmodel file.</param>
 		/// <param name="subFolder">The folder to read within the meshmodel file.</param>
@@ -349,7 +348,7 @@ namespace Zeiss.PiWeb.MeshModel
 				}
 			}
 
-			// validation for mendatory properties since version 5.1.0.0 and missing Guid fallback for older versions
+			// Validation for mandatory properties since version 5.1.0.0 and missing Guid fallback for older versions.
 			if( result.FileVersion != null && result.FileVersion >= new Version( 5, 1, 0, 0 ) )
 			{
 				ValidateMetadata( hasGuid, hasName, hasPartCount );

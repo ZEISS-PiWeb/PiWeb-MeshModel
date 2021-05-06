@@ -45,8 +45,7 @@ PM> Install-Package Zeiss.PiWeb.MeshModel
 
 Or compile the library by yourself. Requirements:
 
-* Microsoft Visual Studio 2019
-* Microsoft .NET Standard 2.0
+* A .NET Standard 2.0 compatible .NET SDK (recommended: .NET Core 3.1)
 
 
 ## Older versions
@@ -110,10 +109,10 @@ static Mesh CreateSquare( Vector3F p1, Vector3F p2, Vector3F p3, Vector3F p4)
     return new Mesh(
         0,                              // Mesh Index
         new [] { p1, p2, p3, p4 },      // Positions
-		null,                           // Normals
+        null,                           // Normals
         new []{ 0, 1, 2, 2, 3, 0 },     // Triangle Indices
-		null,                           // Texture Coordinates
-		Color.FromRgb( 71, 186, 255 ) );
+        null,                           // Texture Coordinates
+        Color.FromRgb( 71, 186, 255 ) );
 }
 
 var points = new[]
@@ -154,7 +153,9 @@ for (var i = 0; i < meshes.Length; i++)
         
     // The number of values must be equal to the number of vertices  
     for (var j = 0; j < values.Length; j++ )
+    {
         values[ j ] = ( float ) ( rand.NextDouble() * 2 - 1 );
+    }
 
     meshvalues.Add( new MeshValue( values ) );
 }

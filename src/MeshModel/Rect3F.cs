@@ -534,7 +534,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return $"Location: {Location}, Size: {new Vector3F( X + SizeX, Y + SizeY, Z + SizeZ )}";
+			return $"Location: {Location}, Size: [{SizeX}|{SizeY}|{SizeZ}]";
 		}
 	}
 }

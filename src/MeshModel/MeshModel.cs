@@ -22,14 +22,14 @@ namespace Zeiss.PiWeb.MeshModel
 	#endregion
 
 	/// <summary>
-	/// Describes a CAD model that is composed of one or more child models, the <see cref="MeshModelPart"/>.
+	/// Describes a CAD model that is composed of one or more child models of type <see cref="MeshModelPart"/>.
 	/// </summary>
 	public sealed class MeshModel
 	{
 		#region constants
 
 		/// <summary>
-		/// The default file extension of meshmodels with a leading point.
+		/// The default file extension of MeshModels with a leading point.
 		/// </summary>
 		public const string FileExtension = ".meshModel";
 
@@ -38,7 +38,7 @@ namespace Zeiss.PiWeb.MeshModel
 		#region members
 
 		/// <summary>
-		/// The current mesh model file version
+		/// The current MeshModel file format version.
 		/// </summary>
 		public static readonly Version MeshModelFileVersion = new Version( 5, 1, 0, 0 );
 
@@ -71,7 +71,7 @@ namespace Zeiss.PiWeb.MeshModel
 		{ }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MeshModel" /> class from a set <see cref="MeshModelPart" />.
+		/// Initializes a new instance of the <see cref="MeshModel" /> class from a set of <see cref="MeshModelPart" />s.
 		/// </summary>
 		/// <param name="metaData">The meta data.</param>
 		/// <param name="parts">The parts.</param>
@@ -85,9 +85,9 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MeshModel" /> class from a set <see cref="MeshModelPart" />.
+		/// Initializes a new instance of the <see cref="MeshModel" /> class from a set of <see cref="MeshModelPart" />s.
 		/// </summary>
-		/// <param name="metadata">The metadata.</param>
+		/// <param name="metadata">The meta data.</param>
 		/// <param name="thumbnail">The thumbnail image.</param>
 		/// <param name="parts">The parts.</param>
 		public MeshModel( MeshModelMetadata metadata, byte[] thumbnail, IEnumerable<MeshModelPart> parts )
@@ -114,12 +114,12 @@ namespace Zeiss.PiWeb.MeshModel
 		public IReadOnlyList<MeshModelPart> Parts => _Parts;
 
 		/// <summary>
-		/// Gets the meshmodels metadata.
+		/// Gets this <see cref="MeshModel"/>'s metadata.
 		/// </summary>
 		public MeshModelMetadata Metadata { get; }
 
 		/// <summary>
-		/// Gets the bounding box of this instance.
+		/// Gets the bounding box of this <see cref="MeshModel"/>.
 		/// </summary>
 		public Rect3F Bounds
 		{
@@ -137,14 +137,11 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Gets or sets the thumbnail of this meshmodel.
+		/// Gets or sets a byte array containing the thumbnail of this <see cref="MeshModel" />.
 		/// </summary>
-		/// <value>
-		/// A byte array containing image data.
-		/// </value>
 		public byte[] Thumbnail
 		{
-			get { return _Thumbnail; }
+			get => _Thumbnail;
 			set
 			{
 				_Thumbnail = value;
@@ -163,10 +160,10 @@ namespace Zeiss.PiWeb.MeshModel
 		#region methods
 
 		/// <summary>
-		/// Converts this model to a <see cref="MeshModelPart"/>
+		/// Converts this model to a <see cref="MeshModelPart"/>.
 		/// </summary>
 		/// <param name="meshValueLists">The mesh value lists.</param>
-		/// <returns></returns>
+		/// <returns>A new MeshModelPart with all information of this MeshModel.</returns>
 		public MeshModelPart ToMeshModelPart( IEnumerable<MeshValueList> meshValueLists = null )
 		{
 			var meshes = Parts.SelectMany( p => p.Meshes );
@@ -179,6 +176,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Creates a new <see cref="MeshModel"/> from a single <see cref="MeshModelPart"/>.
 		/// </summary>
 		/// <param name="part">The part.</param>
+		/// <returns>A new <see cref="MeshModel"/>.</returns>
 		public static MeshModel FromMeshModelPart( MeshModelPart part )
 		{
 			return new MeshModel( part );
@@ -188,7 +186,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Creates a combined <see cref="MeshModel" /> from the specified <paramref name="models" />.
 		/// </summary>
 		/// <param name="models">The models.</param>
-		/// <returns></returns>
+		/// <returns>A new <see cref="MeshModel"/>.</returns>
 		public static MeshModel CreateCombined( params MeshModel[] models )
 		{
 			return CreateCombined( (string)null, null, models );
@@ -200,7 +198,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="metadata">The metadata for the combined model.</param>
 		/// <param name="thumbnail">The thumbnail for the combined model.</param>
 		/// <param name="models">The models.</param>
-		/// <returns></returns>
+		/// <returns>A new <see cref="MeshModel"/>.</returns>
 		public static MeshModel CreateCombined( MeshModelMetadata metadata, byte[] thumbnail, params MeshModel[] models )
 		{
 			return new MeshModel( metadata, thumbnail, models.SelectMany( m => m.Parts ).ToArray() );
@@ -212,7 +210,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="name">The name for the combined model.</param>
 		/// <param name="thumbnail">The thumbnail for the combined model.</param>
 		/// <param name="models">The models.</param>
-		/// <returns></returns>
+		/// <returns>A new <see cref="MeshModel"/>.</returns>
 		public static MeshModel CreateCombined( string name, byte[] thumbnail, params MeshModel[] models )
 		{
 			return CreateCombined( name, thumbnail, models.SelectMany( m => m.Parts ).ToArray() );
@@ -224,7 +222,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <param name="name">The name for the combined model.</param>
 		/// <param name="thumbnail">The thumbnail for the combined model.</param>
 		/// <param name="parts">The parts.</param>
-		/// <returns></returns>
+		/// <returns>A new <see cref="MeshModel"/>.</returns>
 		public static MeshModel CreateCombined( string name, byte[] thumbnail, params MeshModelPart[] parts )
 		{
 			if( parts.Length == 0 )
@@ -247,6 +245,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Serializes this <see cref="MeshModel"/> and returns it as a byte array.
 		/// </summary>
+		/// <returns>A byte array containing the serialized <see cref="MeshModel"/>.</returns>
 		public byte[] Serialize()
 		{
 			var stream = new MemoryStream();
@@ -257,12 +256,13 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <summary>
-		/// Serializes this <see cref="MeshModel"/> and writes the result in the specified <paramref name="stream"/>.
+		/// Serializes this <see cref="MeshModel"/> and writes the result into the specified <paramref name="stream"/>.
 		/// </summary>
 		public void Serialize( Stream stream )
 		{
 			using var zipOutput = new ZipArchive( stream, ZipArchiveMode.Create, true, Encoding.UTF8 );
-			// Metadaten schreiben
+
+			// Write meta data.
 			if( Parts.Count != 1 )
 			{
 				var entry = zipOutput.CreateNormalizedEntry( "Metadata.xml", CompressionLevel.Optimal );
@@ -271,7 +271,7 @@ namespace Zeiss.PiWeb.MeshModel
 					Metadata.WriteTo( entryStream, true );
 				}
 
-				// Vorschaubild
+				// Preview image.
 				if( _Thumbnail != null )
 				{
 					entry = zipOutput.CreateNormalizedEntry( "PreviewImage.png", CompressionLevel.NoCompression );
@@ -279,7 +279,7 @@ namespace Zeiss.PiWeb.MeshModel
 					entryStream.Write( _Thumbnail, 0, _Thumbnail.Length );
 				}
 
-				// Parts schreiben
+				// Write parts.
 				for( var i = 0; i < Parts.Count; i += 1 )
 				{
 					Parts[ i ].Serialize( zipOutput, i.ToString() );
@@ -295,12 +295,11 @@ namespace Zeiss.PiWeb.MeshModel
 		/// Extracts the <see cref="MeshModelFormatData"/> from the specified <paramref name="zipFile"/>
 		/// and checks whether the version is known and supported.
 		/// </summary>
-		/// <param name="zipFile"></param>
+		/// <param name="zipFile">Source zip file.</param>
 		private static MeshModelFormatData ExtractAndCheckFormatData( ZipArchive zipFile )
 		{
 			var formatData = MeshModelFormatData.ExtractFrom( zipFile );
 
-			// Versionschecks
 			var fileVersion = formatData.FileVersion;
 			if( fileVersion == null )
 				throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
@@ -313,6 +312,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Deserializes a <see cref="MeshModel"/> from the specified <paramref name="stream"/>
 		/// </summary>
+		/// <returns>The deserialized <see cref="MeshModel"/> instance.</returns>
 		public static MeshModel Deserialize( Stream stream )
 		{
 			if( !stream.CanSeek )
@@ -321,7 +321,7 @@ namespace Zeiss.PiWeb.MeshModel
 			using var zipFile = new ZipArchive( stream, ZipArchiveMode.Read, true, Encoding.UTF8 );
 			var formatData = ExtractAndCheckFormatData( zipFile );
 
-			// Modelldaten laden
+			// Load model data.
 			return formatData.Type == MeshModelType.Part
 				? DeserializeSinglePart( zipFile )
 				: DeserializeComposite( zipFile );
@@ -330,6 +330,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Deserializes the values of a <see cref="MeshModel"/> from the specified <paramref name="stream"/>
 		/// </summary>
+		/// <returns>The deserialized <see cref="MeshModel"/> instance.</returns>
 		public static MeshModel DeserializeValues( MeshModel baseModel, Stream stream )
 		{
 			if( !stream.CanSeek )
@@ -338,7 +339,7 @@ namespace Zeiss.PiWeb.MeshModel
 			using var zipFile = new ZipArchive( stream, ZipArchiveMode.Read, true, Encoding.UTF8 );
 			var formatData = ExtractAndCheckFormatData( zipFile );
 
-			// Modelldaten laden
+			// Load model data.
 			return formatData.Type == MeshModelType.Part
 				? DeserializeSinglePartValues( baseModel, zipFile )
 				: DeserializeCompositeValues( baseModel, zipFile );
@@ -359,7 +360,7 @@ namespace Zeiss.PiWeb.MeshModel
 			var metadata = MeshModelMetadata.ExtractFrom( zipFile );
 			var partCount = metadata.PartCount;
 
-			// Vorschaubild lesen
+			// Read preview image.
 			byte[] thumbnail = null;
 
 			if( partCount != 1 )
@@ -372,7 +373,7 @@ namespace Zeiss.PiWeb.MeshModel
 				}
 			}
 
-			// Parts lesen
+			// Read parts.
 			var parts = new List<MeshModelPart>( partCount );
 			for( var i = 0; i < partCount; i += 1 )
 			{
@@ -387,7 +388,7 @@ namespace Zeiss.PiWeb.MeshModel
 			var metadata = MeshModelMetadata.ExtractFrom( zipFile );
 			var partCount = metadata.PartCount;
 
-			// Parts lesen
+			// Read parts.
 			var parts = new List<MeshModelPart>( partCount );
 			for( var i = 0; i < partCount; i += 1 )
 			{
@@ -442,9 +443,7 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
-		/// <summary>
-		/// Returns a string that represents the current object.
-		/// </summary>
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return $"CAD {Parts.Count} '{Metadata.Name}'";

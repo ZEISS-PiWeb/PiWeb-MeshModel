@@ -4,4 +4,4 @@ using System.Runtime.CompilerServices;
 
 #endregion
 
-[assembly: InternalsVisibleTo( "PiWeb.MeshModel.Tests" )]
+[assembly: InternalsVisibleTo( "Zeiss.PiWeb.MeshModel.Tests" )]

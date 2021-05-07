@@ -3,13 +3,13 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <LangVersion>8.0</LangVersion>
-        <AssemblyName>PiWeb.MeshModel.Tests</AssemblyName>
+        <AssemblyName>Zeiss.PiWeb.MeshModel.Tests</AssemblyName>
         <RootNamespace>Zeiss.PiWeb.MeshModel.Tests</RootNamespace>
         <Copyright>Copyright © 2020 Carl Zeiss Industrielle Messtechnik GmbH</Copyright>
         <Company>Carl Zeiss Industrielle Messtechnik GmbH</Company>
         <Authors>$(Company)</Authors>
         <IsPackable>false</IsPackable>
-        <Version>3.0.1</Version>
+        <Version>3.0.2</Version>
     </PropertyGroup>
 
     <ItemGroup>

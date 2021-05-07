@@ -107,11 +107,12 @@ This isn't very nice, because every vertex has only one normal, and it points to
 ```csharp
 static Mesh CreateSquare( Vector3F p1, Vector3F p2, Vector3F p3, Vector3F p4)
 {   
-    return new Mesh( 0, 
-        new [] { p1, p2, p3, p4 },
-		null, 
-        new []{ 0, 1, 2, 2, 3, 0 },
-		null,
+    return new Mesh(
+        0,                              // Mesh Index
+        new [] { p1, p2, p3, p4 },      // Positions
+		null,                           // Normals
+        new []{ 0, 1, 2, 2, 3, 0 },     // Triangle Indices
+		null,                           // Texture Coordinates
 		Color.FromRgb( 71, 186, 255 ) );
 }
 

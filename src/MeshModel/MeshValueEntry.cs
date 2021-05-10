@@ -63,7 +63,7 @@ namespace Zeiss.PiWeb.MeshModel
 		public string DataType { get; }
 
 		/// <summary>
-		/// Gets the optional measurand unit of data. Default for deviations is "mm".
+		/// Gets the optional measuring unit of data. Default for deviations is "mm".
 		/// </summary>
 		public string Unit => string.IsNullOrEmpty( _Unit ) && IsDeviation ? "mm" : _Unit;
 
@@ -73,7 +73,7 @@ namespace Zeiss.PiWeb.MeshModel
 		public bool IsDeviation => string.Equals( WellKnownDataTypes.Deviation, DataType, StringComparison.OrdinalIgnoreCase );
 
 		/// <summary>
-		/// The filename within the meshmodel archive from which this entry was loaded, and to which it's serialized.
+		/// The filename within the MeshModel archive from which this entry was loaded, and to which it's serialized.
 		/// </summary>
 		public string Filename { get; }
 

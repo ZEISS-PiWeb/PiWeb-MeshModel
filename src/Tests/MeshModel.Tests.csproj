@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <LangVersion>8.0</LangVersion>
         <AssemblyName>Zeiss.PiWeb.MeshModel.Tests</AssemblyName>
         <RootNamespace>Zeiss.PiWeb.MeshModel.Tests</RootNamespace>
@@ -34,6 +34,14 @@
 
     <ItemGroup>
         <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\*.meshModel" />
+        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\Edges.dat" />
+        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\Meshes.dat" />
+        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\deviation0.dat" />
+        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\deviation1.dat" />
+        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\deviation2.dat" />
+        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\deviation3.dat" />
+        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\deviation4.dat" />
+        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\Metadata.xml" />
     </ItemGroup>
 
 </Project>

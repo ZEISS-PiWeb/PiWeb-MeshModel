@@ -15,7 +15,6 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 	using System;
 	using System.Linq;
 	using NUnit.Framework;
-	using Zeiss.PiWeb.MeshModel;
 
 	#endregion
 

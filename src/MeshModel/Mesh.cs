@@ -504,14 +504,24 @@ namespace Zeiss.PiWeb.MeshModel
 
 		public readonly struct Triangle
 		{
+			#region members
+
 			private readonly Mesh _Mesh;
 			private readonly int _Index;
+
+			#endregion
+
+			#region constructors
 
 			public Triangle( int index, Mesh mesh )
 			{
 				_Mesh = mesh;
 				_Index = index;
 			}
+
+			#endregion
+
+			#region properties
 
 			public Vector3F VertexA => _Mesh.Positions[ _Mesh._TriangleIndices[ _Index * 3 + 0 ] ];
 			public Vector3F VertexB => _Mesh.Positions[ _Mesh._TriangleIndices[ _Index * 3 + 1 ] ];
@@ -522,6 +532,8 @@ namespace Zeiss.PiWeb.MeshModel
 			public Vector3F NormalC => _Mesh.Normals[ _Mesh._TriangleIndices[ _Index * 3 + 2 ] ];
 
 			public Vector3F MeanNormal => ( NormalA + NormalB + NormalC ) / 3f;
+
+			#endregion
 		}
 
 		#endregion

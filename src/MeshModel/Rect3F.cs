@@ -23,12 +23,65 @@ namespace Zeiss.PiWeb.MeshModel
 	/// </summary>
 	public struct Rect3F : IEquatable<Rect3F>
 	{
+		#region members
+
 		private float _X;
 		private float _Y;
 		private float _Z;
 		private float _SizeX;
 		private float _SizeY;
 		private float _SizeZ;
+
+		#endregion
+
+		#region constructors
+
+		/// <summary>Constructor.</summary>
+		public Rect3F( Vector3F location, Size3F size )
+		{
+			if( size.IsEmpty )
+			{
+				this = Empty;
+			}
+			else
+			{
+				_X = location.X;
+				_Y = location.Y;
+				_Z = location.Z;
+				_SizeX = size.X;
+				_SizeY = size.Y;
+				_SizeZ = size.Z;
+			}
+		}
+
+		/// <summary>Constructor.</summary>
+		/// <exception cref="ArgumentException">A rect cannot have a negative dimension</exception>
+		public Rect3F( float x, float y, float z, float sizeX, float sizeY, float sizeZ )
+		{
+			if( sizeX < 0.0 || sizeY < 0.0 || sizeZ < 0.0 )
+				throw new ArgumentException( "A rect cannot have a negative dimension" );
+			_X = x;
+			_Y = y;
+			_Z = z;
+			_SizeX = sizeX;
+			_SizeY = sizeY;
+			_SizeZ = sizeZ;
+		}
+
+		/// <summary>Constructor.</summary>
+		public Rect3F( Vector3F corner1, Vector3F corner2 )
+		{
+			_X = Math.Min( corner1.X, corner2.X );
+			_Y = Math.Min( corner1.Y, corner2.Y );
+			_Z = Math.Min( corner1.Z, corner2.Z );
+			_SizeX = Math.Abs( corner2.X - corner1.X );
+			_SizeY = Math.Abs( corner2.Y - corner1.Y );
+			_SizeZ = Math.Abs( corner2.Z - corner1.Z );
+		}
+
+		#endregion
+
+		#region properties
 
 		/// <summary>
 		/// Gets the an empty rect.
@@ -201,48 +254,9 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
-		/// <summary>Constructor.</summary>
-		public Rect3F( Vector3F location, Size3F size )
-		{
-			if( size.IsEmpty )
-			{
-				this = Empty;
-			}
-			else
-			{
-				_X = location.X;
-				_Y = location.Y;
-				_Z = location.Z;
-				_SizeX = size.X;
-				_SizeY = size.Y;
-				_SizeZ = size.Z;
-			}
-		}
+		#endregion
 
-		/// <summary>Constructor.</summary>
-		/// <exception cref="ArgumentException">A rect cannot have a negative dimension</exception>
-		public Rect3F( float x, float y, float z, float sizeX, float sizeY, float sizeZ )
-		{
-			if( sizeX < 0.0 || sizeY < 0.0 || sizeZ < 0.0 )
-				throw new ArgumentException( "A rect cannot have a negative dimension" );
-			_X = x;
-			_Y = y;
-			_Z = z;
-			_SizeX = sizeX;
-			_SizeY = sizeY;
-			_SizeZ = sizeZ;
-		}
-
-		/// <summary>Constructor.</summary>
-		public Rect3F( Vector3F corner1, Vector3F corner2 )
-		{
-			_X = Math.Min( corner1.X, corner2.X );
-			_Y = Math.Min( corner1.Y, corner2.Y );
-			_Z = Math.Min( corner1.Z, corner2.Z );
-			_SizeX = Math.Abs( corner2.X - corner1.X );
-			_SizeY = Math.Abs( corner2.Y - corner1.Y );
-			_SizeZ = Math.Abs( corner2.Z - corner1.Z );
-		}
+		#region methods
 
 		public static bool operator ==( Rect3F rect1, Rect3F rect2 )
 		{
@@ -298,11 +312,11 @@ namespace Zeiss.PiWeb.MeshModel
 				return false;
 
 			return (double)_X <= rect._X
-					&& (double)_Y <= rect._Y
-					&& (double)_Z <= rect._Z
-					&& (double)( _X + _SizeX ) >= rect._X + rect._SizeX
-					&& (double)( _Y + _SizeY ) >= rect._Y + rect._SizeY
-					&& (double)( _Z + _SizeZ ) >= rect._Z + rect._SizeZ;
+				&& (double)_Y <= rect._Y
+				&& (double)_Z <= rect._Z
+				&& (double)( _X + _SizeX ) >= rect._X + rect._SizeX
+				&& (double)( _Y + _SizeY ) >= rect._Y + rect._SizeY
+				&& (double)( _Z + _SizeZ ) >= rect._Z + rect._SizeZ;
 		}
 
 		/// <summary>
@@ -317,8 +331,8 @@ namespace Zeiss.PiWeb.MeshModel
 				return false;
 
 			return rect.X <= _X + _SizeX && rect._X + rect._SizeX >= _X
-										&& rect._Y <= _Y + _SizeY && rect._Y + rect._SizeY >= _Y
-										&& rect._Z <= _Z + _SizeZ && rect._Z + rect._SizeZ >= _Z;
+				&& rect._Y <= _Y + _SizeY && rect._Y + rect._SizeY >= _Y
+				&& rect._Z <= _Z + _SizeZ && rect._Z + rect._SizeZ >= _Z;
 		}
 
 		/// <summary>
@@ -419,8 +433,8 @@ namespace Zeiss.PiWeb.MeshModel
 		private readonly bool ContainsInternal( float x, float y, float z )
 		{
 			return x >= _X && x <= _X + _SizeX
-							&& y >= _Y && y <= _Y + _SizeY
-							&& z >= _Z && z <= _Z + _SizeZ;
+				&& y >= _Y && y <= _Y + _SizeY
+				&& z >= _Z && z <= _Z + _SizeZ;
 		}
 
 		private static Rect3F CreateEmptyCuboid()
@@ -502,20 +516,6 @@ namespace Zeiss.PiWeb.MeshModel
 		}
 
 		/// <inheritdoc />
-		public bool Equals( Rect3F value )
-		{
-			if( IsEmpty )
-				return value.IsEmpty;
-
-			return X == value.X
-					&& Y == value.Y
-					&& Z == value.Z
-					&& SizeX == value.SizeX
-					&& SizeY == value.SizeY
-					&& SizeZ == value.SizeZ;
-		}
-
-		/// <inheritdoc />
 		public override int GetHashCode()
 		{
 			unchecked
@@ -536,5 +536,25 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			return $"Location: {Location}, Size: {new Vector3F( X + SizeX, Y + SizeY, Z + SizeZ )}";
 		}
+
+		#endregion
+
+		#region interface IEquatable<Rect3F>
+
+		/// <inheritdoc />
+		public bool Equals( Rect3F value )
+		{
+			if( IsEmpty )
+				return value.IsEmpty;
+
+			return X == value.X
+				&& Y == value.Y
+				&& Z == value.Z
+				&& SizeX == value.SizeX
+				&& SizeY == value.SizeY
+				&& SizeZ == value.SizeZ;
+		}
+
+		#endregion
 	}
 }

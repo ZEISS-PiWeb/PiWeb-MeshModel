@@ -8,14 +8,12 @@
 
 #endregion
 
-using System.IO;
-
 namespace Zeiss.PiWeb.MeshModel.Tests
 {
 	#region usings
 
+	using System.IO;
 	using NUnit.Framework;
-	using Zeiss.PiWeb.MeshModel;
 
 	#endregion
 
@@ -33,13 +31,13 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 		[Test, Description( "Given: float array, When: writing to binary stream, Then: output is correct." )]
 		public void TestWritingFloatArray()
 		{
-			// ................................................................. GIVEN
+			// ## Given ##
 			var floats = new[] { 1f, 2f, 3f, 4f, 5f, 6f };
 			var bytes = new byte[ floats.Length * sizeof( float ) + ArrayHeaderSize ];
 			float[] readFloats;
 
 
-			// ................................................................. WHEN
+			// ## When ##
 			using( var stream = new MemoryStream( bytes ) )
 			{
 				using var binaryWriter = new BinaryWriter( stream );
@@ -53,20 +51,20 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			}
 
 
-			// ................................................................. THEN
+			// ## Then ##
 			Assert.That( readFloats, Is.EquivalentTo( floats ) );
 		}
 
 		[Test, Description( "Given: vector array, When: writing to binary stream, Then: output is correct." )]
 		public void TestWritingVector3FArray()
 		{
-			// ................................................................. GIVEN
+			// ## Given ##
 			var vectors = MeshTest.Create4Positions();
 			var bytes = new byte[ vectors.Length * sizeof( float ) * 3 + ArrayHeaderSize ];
 			Vector3F[] readVectors;
 
 
-			// ................................................................. WHEN
+			// ## When ##
 			using( var stream = new MemoryStream( bytes ) )
 			{
 				using var binaryWriter = new BinaryWriter( stream );
@@ -80,20 +78,20 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			}
 
 
-			// ................................................................. THEN
+			// ## Then ##
 			Assert.That( readVectors, Is.EquivalentTo( vectors ) );
 		}
 
 		[Test, Description( "Given: vector array, When: writing to binary stream, Then: output is correct." )]
 		public void TestWritingVector2FArray()
 		{
-			// ................................................................. GIVEN
+			// ## Given ##
 			var vectors = MeshTest.Create4UVs();
 			var bytes = new byte[ vectors.Length * sizeof( float ) * 2 + ArrayHeaderSize ];
 			Vector2F[] readVectors;
 
 
-			// ................................................................. WHEN
+			// ## When ##
 			using( var stream = new MemoryStream( bytes ) )
 			{
 				using var binaryWriter = new BinaryWriter( stream );
@@ -107,20 +105,20 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			}
 
 
-			// ................................................................. THEN
+			// ## Then ##
 			Assert.That( readVectors, Is.EquivalentTo( vectors ) );
 		}
 
 		[Test, Description( "Given: color array, When: writing to binary stream, Then: output is correct." )]
 		public void TestWritingColorArray()
 		{
-			// ................................................................. GIVEN
+			// ## Given ##
 			var colors = MeshTest.Create4Colors();
 			var bytes = new byte[ colors.Length * sizeof( byte ) * 4 + ArrayHeaderSize ];
 			Color[] readColors;
 
 
-			// ................................................................. WHEN
+			// ## When ##
 			using( var stream = new MemoryStream( bytes ) )
 			{
 				using var binaryWriter = new BinaryWriter( stream );
@@ -134,21 +132,21 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			}
 
 
-			// ................................................................. THEN
+			// ## Then ##
 			Assert.That( readColors, Is.EquivalentTo( colors ) );
 		}
 
 		[Test, Description( "Given: double array, When: writing to binary stream, Then: output is correct." )]
 		public void TestReadingDoubleArrayAsVector3F()
 		{
-			// ................................................................. GIVEN
+			// ## Given ##
 			var doubles = new[] { 1.2, 1.3, 2.0, 3.0, 6.0, 8.5 };
 			var bytes = new byte[ doubles.Length * sizeof( double ) + ArrayHeaderSize ];
 			var expectedVectors = new[] { new Vector3F( 1.2f, 1.3f, 2.0f ), new Vector3F( 3.0f, 6.0f, 8.5f ) };
 			Vector3F[] readVectors;
 
 
-			// ................................................................. WHEN
+			// ## When ##
 			using( var stream = new MemoryStream( bytes ) )
 			{
 				using var binaryWriter = new BinaryWriter( stream );
@@ -166,7 +164,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			}
 
 
-			// ................................................................. THEN
+			// ## Then ##
 			Assert.That( readVectors, Is.EquivalentTo( expectedVectors ) );
 		}
 

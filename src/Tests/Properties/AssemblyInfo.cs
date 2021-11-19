@@ -7,8 +7,8 @@ using NUnit.Framework;
 
 #endregion
 
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyConfiguration( "" )]
 
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(false)]
-[assembly: Parallelizable(ParallelScope.Self | ParallelScope.Children | ParallelScope.Fixtures)]
+[assembly: ComVisible( false )]
+[assembly: CLSCompliant( false )]
+[assembly: Parallelizable( ParallelScope.Self | ParallelScope.Children | ParallelScope.Fixtures )]

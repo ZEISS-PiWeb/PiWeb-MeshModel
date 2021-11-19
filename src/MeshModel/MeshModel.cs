@@ -262,7 +262,8 @@ namespace Zeiss.PiWeb.MeshModel
 		public void Serialize( Stream stream )
 		{
 			using var zipOutput = new ZipArchive( stream, ZipArchiveMode.Create, true, Encoding.UTF8 );
-			// Metadaten schreiben
+
+			// Write meta data.
 			if( Parts.Count != 1 )
 			{
 				var entry = zipOutput.CreateNormalizedEntry( "Metadata.xml", CompressionLevel.Optimal );
@@ -271,7 +272,7 @@ namespace Zeiss.PiWeb.MeshModel
 					Metadata.WriteTo( entryStream, true );
 				}
 
-				// Vorschaubild
+				// Thumbnail.
 				if( _Thumbnail != null )
 				{
 					entry = zipOutput.CreateNormalizedEntry( "PreviewImage.png", CompressionLevel.NoCompression );
@@ -279,7 +280,7 @@ namespace Zeiss.PiWeb.MeshModel
 					entryStream.Write( _Thumbnail, 0, _Thumbnail.Length );
 				}
 
-				// Parts schreiben
+				// Write parts.
 				for( var i = 0; i < Parts.Count; i += 1 )
 				{
 					Parts[ i ].Serialize( zipOutput, i.ToString() );
@@ -321,7 +322,7 @@ namespace Zeiss.PiWeb.MeshModel
 			using var zipFile = new ZipArchive( stream, ZipArchiveMode.Read, true, Encoding.UTF8 );
 			var formatData = ExtractAndCheckFormatData( zipFile );
 
-			// Modelldaten laden
+			// Load model data.
 			return formatData.Type == MeshModelType.Part
 				? DeserializeSinglePart( zipFile )
 				: DeserializeComposite( zipFile );

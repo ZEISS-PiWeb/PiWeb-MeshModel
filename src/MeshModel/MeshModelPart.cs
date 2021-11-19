@@ -187,42 +187,55 @@ namespace Zeiss.PiWeb.MeshModel
 				Metadata.WriteTo( entryStream, true );
 			}
 
-			// Vorschaubild
+			// Write thumbnail.
 			if( HasThumbnail )
 			{
 				using var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, "PreviewImage.png" ), CompressionLevel.NoCompression ).Open();
 				entryStream.Write( Thumbnail, 0, Thumbnail.Length );
 			}
 
-			// Triangulierungsdaten schreiben
+			// Write triangulation data.
 			using( var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, "Meshes.dat" ), CompressionLevel.Fastest ).Open() )
 			{
-				using var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true );
-				binaryWriter.Write( Meshes.Length );
-				foreach( var mesh in Meshes )
-				{
-					mesh.Write( binaryWriter );
-				}
+				SerializeMeshes( entryStream, Meshes );
 			}
 
-			// Edgedaten schreiben
+			// Write edge data.
 			using( var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, "Edges.dat" ), CompressionLevel.Fastest ).Open() )
 			{
-				using var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true );
-				binaryWriter.Write( Edges.Length );
-				foreach( var edge in Edges )
-				{
-					edge.Write( binaryWriter );
-				}
+				SerializeEdges( entryStream, Edges );
 			}
 
-			// Datenwerte schreiben
+			// Write data values.
 			foreach( var entry in MeshValues )
 			{
 				using var entryStream = zipFile.CreateNormalizedEntry( Path.Combine( subFolder, entry.Entry.Filename ), CompressionLevel.Fastest ).Open();
-				using var binaryWriter = new BinaryWriter( entryStream, Encoding.UTF8, true );
-				entry.Write( binaryWriter );
+				SerializeMeshValueList( entryStream, entry );
 			}
+		}
+
+		internal static void SerializeMeshes( Stream stream, Mesh[] meshes )
+		{
+			using var binaryWriter = new BinaryWriter( stream, Encoding.UTF8, true );
+
+			binaryWriter.Write( meshes.Length );
+			foreach( var mesh in meshes )
+				mesh.Write( binaryWriter );
+		}
+
+		internal static void SerializeEdges( Stream stream, Edge[] edges )
+		{
+			using var binaryWriter = new BinaryWriter( stream, Encoding.UTF8, true );
+
+			binaryWriter.Write( edges.Length );
+			foreach( var edge in edges )
+				edge.Write( binaryWriter );
+		}
+
+		internal static void SerializeMeshValueList( Stream stream, MeshValueList meshValueList )
+		{
+			using var binaryWriter = new BinaryWriter( stream, Encoding.UTF8, true );
+			meshValueList.Write( binaryWriter );
 		}
 
 		/// <summary>
@@ -235,7 +248,7 @@ namespace Zeiss.PiWeb.MeshModel
 
 			var metadata = MeshModelMetadata.ExtractFrom( zipFile, subFolder );
 
-			// Versionschecks
+			// Version checks.
 			var fileVersion = metadata.FileVersion;
 			if( fileVersion < fileVersion10 )
 				throw new InvalidOperationException( MeshModelHelper.GetResource<MeshModel>( "OldFileVersionError_Text" ) );
@@ -290,15 +303,21 @@ namespace Zeiss.PiWeb.MeshModel
 
 		private static MeshValueList[] ReadMeshValueLists( ZipArchive zipFile, MeshModelMetadata metadata, string subFolder, Version fileVersion )
 		{
-			// Datenwerte lesen
+			// Read data values.
 			var meshValueList = new List<MeshValueList>( metadata.MeshValueEntries?.Length ?? 0 );
 			foreach( var entry in metadata.MeshValueEntries ?? Array.Empty<MeshValueEntry>() )
 			{
-				using var binaryReader = new BinaryReader( zipFile.GetEntry( Path.Combine( subFolder, entry.Filename ) ).Open() );
-				meshValueList.Add( MeshValueList.Read( binaryReader, entry, fileVersion ) );
+				using var entryStream = zipFile.GetEntry( Path.Combine( subFolder, entry.Filename ) ).Open();
+				meshValueList.Add( ReadMeshValueList( entryStream, fileVersion, entry ) );
 			}
 
 			return meshValueList.ToArray();
+		}
+
+		internal static MeshValueList ReadMeshValueList( Stream stream, Version fileVersion, MeshValueEntry entry )
+		{
+			using var binaryReader = new BinaryReader( stream );
+			return MeshValueList.Read( binaryReader, entry, fileVersion );
 		}
 
 		private static Edge[] ReadEdges( ZipArchive zipFile, string subFolder, Version fileVersion )
@@ -306,7 +325,13 @@ namespace Zeiss.PiWeb.MeshModel
 			var entry = zipFile.GetEntry( Path.Combine( subFolder, "Edges.dat" ) );
 			if( entry == null ) return Array.Empty<Edge>();
 
-			using var binaryReader = new BinaryReader( entry.Open() );
+			using var stream = entry.Open();
+			return ReadEdges( stream, fileVersion );
+		}
+
+		internal static Edge[] ReadEdges( Stream stream, Version fileVersion )
+		{
+			using var binaryReader = new BinaryReader( stream );
 			var edgeCount = binaryReader.ReadInt32();
 
 			var edges = new List<Edge>( edgeCount );
@@ -324,7 +349,13 @@ namespace Zeiss.PiWeb.MeshModel
 			var entry = zipFile.GetEntry( Path.Combine( subFolder, "Meshes.dat" ) );
 			if( entry == null ) return Array.Empty<Mesh>();
 
-			using var binaryReader = new BinaryReader( entry.Open() );
+			using var stream = entry.Open();
+			return ReadMeshes( stream, fileVersion );
+		}
+
+		internal static Mesh[] ReadMeshes( Stream stream, Version fileVersion )
+		{
+			using var binaryReader = new BinaryReader( stream );
 			var meshCount = binaryReader.ReadInt32();
 
 			var meshes = new List<Mesh>( meshCount );

@@ -12,7 +12,7 @@ using System;
 
 namespace Zeiss.PiWeb.MeshModel
 {
-	interface IStructArrayIo<in T>
+	public interface IStructArrayIo<in T>
 		where T : struct
 	{
 		#region properties

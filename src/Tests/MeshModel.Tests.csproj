@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <LangVersion>8.0</LangVersion>
         <AssemblyName>Zeiss.PiWeb.MeshModel.Tests</AssemblyName>
         <RootNamespace>Zeiss.PiWeb.MeshModel.Tests</RootNamespace>
@@ -9,7 +9,7 @@
         <Company>Carl Zeiss Industrielle Messtechnik GmbH</Company>
         <Authors>$(Company)</Authors>
         <IsPackable>false</IsPackable>
-        <Version>3.0.2</Version>
+        <Version>3.0.3</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -33,7 +33,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\*.meshModel" />
+      <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\*" />
     </ItemGroup>
 
 </Project>

@@ -22,9 +22,29 @@ namespace Zeiss.PiWeb.MeshModel
 	/// </summary>
 	public struct Size3F : IEquatable<Size3F>
 	{
+		#region members
+
 		private float _X;
 		private float _Y;
 		private float _Z;
+
+		#endregion
+
+		#region constructors
+
+		/// <summary>Constructor.</summary>
+		public Size3F( float x, float y, float z )
+		{
+			if( x < 0.0 || y < 0.0 || z < 0.0 )
+				throw new ArgumentException( "A size cannot have a negative dimension" );
+			_X = x;
+			_Y = y;
+			_Z = z;
+		}
+
+		#endregion
+
+		#region properties
 
 		/// <summary>
 		/// Gets an empty size.
@@ -90,15 +110,9 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
-		/// <summary>Constructor.</summary>
-		public Size3F( float x, float y, float z )
-		{
-			if( x < 0.0 || y < 0.0 || z < 0.0 )
-				throw new ArgumentException( "A size cannot have a negative dimension" );
-			_X = x;
-			_Y = y;
-			_Z = z;
-		}
+		#endregion
+
+		#region methods
 
 		public static bool operator ==( Size3F size1, Size3F size2 )
 		{
@@ -138,15 +152,6 @@ namespace Zeiss.PiWeb.MeshModel
 			return o is Size3F s && Equals( s );
 		}
 
-		/// <inheritdoc />
-		public bool Equals( Size3F value )
-		{
-			if( IsEmpty )
-				return value.IsEmpty;
-
-			return X == value.X && Y == value.Y && Z == value.Z;
-		}
-
 		/// <summary>
 		/// Returns a hash code for this instance.
 		/// </summary>
@@ -163,5 +168,20 @@ namespace Zeiss.PiWeb.MeshModel
 				return hashCode;
 			}
 		}
+
+		#endregion
+
+		#region interface IEquatable<Size3F>
+
+		/// <inheritdoc />
+		public bool Equals( Size3F value )
+		{
+			if( IsEmpty )
+				return value.IsEmpty;
+
+			return X == value.X && Y == value.Y && Z == value.Z;
+		}
+
+		#endregion
 	}
 }

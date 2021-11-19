@@ -1,38 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>8.0</LangVersion>
-        <AssemblyName>Zeiss.PiWeb.MeshModel</AssemblyName>
-        <RootNamespace>Zeiss.PiWeb.MeshModel</RootNamespace>
-        <Copyright>Copyright © 2020 Carl Zeiss Industrielle Messtechnik GmbH</Copyright>
-        <Company>Carl Zeiss Industrielle Messtechnik GmbH</Company>
-        <Authors>$(Company)</Authors>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <AssemblyName>Zeiss.PiWeb.MeshModel</AssemblyName>
+    <RootNamespace>Zeiss.PiWeb.MeshModel</RootNamespace>
+    <Copyright>Copyright © 2020 Carl Zeiss Industrielle Messtechnik GmbH</Copyright>
+    <Company>Carl Zeiss Industrielle Messtechnik GmbH</Company>
+    <Authors>$(Company)</Authors>
+  </PropertyGroup>
 
-    <PropertyGroup Label="NuGet package specifications">
-        <ProductName>PiWeb MeshModel Library</ProductName>
-        <Description>
-            The PiWeb MeshModel library provides an easy to use interface for reading
-            and especially writing PiWeb meshmodel data.
-        </Description>
-        <PackageId>Zeiss.PiWeb.MeshModel</PackageId>
-        <Version>3.0.3</Version>
-        <PackageIcon>logo_128x128.png</PackageIcon>
-        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-        <PackageProjectUrl>https://github.com/ZEISS-PiWeb/PiWeb-MeshModel</PackageProjectUrl>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <RepositoryUrl>https://github.com/ZEISS-PiWeb/PiWeb-MeshModel.git</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-    </PropertyGroup>
+  <PropertyGroup Label="NuGet package specifications">
+    <ProductName>PiWeb MeshModel Library</ProductName>
+    <Description>
+      The PiWeb MeshModel library provides an easy to use interface for reading
+      and especially writing PiWeb meshmodel data.
+    </Description>
+    <PackageId>Zeiss.PiWeb.MeshModel</PackageId>
+    <Version>3.0.3</Version>
+    <PackageIcon>logo_128x128.png</PackageIcon>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/ZEISS-PiWeb/PiWeb-MeshModel</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/ZEISS-PiWeb/PiWeb-MeshModel.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="System.Buffers" Version="4.5.1" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Buffers" Version="4.5.1"/>
+  </ItemGroup>
 
-    <ItemGroup>
-        <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="LICENSE.txt" />
-        <None Include="..\..\gfx\logo_128x128.png" Pack="true" PackagePath="logo_128x128.png" />
-    </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="LICENSE.txt"/>
+    <None Include="..\..\gfx\logo_128x128.png" Pack="true" PackagePath="logo_128x128.png"/>
+  </ItemGroup>
 
 </Project>

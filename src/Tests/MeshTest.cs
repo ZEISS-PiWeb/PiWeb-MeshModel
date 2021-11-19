@@ -8,19 +8,17 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-
 namespace Zeiss.PiWeb.MeshModel.Tests
 {
 	#region usings
 
+	using System;
 	using System.Buffers;
+	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.IO;
 	using System.Linq;
 	using NUnit.Framework;
-	using Zeiss.PiWeb.MeshModel;
 
 	#endregion
 
@@ -115,17 +113,17 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 		[Test, Description( "Checks if the getters return the correct results." )]
 		public void GetterTest()
 		{
-			// ..................................................................................... GIVEN
+			// ## Given ##
 			var positions = Create4Positions();
 			var normals = Create4Normals();
 			var triangleIndices = Create4Triangles();
 
 
-			// ..................................................................................... WHEN
+			// ## When ##
 			var mesh = new Mesh( 0, positions, normals, triangleIndices );
 
 
-			// ..................................................................................... THEN
+			// ## Then ##
 			// Counts
 			Assert.AreEqual( 4, mesh.TriangleCount );
 			Assert.AreEqual( 12, mesh.TriangleIndicesCount );

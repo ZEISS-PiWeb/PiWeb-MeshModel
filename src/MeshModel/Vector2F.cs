@@ -9,14 +9,13 @@
 #endregion
 
 // ReSharper disable NonReadonlyMemberInGetHashCode
-using System.Runtime.InteropServices;
-
 namespace Zeiss.PiWeb.MeshModel
 {
 	#region usings
 
 	using System;
 	using System.Runtime.CompilerServices;
+	using System.Runtime.InteropServices;
 
 	#endregion
 

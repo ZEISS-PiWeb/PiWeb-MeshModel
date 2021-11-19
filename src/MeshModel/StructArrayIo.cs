@@ -8,10 +8,14 @@
 
 #endregion
 
-using System;
-
 namespace Zeiss.PiWeb.MeshModel
 {
+	#region usings
+
+	using System;
+
+	#endregion
+
 	public interface IStructArrayIo<in T>
 		where T : struct
 	{
@@ -239,7 +243,7 @@ namespace Zeiss.PiWeb.MeshModel
 				result[ index ] = new Vector3F(
 					BitConverter.ToSingle( buffer, i ),
 					BitConverter.ToSingle( buffer, i + yOffset ),
-					BitConverter.ToSingle( buffer, i + zOffset ));
+					BitConverter.ToSingle( buffer, i + zOffset ) );
 				index++;
 			}
 		}

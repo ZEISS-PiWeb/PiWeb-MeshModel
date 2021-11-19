@@ -289,7 +289,7 @@ namespace Zeiss.PiWeb.MeshModel
 			{
 				throw new ArgumentOutOfRangeException(
 					nameof( numberOfElements ),
-					$"The given {nameof(numberOfElements)} is out of the bounds [0,<remaining buffer length / element stride>]." );
+					$"The given {nameof( numberOfElements )} is out of the bounds [0,<remaining buffer length / element stride>]." );
 			}
 
 			return reader.ReadArray( Vector3FIo.Instance, numberOfElements );
@@ -412,10 +412,10 @@ namespace Zeiss.PiWeb.MeshModel
 					break;
 
 				var totalRead = 0;
-				while ( totalRead < count )
+				while( totalRead < count )
 				{
 					var bytesRead = rdr.BaseStream.Read( buffer, totalRead, count - totalRead );
-					if ( bytesRead == 0 ) break;
+					if( bytesRead == 0 ) break;
 					totalRead += bytesRead;
 				}
 

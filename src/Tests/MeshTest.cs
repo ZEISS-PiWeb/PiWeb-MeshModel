@@ -361,9 +361,6 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 							break;
 					}
 
-					if( !byteWiseEqual )
-						break;
-
 					current += commonReadLength;
 				}
 			}

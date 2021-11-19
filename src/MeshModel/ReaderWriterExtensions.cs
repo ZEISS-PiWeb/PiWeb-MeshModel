@@ -412,10 +412,10 @@ namespace Zeiss.PiWeb.MeshModel
 					break;
 
 				var totalRead = 0;
-				while (totalRead < count)
+				while ( totalRead < count )
 				{
 					var bytesRead = rdr.BaseStream.Read( buffer, totalRead, count - totalRead );
-					if (bytesRead == 0) break;
+					if ( bytesRead == 0 ) break;
 					totalRead += bytesRead;
 				}
 

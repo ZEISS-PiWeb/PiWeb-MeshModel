@@ -33,15 +33,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\*.meshModel" />
-        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\Edges.dat" />
-        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\Meshes.dat" />
-        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\deviation0.dat" />
-        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\deviation1.dat" />
-        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\deviation2.dat" />
-        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\deviation3.dat" />
-        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\deviation4.dat" />
-        <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\Metadata.xml" />
+      <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\*" />
     </ItemGroup>
 
 </Project>

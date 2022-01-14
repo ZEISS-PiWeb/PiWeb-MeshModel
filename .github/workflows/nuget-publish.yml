@@ -2,7 +2,9 @@ name: NuGet Packaging and Pushing to NuGet.org
 
 # See https://tehgm.net/blog/nuget-github-actions/ for explanations
 
-on: workflow_dispatch
+on:
+  push:
+    branches: [ master ]
     
 defaults:
   run:

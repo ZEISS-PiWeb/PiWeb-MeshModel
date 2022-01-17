@@ -13,15 +13,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MeshModel\MeshModel.csproj"/>
+    <ProjectReference Include="..\MeshModel\MeshModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.16.0"/>
-    <PackageReference Include="Moq" Version="4.16.1"/>
-    <PackageReference Include="NUnit" Version="3.12.0"/>
-    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1"/>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0"/>
+    <PackageReference Include="AutoFixture" Version="4.17.0" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -33,7 +33,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\*"/>
+    <Content CopyToOutputDirectory="PreserveNewest" Include="TestData\*" />
   </ItemGroup>
 
 </Project>

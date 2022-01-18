@@ -37,9 +37,8 @@ jobs:
       - name: commit
         run: |
           # Change version number, commit and push
-          sed -i 's#<PackageVersion>[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]#<PackageVersion>${{ github.event.inputs.version }}#g' ./src/Formplot/Formplot.csproj
-          sed -i 's#<Version>[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]#<Version>${{ github.event.inputs.version }}#g' ./src/Formplot/Formplot.csproj
-          git add ./src/Formplot/Formplot.csproj
+          sed -i 's#<Version>[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]#<Version>${{ github.event.inputs.version }}#g' ./src/MeshModel/MeshModel.csproj
+          git add ./src/MeshModel/MeshModel.csproj
           git commit -m "feat: Raises version number"
           
       - name: checkout master

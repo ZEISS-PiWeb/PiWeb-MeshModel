@@ -22,11 +22,79 @@ namespace Zeiss.PiWeb.MeshModel
 	/// </summary>
 	public struct Triangle3F : IEquatable<Triangle3F>
 	{
+		#region members
+
 		private Vector3F _A;
 		private Vector3F _B;
 		private Vector3F _C;
 
 		private float? _Area;
+
+		private Vector3F? _Normal;
+
+		#endregion
+
+		#region constructors
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Triangle3F"/> struct.
+		/// </summary>
+		public Triangle3F( Vector3F a, Vector3F b, Vector3F c )
+		{
+			if( float.IsNaN( a.X )
+				|| float.IsNaN( a.Y )
+				|| float.IsNaN( a.Z )
+				|| float.IsNaN( b.X )
+				|| float.IsNaN( b.Y )
+				|| float.IsNaN( b.Z )
+				|| float.IsNaN( c.X )
+				|| float.IsNaN( c.Y )
+				|| float.IsNaN( c.Z ) )
+				throw new ArgumentException( "NaN is not a valid value." );
+
+			_A = a;
+			_B = b;
+			_C = c;
+
+			_Area = null;
+			_Normal = null;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Triangle3F"/> struct.
+		/// </summary>
+		/// <exception cref="ArgumentException">A rect cannot have a negative dimension</exception>
+		public Triangle3F( float aX, float aY, float aZ, float bX, float bY, float bZ, float cX, float cY, float cZ )
+			:
+			this
+			(
+				new Vector3F( aX, aY, aZ ),
+				new Vector3F( aX, aY, aZ ),
+				new Vector3F( aX, aY, aZ )
+			)
+		{ }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Triangle3F"/> struct using an array of coordinate values.
+		/// </summary>
+		/// <param name="coordinateValues">An array of coordinate values in this form: [aX, aY, aZ, bX, bY, ... }.</param>
+		public Triangle3F( float[] coordinateValues ) : this
+		(
+			coordinateValues.Length != 9 ? throw new ArgumentException( "A triangle consists of exactly 9 coordinate components." ) : coordinateValues[ 0 ],
+			coordinateValues[ 1 ],
+			coordinateValues[ 2 ],
+			coordinateValues[ 3 ],
+			coordinateValues[ 4 ],
+			coordinateValues[ 5 ],
+			coordinateValues[ 6 ],
+			coordinateValues[ 7 ],
+			coordinateValues[ 8 ]
+		)
+		{ }
+
+		#endregion
+
+		#region properties
 
 		/// <summary>
 		/// Gets the an empty triangle.
@@ -66,8 +134,6 @@ namespace Zeiss.PiWeb.MeshModel
 				return _Area.GetValueOrDefault();
 			}
 		}
-
-		private Vector3F? _Normal;
 
 		/// <summary>
 		/// Normal is calculated in a right hand order.
@@ -144,68 +210,16 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 		}
 
+		#endregion
+
+		#region methods
+
 		public void Initialize( Vector3F a, Vector3F b, Vector3F c )
 		{
 			A = a;
 			B = b;
 			C = c;
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Triangle3F"/> struct.
-		/// </summary>
-		public Triangle3F( Vector3F a, Vector3F b, Vector3F c )
-		{
-			if( float.IsNaN( a.X )
-				|| float.IsNaN( a.Y )
-				|| float.IsNaN( a.Z )
-				|| float.IsNaN( b.X )
-				|| float.IsNaN( b.Y )
-				|| float.IsNaN( b.Z )
-				|| float.IsNaN( c.X )
-				|| float.IsNaN( c.Y )
-				|| float.IsNaN( c.Z ) )
-				throw new ArgumentException( "NaN is not a valid value." );
-
-			_A = a;
-			_B = b;
-			_C = c;
-
-			_Area = null;
-			_Normal = null;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Triangle3F"/> struct.
-		/// </summary>
-		/// <exception cref="ArgumentException">A rect cannot have a negative dimension</exception>
-		public Triangle3F( float aX, float aY, float aZ, float bX, float bY, float bZ, float cX, float cY, float cZ )
-			:
-			this
-			(
-				new Vector3F( aX, aY, aZ ),
-				new Vector3F( aX, aY, aZ ),
-				new Vector3F( aX, aY, aZ )
-			)
-		{ }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Triangle3F"/> struct using an array of coordinate values.
-		/// </summary>
-		/// <param name="coordinateValues">An array of coordinate values in this form: [aX, aY, aZ, bX, bY, ... }.</param>
-		public Triangle3F( float[] coordinateValues ) : this
-		(
-			coordinateValues.Length != 9 ? throw new ArgumentException( "A triangle consists of exactly 9 coordinate components." ) : coordinateValues[ 0 ],
-			coordinateValues[ 1 ],
-			coordinateValues[ 2 ],
-			coordinateValues[ 3 ],
-			coordinateValues[ 4 ],
-			coordinateValues[ 5 ],
-			coordinateValues[ 6 ],
-			coordinateValues[ 7 ],
-			coordinateValues[ 8 ]
-		)
-		{ }
 
 		/// <summary>
 		/// Implements the operator ==.
@@ -261,8 +275,8 @@ namespace Zeiss.PiWeb.MeshModel
 				return triangle2.IsEmpty;
 
 			return triangle1.A.Equals( triangle2.A )
-					&& triangle1.B.Equals( triangle2.B )
-					&& triangle1.C.Equals( triangle2.C );
+				&& triangle1.B.Equals( triangle2.B )
+				&& triangle1.C.Equals( triangle2.C );
 		}
 
 		/// <summary>
@@ -277,16 +291,6 @@ namespace Zeiss.PiWeb.MeshModel
 			if( !( o is Triangle3F ) )
 				return false;
 			return Equals( this, (Triangle3F)o );
-		}
-
-		/// <summary>
-		/// Equalises the specified value.
-		/// </summary>
-		/// <param name="value">The value.</param>
-		/// <returns></returns>
-		public bool Equals( Triangle3F value )
-		{
-			return Equals( this, value );
 		}
 
 		/// <summary>
@@ -347,5 +351,21 @@ namespace Zeiss.PiWeb.MeshModel
 			triangle.ScaleAbsolute( scaleX, scaleY, scaleZ );
 			return triangle;
 		}
+
+		#endregion
+
+		#region interface IEquatable<Triangle3F>
+
+		/// <summary>
+		/// Equalises the specified value.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <returns></returns>
+		public bool Equals( Triangle3F value )
+		{
+			return Equals( this, value );
+		}
+
+		#endregion
 	}
 }

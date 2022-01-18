@@ -1,0 +1,75 @@
+# This is a basic workflow that is manually triggered
+
+name: Create release
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      version:
+        description: 'New release version number (semantic versioning).'
+        type: string
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the branch
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.ADMIN_TOKEN }}
+
+      - name: setup git config
+        run: |
+          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          
+      - name: start release
+        run: |
+          git checkout develop
+          git checkout -b release/${{ github.event.inputs.version }}
+
+      - name: commit
+        run: |
+          # Change version number, commit and push
+          sed -i 's#<Version>[[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]#<Version>${{ github.event.inputs.version }}#g' ./src/MeshModel/MeshModel.csproj
+          git add ./src/MeshModel/MeshModel.csproj
+          git commit -m "feat: Raises version number"
+          
+      - name: checkout master
+        run: |
+          git checkout master
+          
+      - name: merge release into master
+        run: |
+          git merge --no-ff release/${{ github.event.inputs.version }}
+          
+      - name: tag release commit
+        run: |
+          git tag release/${{ github.event.inputs.version }}
+          
+      - name: delete release branch
+        run: |
+          git branch -d release/${{ github.event.inputs.version }}
+          
+      - name: checkout develop
+        run: |
+          git checkout develop
+          
+      - name: merge back master into develop
+        run: |
+          git merge --no-ff master
+          
+      - name: push
+        run: |
+          git checkout develop
+          git push origin develop
+          git checkout master
+          git push origin master
+          git push --tags
+      

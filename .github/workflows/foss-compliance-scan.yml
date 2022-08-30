@@ -1,0 +1,42 @@
+name: FOSS Compliance
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: src
+
+jobs:
+  build_job:
+    name: build solution
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [ '6.0.x' ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET SDK ${{matrix.dotnet-version}}
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{matrix.dotnet-version}}
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
+      - name: SCA scan
+        run: |
+          # Extract version number.
+          cd ${{ github.workspace }}/src/MeshModel
+          sudo apt install xmlstarlet
+          version=$(xmlstarlet sel -t -m '//Version[1]' -v . -n <MeshModel.csproj)
+        
+          # Run scan and upload binaries.
+          cd ${{ github.workspace }}/software_composition_analysis
+          bash <(curl -s -L https://detect.synopsys.com/detect7.sh) --blackduck.api.token=${{ secrets.BLACKDUCK_PAT }} --detect.project.version.name=$version --detect.source.path=${{ github.workspace }}/src/MeshModel/bin/Release/net6.0
+

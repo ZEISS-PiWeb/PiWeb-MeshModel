@@ -1,4 +1,4 @@
-[![master](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/dotnet.yml)
+[![main](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/develop.yml/badge.svg?branch=main)](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/develop.yml)
 [![NuGet](https://img.shields.io/nuget/v/Zeiss.PiWeb.MeshModel?logo=nuget)](https://www.nuget.org/packages/Zeiss.PiWeb.MeshModel/)
 
 # PiWeb MeshModel

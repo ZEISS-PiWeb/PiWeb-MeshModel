@@ -1,6 +1,10 @@
-# Workflow to build and publish the develop branch
+# Calls a workflow that
+# + builds and tests the develop branch,
+# + packs and uploads a beta NuGet package.
+#
+# This workflow runs automatically on pushes or pull requests to develop.
 
-name: Build, Test & Pack on develop
+name: Build, test & pack beta on develop
 
 on:
   push:
@@ -10,6 +14,7 @@ on:
 
 jobs:
   develop:
+    # With @main we want the latest version. Consider using a version tag to avoid breaking changes.
     uses: ZEISS-PiWeb/github-actions/.github/workflows/develop.yml@main
     with:
       do_pack: true  

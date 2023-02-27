@@ -1,15 +1,13 @@
 # Calls a workflow that
-# + creates a new release branch from develop,
+# + runs on support branches only,
 # + raises version numbers semantically,
-# + merges the release branch into main,
 # + sets a version tag,
-# + generates release notes from commits and contributors,
-# + creates a support branch off the last release if necessary
+# + generates release notes from commits and contributors
 # + and publishes a NuGet.
 #
 # This workflow must be triggered manually.
 
-name: Create & publish release from develop
+name: Create & publish release from support branch
 
 on:
   workflow_dispatch:
@@ -17,7 +15,7 @@ on:
 jobs:
   release:
     # With @main we want the latest version. Consider using a version tag to avoid breaking changes.
-    uses: ZEISS-PiWeb/github-actions/.github/workflows/create-release.yml@main
+    uses: ZEISS-PiWeb/github-actions/.github/workflows/create-support-release.yml@main
     with:
       generate_release_notes: true
     secrets: inherit

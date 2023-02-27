@@ -12,7 +12,7 @@
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/wiki/Contributing)
+- [Contributing](#contributing)
 
 
 <a id="markdown-introduction" name="introduction"></a>
@@ -178,3 +178,8 @@ var part = new MeshModelPart( new MeshModelMetadata( ), meshes, squares.Select(s
 A cube isn't exactly a perfect example for showing deviations on a CAD model, but it's sufficient to show the mechanics. 
 
 <img style="width:100px;" src="gfx/CubeWithDeviations.png" >
+
+
+# Contributing
+
+This repository makes use of resuable workflows from [ZEISS-PiWeb/github-actions](https://github.com/ZEISS-PiWeb/github-actions). Read the documentation (especially about automated semantic versioning) before committing any changes.

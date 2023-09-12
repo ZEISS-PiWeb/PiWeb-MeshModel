@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="LICENSE.txt"/>
-    <None Include="..\..\gfx\logo_128x128.png" Pack="true" PackagePath="logo_128x128.png"/>
+    <None Include="..\..\img\logo_128x128.png" Pack="true" PackagePath="logo_128x128.png"/>
   </ItemGroup>
 
 </Project>

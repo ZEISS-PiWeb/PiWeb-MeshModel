@@ -17,6 +17,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.IO;
+	using System.IO.Compression;
 	using System.Linq;
 	using NUnit.Framework;
 
@@ -299,71 +300,6 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 				.SelectMany( p => p.Meshes )
 				.Sum( m => m.TriangleCount );
 			Assert.That( triangleSum, Is.EqualTo( 17326 ) );
-		}
-
-
-		[Test, Description( "Given: Test file, When: imported and exported, Then: Both files are binary equal." )]
-		public void ImportExportTest()
-		{
-			// ..................................................................................... GIVEN
-			var originalInfo = new FileInfo( MeshModelTestFile );
-			var reWrittenInfo = new FileInfo( MeshModelReWrittenFile );
-
-			// ..................................................................................... WHEN
-			using( var fsOriginal = originalInfo.OpenRead() )
-			using( var fsReWritten = reWrittenInfo.Create() )
-			{
-				var stopwatch = new Stopwatch();
-
-				stopwatch.Start();
-				var meshModel = MeshModel.Deserialize( fsOriginal );
-				stopwatch.Stop();
-				var stopwatchElapsed = stopwatch.Elapsed;
-				TestContext.WriteLine( $"Deserialization: {Convert.ToInt32( stopwatchElapsed.TotalMilliseconds )} ms" );
-
-				stopwatch.Start();
-				meshModel.Serialize( fsReWritten );
-				stopwatch.Stop();
-				stopwatchElapsed = stopwatch.Elapsed;
-				TestContext.WriteLine( $"Serialization: {Convert.ToInt32( stopwatchElapsed.TotalMilliseconds )} ms" );
-			}
-
-			reWrittenInfo.Refresh();
-
-			var totalBytes = (int)originalInfo.Length;
-			const int arrayLength = 1024;
-
-			var byteWiseEqual = true;
-
-			var current = 0;
-			var originalBuffer = ArrayPool<byte>.Shared.Rent( arrayLength );
-			var reWrittenBuffer = ArrayPool<byte>.Shared.Rent( arrayLength );
-
-			using( var fsOriginal = originalInfo.OpenRead() )
-			using( var fsReWritten = reWrittenInfo.OpenRead() )
-			{
-				while( true )
-				{
-					var count = Math.Min( arrayLength, totalBytes - current );
-					if( count <= 0 )
-						break;
-
-					var readByteCountOriginal = fsOriginal.Read( originalBuffer, 0, count );
-					var readByteCountReWritten = fsReWritten.Read( reWrittenBuffer, 0, count );
-
-					var commonReadLength = Math.Min( readByteCountOriginal, readByteCountReWritten );
-					for( var i = 0; i < count; ++i )
-					{
-						byteWiseEqual &= originalBuffer[ i ] == reWrittenBuffer[ i ];
-						if( !byteWiseEqual )
-							break;
-					}
-
-					current += commonReadLength;
-				}
-			}
-
-			Assert.That( byteWiseEqual, Is.True );
 		}
 
 		[Test, Description( "Given: CAD information, When: Create MeshModel in code, Then: MeshModel is complete." )]

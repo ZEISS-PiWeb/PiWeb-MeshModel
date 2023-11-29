@@ -15,5 +15,5 @@ jobs:
     # With @main we want the latest version. Consider using a version tag to avoid breaking changes.
     uses: ZEISS-PiWeb/github-actions/.github/workflows/feature-branch.yml@main
     with:
-      do_pack: true  
+      do_pack: true     
     secrets: inherit

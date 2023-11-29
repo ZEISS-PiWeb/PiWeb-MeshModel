@@ -12,6 +12,7 @@ namespace Zeiss.PiWeb.MeshModel
 {
 	#region usings
 
+	using System;
 	using System.IO;
 	using System.Security.Cryptography;
 
@@ -28,7 +29,17 @@ namespace Zeiss.PiWeb.MeshModel
 
 		internal static HashAlgorithm CreateHashAlgorithm()
 		{
-			return CryptoConfig.AllowOnlyFipsAlgorithms ? (HashAlgorithm)new MD5Managed() : MD5.Create();
+			if( CryptoConfig.AllowOnlyFipsAlgorithms )
+				return new MD5Managed();
+
+			try
+			{
+				return MD5.Create();
+			}
+			catch( Exception )
+			{
+				return new MD5Managed();
+			}
 		}
 
 		internal static byte[] ComputeHash( Stream stream )

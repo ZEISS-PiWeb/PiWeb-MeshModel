@@ -1,9 +1,9 @@
-[![master](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/dotnet.yml)
+[![main](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/develop.yml/badge.svg?branch=main)](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/develop.yml)
 [![NuGet](https://img.shields.io/nuget/v/Zeiss.PiWeb.MeshModel?logo=nuget)](https://www.nuget.org/packages/Zeiss.PiWeb.MeshModel/)
 
 # PiWeb MeshModel
 
-| ![Zeiss IQS Logo](gfx/logo_128x128.png) | The **PiWeb MeshModel library** provides an easy to use interface for reading and especially writing PiWeb meshmodel data. |
+| ![Zeiss IQS Logo](img/logo_128x128.png) | The **PiWeb MeshModel library** provides an easy to use interface for reading and especially writing PiWeb meshmodel data used by the quality data management system [ZEISS PiWeb](http://www.zeiss.com/industrial-metrology/en_de/products/software/piweb.html). |
 |-|:-|
 
 
@@ -12,7 +12,7 @@
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/wiki/Contributing)
+- [Contributing](#contributing)
 
 
 <a id="markdown-introduction" name="introduction"></a>
@@ -100,7 +100,7 @@ model.Serialize( outputStream );
 
 When we display the model in PiWeb, the result will look like this:
 
-<img style="width:100px;" src="gfx/CubeSingleMesh.png" >
+<img style="width:100px;" src="img/CubeSingleMesh.png" >
 
 This isn't very nice, because every vertex has only one normal, and it points to none of the sides, since the adjacent triangles are orthogonal to each other. You could improve this by duplicating points and specifying precalculated normals, but there's an easier way: just create a single **mesh** for **every side** of the cube:
 
@@ -133,7 +133,7 @@ var part = new MeshModelPart( new MeshModelMetadata( ), meshes );
 
 This will already look much better. You can improve this example further, by adding **edges**.
 
-<img style="width:100px;" src="gfx/CubeMultiMesh.png" >
+<img style="width:100px;" src="img/CubeMultiMesh.png" >
 
 
 ## Models with deviation data
@@ -177,4 +177,9 @@ var part = new MeshModelPart( new MeshModelMetadata( ), meshes, squares.Select(s
 
 A cube isn't exactly a perfect example for showing deviations on a CAD model, but it's sufficient to show the mechanics. 
 
-<img style="width:100px;" src="gfx/CubeWithDeviations.png" >
+<img style="width:100px;" src="img/CubeWithDeviations.png" >
+
+
+# Contributing
+
+This repository makes use of resuable workflows from [ZEISS-PiWeb/github-actions](https://github.com/ZEISS-PiWeb/github-actions). Read the documentation (especially about automated semantic versioning) before committing any changes.

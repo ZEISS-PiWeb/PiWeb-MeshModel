@@ -32,6 +32,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			TestContext.CurrentContext.TestDirectory,
 			"TestData" );
 
+		private static readonly string MissingHashTestFile = Path.Combine( TestDataPath, "missingHash.meshModel" );
 		private static readonly string MeshModelTestFile = Path.Combine( TestDataPath, "test_deviation.meshModel" );
 		private static readonly string MeshesTestFile = Path.Combine( TestDataPath, "Meshes.dat" );
 		private static readonly string EdgesTestFile = Path.Combine( TestDataPath, "Edges.dat" );
@@ -258,6 +259,19 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 			TestContext.WriteLine( $"Serialization: {Convert.ToInt32( stopwatchElapsed.TotalMilliseconds )} ms" );
 
 			Assert.That( originalBytes.Length, Is.EqualTo( fsReWritten.Position ) );
+		}
+
+		[Test, Description( "Given: Test file, When: imported, Then: Imported values are correct." )]
+		public void ImportWithoutHashTest()
+		{
+			// ..................................................................................... GIVEN
+			using var file = File.OpenRead( MissingHashTestFile );
+
+			// ..................................................................................... WHEN
+			var meshModel = MeshModel.Deserialize( file );
+
+			// ..................................................................................... THEN
+			Assert.That( meshModel.Metadata.TriangulationHash, Is.EqualTo( new Guid( "4b3973345f9430a80ce760d1f0da3e94" ) ) );
 		}
 
 		[Test, Description( "Given: Test file, When: imported, Then: Imported values are correct." )]

@@ -9,7 +9,7 @@
     <Company>Carl Zeiss Industrielle Messtechnik GmbH</Company>
     <Authors>$(Company)</Authors>
     <IsPackable>false</IsPackable>
-    <Version>3.0.5</Version>
+    <Version>3.0.6</Version>
   </PropertyGroup>
 
   <ItemGroup>

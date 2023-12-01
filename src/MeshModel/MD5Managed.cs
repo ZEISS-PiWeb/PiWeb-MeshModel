@@ -83,12 +83,6 @@ namespace Zeiss.PiWeb.MeshModel
 		// Last hash result
 		private readonly byte[] _digest = new byte[ 16 ];
 
-		// True if HashCore has been called
-		private bool _hashCoreCalled;
-
-		// True if HashFinal has been called
-		private bool _hashFinalCalled;
-
 		#endregion
 
 		#region constructors
@@ -110,40 +104,6 @@ namespace Zeiss.PiWeb.MeshModel
 
 		#endregion
 
-		#region properties
-
-		/// <summary>
-		/// Returns the hash as an array of bytes.
-		/// </summary>
-		[SuppressMessage( "Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Matching .NET behavior by throwing here." )]
-		[SuppressMessage( "Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes", Justification = "Matching .NET behavior by throwing NullReferenceException." )]
-		public override byte[] Hash
-		{
-			get
-			{
-				if( !_hashCoreCalled )
-				{
-					throw new NullReferenceException();
-				}
-
-				if( !_hashFinalCalled )
-				{
-					// Note: Not CryptographicUnexpectedOperationException because that can't be instantiated on Silverlight 4
-					throw new CryptographicException( "Hash must be finalized before the hash value is retrieved." );
-				}
-
-				return _digest;
-			}
-		}
-
-		// Return size of hash in bits.
-		public override int HashSize
-		{
-			get { return _digest.Length * 8; }
-		}
-
-		#endregion
-
 		#region methods
 
 		/// <summary>
@@ -160,8 +120,6 @@ namespace Zeiss.PiWeb.MeshModel
 		private void InitializeVariables()
 		{
 			MD5Init( _context );
-			_hashCoreCalled = false;
-			_hashFinalCalled = false;
 		}
 
 		/// <summary>
@@ -174,15 +132,8 @@ namespace Zeiss.PiWeb.MeshModel
 		{
 			if( null == array )
 			{
-				throw new ArgumentNullException( "array" );
+				throw new ArgumentNullException( nameof( array ) );
 			}
-
-			if( _hashFinalCalled )
-			{
-				throw new CryptographicException( "Hash not valid for use in specified state." );
-			}
-
-			_hashCoreCalled = true;
 
 			MD5Update( _context, array, (uint)ibStart, (uint)cbSize );
 		}
@@ -193,9 +144,8 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <returns></returns>
 		protected override byte[] HashFinal()
 		{
-			_hashFinalCalled = true;
 			MD5Final( _digest, _context );
-			return Hash;
+			return _digest;
 		}
 
 		/* F, G, H and I are basic MD5 functions. */

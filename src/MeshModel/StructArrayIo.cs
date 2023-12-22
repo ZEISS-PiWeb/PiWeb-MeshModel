@@ -13,14 +13,17 @@ namespace Zeiss.PiWeb.MeshModel
 	#region usings
 
 	using System;
+	using System.IO;
 
 	#endregion
 
-	public interface IStructArrayIo<in T>
-		where T : struct
+	public interface IStructArrayIo<in T> where T : struct
 	{
 		#region properties
 
+		/// <summary>
+		/// Returns the data stride.
+		/// </summary>
 		int Stride { get; }
 
 		#endregion
@@ -42,6 +45,14 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <returns>Position in the source array after filling the buffer.</returns>
 		int WriteBuffer( byte[] buffer, T[] source, int count, int index );
 
+		/// <summary>
+		/// Reads the given buffer array with the given number of elements.
+		/// </summary>
+		/// <seealso cref="WriteBuffer"/>
+		/// <param name="buffer">Buffer to be read.</param>
+		/// <param name="result">Result data array.</param>
+		/// <param name="count">Number of items to take from the source array.</param>
+		/// <param name="index">Where to start copying from the source array.</param>
 		void ReadBuffer( byte[] buffer, T[] result, int count, int index );
 
 		#endregion
@@ -166,12 +177,13 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </remarks>
 		public int WriteBuffer( byte[] buffer, Vector2F[] source, int count, int index )
 		{
-			const int componentSize = sizeof( float );
+			using var stream = new MemoryStream( buffer, true );
+			using var binaryWriter = new BinaryWriter( stream );
 
 			for( var i = 0; i < count; i += Stride, index++ )
 			{
-				Array.Copy( BitConverter.GetBytes( source[ index ].X ), 0, buffer, i, componentSize );
-				Array.Copy( BitConverter.GetBytes( source[ index ].Y ), 0, buffer, i + componentSize, componentSize );
+				binaryWriter.Write( source[ index ].X );
+				binaryWriter.Write( source[ index ].Y );
 			}
 
 			return index;
@@ -219,15 +231,14 @@ namespace Zeiss.PiWeb.MeshModel
 		/// </remarks>
 		public int WriteBuffer( byte[] buffer, Vector3F[] source, int count, int index )
 		{
-			const int componentSize = sizeof( float );
-			const int yOffset = componentSize;
-			const int zOffset = componentSize * 2;
+			using var stream = new MemoryStream( buffer, true );
+			using var binaryWriter = new BinaryWriter( stream );
 
 			for( var i = 0; i < count; i += Stride, index++ )
 			{
-				Array.Copy( BitConverter.GetBytes( source[ index ].X ), 0, buffer, i, componentSize );
-				Array.Copy( BitConverter.GetBytes( source[ index ].Y ), 0, buffer, i + yOffset, componentSize );
-				Array.Copy( BitConverter.GetBytes( source[ index ].Z ), 0, buffer, i + zOffset, componentSize );
+				binaryWriter.Write( source[ index ].X );
+				binaryWriter.Write( source[ index ].Y );
+				binaryWriter.Write( source[ index ].Z );
 			}
 
 			return index;

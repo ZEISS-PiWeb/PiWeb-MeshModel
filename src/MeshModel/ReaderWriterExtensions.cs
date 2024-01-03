@@ -86,7 +86,7 @@ namespace Zeiss.PiWeb.MeshModel
 		/// <summary>
 		/// Writes the color value as an integer value.
 		/// </summary>
-		internal static void WriteArgbColor( this BinaryWriter writer, Color color )
+		private static void WriteArgbColor( this BinaryWriter writer, Color color )
 		{
 			writer.Write( color.A << 24 | color.R << 16 | color.G << 8 | color.B );
 		}
@@ -275,26 +275,6 @@ namespace Zeiss.PiWeb.MeshModel
 			return layer;
 		}
 
-		/// <summary>
-		/// Reads the given number of <see cref="Vector3F"/> from a <see cref="BinaryReader"/>.
-		/// </summary>
-		/// <param name="reader">To read binary stream.</param>
-		/// <param name="numberOfElements">To know where to stop reading.</param>
-		/// <returns>Array of vectors.</returns>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">If <paramref name="numberOfElements">numberOfElements</paramref> exceeds the remaining length of the buffer or is &lt; 0.</exception>
-		public static Vector3F[] ReadVector3FArray( this BinaryReader reader, int numberOfElements )
-		{
-			if( numberOfElements < 0
-				|| reader.BaseStream.Length - reader.BaseStream.Position < numberOfElements * Vector3F.Stride )
-			{
-				throw new ArgumentOutOfRangeException(
-					nameof( numberOfElements ),
-					$"The given {nameof( numberOfElements )} is out of the bounds [0,<remaining buffer length / element stride>]." );
-			}
-
-			return reader.ReadArray( Vector3FIo.Instance, numberOfElements );
-		}
-
 		internal static T[] ReadLengthAndArray<T>( this BinaryReader reader, IStructArrayIo<T> structArrayIo )
 			where T : struct
 		{
@@ -303,14 +283,12 @@ namespace Zeiss.PiWeb.MeshModel
 			return reader.ReadArray( structArrayIo, length );
 		}
 
-		internal static T[] ReadArray<T>( this BinaryReader reader, IStructArrayIo<T> structArrayIo, int numberOfElements )
-			where T : struct
+		private static T[] ReadArray<T>( this BinaryReader reader, IStructArrayIo<T> structArrayIo, int numberOfElements ) where T : struct
 		{
 			var result = new T[ numberOfElements ];
 			foreach( var (count, current, buffer) in reader.ReadByteArrays( numberOfElements, structArrayIo.Stride ) )
 			{
 				var index = current / structArrayIo.Stride;
-
 				structArrayIo.ReadBuffer( buffer, result, count, index );
 			}
 

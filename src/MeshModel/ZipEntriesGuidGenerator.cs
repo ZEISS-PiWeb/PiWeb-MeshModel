@@ -18,6 +18,7 @@ namespace Zeiss.PiWeb.MeshModel
 	using System.IO.Compression;
 	using System.Linq;
 	using System.Reflection;
+	using System.Text;
 
 	#endregion
 
@@ -59,14 +60,18 @@ namespace Zeiss.PiWeb.MeshModel
 		public static Guid GenerateGuidStatic( IEnumerable<ZipArchiveEntry> entries )
 		{
 			var stream = new MemoryStream();
-			foreach( var entry in entries.OrderBy( x => x.FullName, StringComparer.Ordinal ) )
+			using( var binaryWriter = new BinaryWriter( stream, Encoding.UTF8, true ) )
 			{
-				stream.Write( BitConverter.GetBytes( entry.CompressedLength ), 0, 8 );
-				stream.Write( BitConverter.GetBytes( entry.Length ), 0, 8 );
-				stream.Write( BitConverter.GetBytes( GetChecksum( entry ) ), 0, 4 );
+				foreach( var entry in entries.OrderBy( x => x.FullName, StringComparer.Ordinal ) )
+				{
+					binaryWriter.Write( entry.CompressedLength );
+					binaryWriter.Write( entry.Length );
+					binaryWriter.Write( GetChecksum( entry ) );
+				}
 			}
 
 			stream.Position = 0;
+
 			return new Guid( HashBuilder.ComputeHash( stream ) );
 		}
 

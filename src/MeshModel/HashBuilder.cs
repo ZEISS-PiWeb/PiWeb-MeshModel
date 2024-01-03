@@ -48,12 +48,6 @@ namespace Zeiss.PiWeb.MeshModel
 			return hashAlgorithm.ComputeHash( stream );
 		}
 
-		internal static byte[] ComputeHash( byte[] buffer )
-		{
-			using var hashAlgorithm = CreateHashAlgorithm();
-			return hashAlgorithm.ComputeHash( buffer );
-		}
-
 		#endregion
 	}
 }

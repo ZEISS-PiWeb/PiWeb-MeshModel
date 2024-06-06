@@ -1,0 +1,32 @@
+
+ort:
+  allowedProcessEnvironmentVariableNames:
+    - PASSPORT
+    - USER_HOME
+  deniedProcessEnvironmentVariablesSubstrings:
+    - PASS
+    - SECRET
+    - TOKEN
+    - USER
+
+  enableRepositoryPackageConfigurations: true
+  enableRepositoryPackageCurations: true
+
+  packageCurationProviders:
+  - type: DefaultFile
+  - type: DefaultDir
+  - type: File
+    id: NuGetCurationsFile
+    options:
+      path: '/home/ort/.ort/config/curations.yml'
+      mustExist: true
+  - type: ClearlyDefined
+    options:
+      serverUrl: 'https://api.clearlydefined.io'
+      minTotalLicenseScore: 80
+    
+  excludes:
+    paths:
+      - pattern: "src/Tests/"
+        reason: "Tests only. Not distributed."
+    

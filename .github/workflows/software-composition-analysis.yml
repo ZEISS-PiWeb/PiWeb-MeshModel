@@ -11,8 +11,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'ZEISS-PiWeb/PiWeb-MeshModel'
+          ref: 'feature/Automate-SCA'
       - name: Run GitHub Action for ORT
         uses: oss-review-toolkit/ort-ci-github-action@v1
-        with:
-          allow-dynamic-versions: 'true'
-          ort-cli-args: '-P ort.analyzer.enabledPackageManagers=Nuget'

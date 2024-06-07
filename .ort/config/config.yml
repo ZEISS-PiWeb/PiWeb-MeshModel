@@ -1,8 +1,11 @@
+# The parameters set here map to members of files in https://github.com/oss-review-toolkit/ort/tree/main/model/src/main/kotlin/config
 
-ort:
+ort: #see https://github.com/oss-review-toolkit/ort/blob/main/model/src/main/kotlin/config/OrtConfiguration.kt
+
   allowedProcessEnvironmentVariableNames:
     - PASSPORT
     - USER_HOME
+    
   deniedProcessEnvironmentVariablesSubstrings:
     - PASS
     - SECRET
@@ -12,21 +15,28 @@ ort:
   enableRepositoryPackageConfigurations: true
   enableRepositoryPackageCurations: true
 
+  forceOverwrite: true
+
+  licenseFilePatterns:
+    licenseFilenames: ['license*']
+    patentFilenames: ['patents']
+    rootLicenseFilenames: ['readme*']
+
+    
+  # Package curation providers are listed from highest to lowest priority. Technically, they are applied in reverse
+  # order: The provider with the highest priority is applied last, so it can overwrite any previously applied curations.
   packageCurationProviders:
   - type: DefaultFile
   - type: DefaultDir
-  - type: File
-    id: NuGetCurationsFile
-    options:
-      path: '/home/ort/.ort/config/curations.yml'
-      mustExist: true
   - type: ClearlyDefined
     options:
       serverUrl: 'https://api.clearlydefined.io'
       minTotalLicenseScore: 80
-    
-  excludes:
-    paths:
-      - pattern: "src/Tests/"
-        reason: "Tests only. Not distributed."
-    
+
+  severeIssueThreshold: ERROR
+  severeRuleViolationThreshold: ERROR
+
+  analyzer: # see https://github.com/oss-review-toolkit/ort/blob/main/model/src/main/kotlin/config/AnalyzerConfiguration.kt
+    allowDynamicVersions: true
+    enabledPackageManagers: [NuGet]
+    skipExcluded: true

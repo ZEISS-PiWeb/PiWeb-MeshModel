@@ -307,8 +307,18 @@ namespace Zeiss.PiWeb.MeshModel
 			var meshValueList = new List<MeshValueList>( metadata.MeshValueEntries?.Length ?? 0 );
 			foreach( var entry in metadata.MeshValueEntries ?? Array.Empty<MeshValueEntry>() )
 			{
-				using var entryStream = zipFile.GetEntry( Path.Combine( subFolder, entry.Filename ) ).Open();
-				meshValueList.Add( ReadMeshValueList( entryStream, fileVersion, entry ) );
+				var zipEntry = zipFile.GetEntry( Path.Combine( subFolder, entry.Filename ) );
+				if( zipEntry is null )
+					continue;
+
+				using var zipStream = zipEntry.Open();
+				using var array = new ArrayPoolRented<byte>( (int)zipEntry.Length );
+				using var stream = new MemoryStream( array.Data, 0, (int)zipEntry.Length );
+
+				zipStream.CopyTo( stream );
+				stream.Seek( 0, SeekOrigin.Begin );
+
+				meshValueList.Add( ReadMeshValueList( stream, fileVersion, entry ) );
 			}
 
 			return meshValueList.ToArray();
@@ -325,7 +335,13 @@ namespace Zeiss.PiWeb.MeshModel
 			var entry = zipFile.GetEntry( Path.Combine( subFolder, "Edges.dat" ) );
 			if( entry == null ) return Array.Empty<Edge>();
 
-			using var stream = entry.Open();
+			using var zipStream = entry.Open();
+			using var array = new ArrayPoolRented<byte>( (int)entry.Length );
+			using var stream = new MemoryStream( array.Data, 0, (int)entry.Length );
+
+			zipStream.CopyTo( stream );
+			stream.Seek( 0, SeekOrigin.Begin );
+
 			return ReadEdges( stream, fileVersion );
 		}
 
@@ -349,7 +365,13 @@ namespace Zeiss.PiWeb.MeshModel
 			var entry = zipFile.GetEntry( Path.Combine( subFolder, "Meshes.dat" ) );
 			if( entry == null ) return Array.Empty<Mesh>();
 
-			using var stream = entry.Open();
+			using var zipStream = entry.Open();
+			using var array = new ArrayPoolRented<byte>( (int)entry.Length );
+			using var stream = new MemoryStream( array.Data, 0, (int)entry.Length );
+
+			zipStream.CopyTo( stream );
+			stream.Seek( 0, SeekOrigin.Begin );
+
 			return ReadMeshes( stream, fileVersion );
 		}
 

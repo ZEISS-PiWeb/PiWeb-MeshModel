@@ -1,0 +1,95 @@
+---
+SPDXID: "SPDXRef-DOCUMENT"
+spdxVersion: "SPDX-2.2"
+creationInfo:
+  created: "2024-06-05T13:44:02Z"
+  creators:
+  - "Tool: ort-22.6.0"
+  licenseListVersion: "3.24.0"
+name: "Unnamed document"
+dataLicense: "CC0-1.0"
+documentNamespace: "spdx://e342787a-b67c-4bce-ab32-e4a1f72e6d9c"
+documentDescribes:
+- "SPDXRef-Project-NuGet-MeshModel.MeshModel.csproj"
+- "SPDXRef-Project-Unmanaged-PiWeb-MeshModel-a3a12a6283c7ee638fa3e5bf18caac40b49e6a02"
+packages:
+- SPDXID: "SPDXRef-Project-NuGet-MeshModel.MeshModel.csproj"
+  copyrightText: "NONE"
+  downloadLocation: "NONE"
+  filesAnalyzed: false
+  homepage: "NONE"
+  licenseConcluded: "NOASSERTION"
+  licenseDeclared: "NOASSERTION"
+  name: "MeshModel/MeshModel.csproj"
+  summary: "NONE"
+- SPDXID: "SPDXRef-Project-Unmanaged-PiWeb-MeshModel-a3a12a6283c7ee638fa3e5bf18caac40b49e6a02"
+  copyrightText: "NONE"
+  downloadLocation: "NONE"
+  filesAnalyzed: false
+  homepage: "NONE"
+  licenseConcluded: "NOASSERTION"
+  licenseDeclared: "NOASSERTION"
+  name: "PiWeb-MeshModel"
+  summary: "NONE"
+  versionInfo: "a3a12a6283c7ee638fa3e5bf18caac40b49e6a02"
+- SPDXID: "SPDXRef-Package-NuGet-NETStandard-Library-2.0.3"
+  checksums:
+  - algorithm: "SHA512"
+    checksumValue: "e78f0cea69c14895b1b089644077dbce8631a626055d96522f4d29e061d8bfc3e48aa1419e74faf265b998612c03f721f5f0cef4690f824150a5689764dee601"
+  copyrightText: "NONE"
+  downloadLocation: "https://api.nuget.org/v3-flatcontainer/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg"
+  externalRefs:
+  - referenceCategory: "PACKAGE_MANAGER"
+    referenceType: "purl"
+    referenceLocator: "pkg:nuget/NETStandard.Library@2.0.3"
+  filesAnalyzed: false
+  homepage: "https://dot.net/"
+  licenseConcluded: "MIT"
+  licenseDeclared: "NOASSERTION"
+  name: "Library"
+  summary: "A set of standard .NET APIs that are prescribed to be used and supported\
+    \ together. "
+  versionInfo: "2.0.3"
+- SPDXID: "SPDXRef-Package-NuGet-NETStandard-Library-2.0.3-vcs"
+  copyrightText: "NONE"
+  downloadLocation: "git+https://github.com/dotnet/standard.git"
+  externalRefs:
+  - referenceCategory: "PACKAGE_MANAGER"
+    referenceType: "purl"
+    referenceLocator: "pkg:nuget/NETStandard.Library@2.0.3"
+  filesAnalyzed: false
+  homepage: "https://dot.net/"
+  licenseConcluded: "NOASSERTION"
+  licenseDeclared: "NOASSERTION"
+  name: "Library"
+  summary: "A set of standard .NET APIs that are prescribed to be used and supported\
+    \ together. "
+  versionInfo: "2.0.3"
+- SPDXID: "SPDXRef-Package-NuGet-System-Buffers-4.5.1"
+  checksums:
+  - algorithm: "SHA512"
+    checksumValue: "80da6158e55b9bcf7e0b5e6379b9cf45a632914f037b53c5bf5609576e3cd7821f7861956b73d74470d2d0c2e56dd235a5ef4ca6ffe7e192b820dc2d023aaff2"
+  copyrightText: "NONE"
+  downloadLocation: "https://api.nuget.org/v3-flatcontainer/system.buffers/4.5.1/system.buffers.4.5.1.nupkg"
+  externalRefs:
+  - referenceCategory: "PACKAGE_MANAGER"
+    referenceType: "purl"
+    referenceLocator: "pkg:nuget/System.Buffers@4.5.1"
+  filesAnalyzed: false
+  homepage: "https://dot.net/"
+  licenseConcluded: "NOASSERTION"
+  licenseDeclared: "MIT"
+  name: "Buffers"
+  summary: "Provides resource pooling of any type for performance-critical applications\
+    \ that allocate and deallocate objects frequently."
+  versionInfo: "4.5.1"
+relationships:
+- spdxElementId: "SPDXRef-Package-NuGet-NETStandard-Library-2.0.3"
+  relationshipType: "GENERATED_FROM"
+  relatedSpdxElement: "SPDXRef-Package-NuGet-NETStandard-Library-2.0.3-vcs"
+- spdxElementId: "SPDXRef-Project-NuGet-MeshModel.MeshModel.csproj"
+  relationshipType: "DEPENDS_ON"
+  relatedSpdxElement: "SPDXRef-Package-NuGet-NETStandard-Library-2.0.3"
+- spdxElementId: "SPDXRef-Project-NuGet-MeshModel.MeshModel.csproj"
+  relationshipType: "DEPENDS_ON"
+  relatedSpdxElement: "SPDXRef-Package-NuGet-System-Buffers-4.5.1"

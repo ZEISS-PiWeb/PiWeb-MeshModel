@@ -10,6 +10,12 @@
 
 namespace Zeiss.PiWeb.MeshModel
 {
+	#region usings
+
+	using Zeiss.PiWeb.ColorScale;
+
+	#endregion
+
 	/// <summary>
 	/// Represents a triangulated mesh.
 	/// </summary>

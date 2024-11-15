@@ -18,6 +18,7 @@ namespace Zeiss.PiWeb.MeshModel
 	using System.IO;
 	using System.IO.Compression;
 	using System.Xml;
+	using Zeiss.PiWeb.ColorScale;
 
 	#endregion
 
@@ -73,14 +74,6 @@ namespace Zeiss.PiWeb.MeshModel
 			{
 				binaryWriter.Write( false );
 			}
-		}
-
-		/// <summary>
-		/// Writes the <paramref name="color"/> as an hex string at an attribute named <paramref name="name"/>.
-		/// </summary>
-		internal static void WriteColorAttribute( this XmlWriter writer, string name, Color color )
-		{
-			writer.WriteAttributeString( name, $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}" );
 		}
 
 		/// <summary>
@@ -212,15 +205,6 @@ namespace Zeiss.PiWeb.MeshModel
 			}
 
 			ArrayPool<byte>.Shared.Return( buffer );
-		}
-
-		/// <summary>
-		/// Reads a hex color value from an attribute with name <paramref name="name"/>.
-		/// </summary>
-		public static Color ReadColorAttribute( this XmlReader reader, string name )
-		{
-			var value = reader.GetAttribute( name );
-			return Color.ParseArgb( value );
 		}
 
 		/// <summary>

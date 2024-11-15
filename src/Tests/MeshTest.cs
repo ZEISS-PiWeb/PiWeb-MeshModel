@@ -20,6 +20,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 	using System.IO.Compression;
 	using System.Linq;
 	using NUnit.Framework;
+	using Zeiss.PiWeb.ColorScale;
 
 	#endregion
 

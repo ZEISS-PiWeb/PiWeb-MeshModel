@@ -19,6 +19,7 @@ namespace Zeiss.PiWeb.MeshModel
 	using System.IO.Compression;
 	using System.Linq;
 	using System.Text;
+	using Zeiss.PiWeb.ColorScale;
 
 	#endregion
 

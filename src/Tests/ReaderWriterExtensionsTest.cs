@@ -14,6 +14,7 @@ namespace Zeiss.PiWeb.MeshModel.Tests
 
 	using System.IO;
 	using NUnit.Framework;
+	using Zeiss.PiWeb.ColorScale;
 
 	#endregion
 

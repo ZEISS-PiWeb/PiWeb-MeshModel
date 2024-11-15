@@ -15,6 +15,7 @@ namespace Zeiss.PiWeb.MeshModel
 	using System;
 	using System.IO;
 	using System.Linq;
+	using Zeiss.PiWeb.ColorScale;
 
 	#endregion
 

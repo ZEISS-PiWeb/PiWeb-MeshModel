@@ -1,0 +1,8 @@
+name: OSS Review Toolkit - FOSS scan
+
+on:
+  workflow_dispatch:
+
+jobs:
+  foss-scan:
+    uses: ZEISS-PiWeb/github-actions/.github/workflows/foss-scan.yml@feature/foss-scan@feature/foss-scan

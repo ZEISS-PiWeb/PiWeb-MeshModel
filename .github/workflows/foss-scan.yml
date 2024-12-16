@@ -1,0 +1,26 @@
+name: OSS Review Toolkit - FOSS scan
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ort:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use HTTPS instead of SSH for Git cloning
+        run: git config --global url.https://github.com/.insteadOf ssh://git@github.com/
+      - name: Build project
+        uses: ZEISS-PiWeb/github-actions/.github/workflows/build-and-pack.yml@main
+        with:
+          do_pack: false
+      - name: Run GitHub Action for ORT
+        uses: oss-review-toolkit/ort-ci-github-action@v1
+        with:
+          allow-dynamic-versions: 'true'
+          ort-cli-args: '-P ort.analyzer.enabledPackageManagers=Nuget'
+          run: >
+            analyzer,
+            scanner,
+            evaluator,
+            reporter,
+            upload-results

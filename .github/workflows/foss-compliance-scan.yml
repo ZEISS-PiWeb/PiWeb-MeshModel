@@ -5,4 +5,4 @@ on:
 
 jobs:
   foss-scan:
-    uses: ZEISS-PiWeb/github-actions/.github/workflows/foss-scan.yml@feature/foss-scan@feature/foss-scan
+    uses: ZEISS-PiWeb/github-actions/.github/workflows/foss-scan.yml@feature/foss-scan

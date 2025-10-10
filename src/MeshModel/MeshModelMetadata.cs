@@ -318,7 +318,7 @@ namespace Zeiss.PiWeb.MeshModel
 				{
 					case "Guid":
 						result.Guid = Guid.ParseExact( reader.ReadString(), "N" );
-						hasGuid = true;
+						hasGuid = result.Guid != Guid.Empty;
 						break;
 					case "TriangulationHash":
 						result.TriangulationHash = Guid.ParseExact( reader.ReadString(), "N" );

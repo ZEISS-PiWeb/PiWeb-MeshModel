@@ -28,19 +28,6 @@ namespace Zeiss.PiWeb.MeshModel
 	/// </summary>
 	public sealed class MeshModelMetadata
 	{
-		#region members
-
-		private static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings
-		{
-			IgnoreComments = true,
-			IgnoreWhitespace = true,
-			IgnoreProcessingInstructions = true,
-			CloseInput = false,
-			NameTable = new NameTable()
-		};
-
-		#endregion
-
 		#region constructors
 
 		/// <summary>
@@ -307,7 +294,16 @@ namespace Zeiss.PiWeb.MeshModel
 			var hasName = false;
 			var hasPartCount = false;
 
-			using var reader = XmlReader.Create( stream, XmlReaderSettings );
+			var settings = new XmlReaderSettings
+			{
+				IgnoreComments = true,
+				IgnoreWhitespace = true,
+				IgnoreProcessingInstructions = true,
+				CloseInput = false,
+				NameTable = new NameTable()
+			};
+
+			using var reader = XmlReader.Create( stream, settings );
 
 			var result = new MeshModelMetadata();
 			reader.MoveToElement();

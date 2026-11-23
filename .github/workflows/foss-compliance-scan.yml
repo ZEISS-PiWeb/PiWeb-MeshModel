@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: [ '6.0.x' ]
+        dotnet-version: [ '10.0.x' ]
 
     steps:
       - uses: actions/checkout@v3
@@ -38,5 +38,5 @@ jobs:
         
           # Run scan and upload binaries.
           cd ${{ github.workspace }}/software_composition_analysis
-          bash <(curl -s -L https://detect.synopsys.com/detect7.sh) --blackduck.api.token=${{ secrets.BLACKDUCK_PAT }} --detect.project.version.name=$version --detect.source.path=${{ github.workspace }}/src/MeshModel/bin/Release/net6.0
+          bash <(curl -s -L https://detect.synopsys.com/detect7.sh) --blackduck.api.token=${{ secrets.BLACKDUCK_PAT }} --detect.project.version.name=$version --detect.source.path=${{ github.workspace }}/src/MeshModel/bin/Release/net10.0
 

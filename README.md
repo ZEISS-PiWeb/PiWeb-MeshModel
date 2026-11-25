@@ -1,9 +1,9 @@
 [![main](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/develop.yml/badge.svg?branch=main)](https://github.com/ZEISS-PiWeb/PiWeb-MeshModel/actions/workflows/develop.yml)
 [![NuGet](https://img.shields.io/nuget/v/Zeiss.PiWeb.MeshModel?logo=nuget)](https://www.nuget.org/packages/Zeiss.PiWeb.MeshModel/)
 
-# PiWeb MeshModel
+# ZEISS PiWeb MeshModel
 
-| ![Zeiss IQS Logo](img/logo_128x128.png) | The **PiWeb MeshModel library** provides an easy to use interface for reading and especially writing PiWeb meshmodel data used by the quality data management system [ZEISS PiWeb](http://www.zeiss.com/industrial-metrology/en_de/products/software/piweb.html). |
+| ![Zeiss IQS Logo](img/logo_128x128.png) | The **ZEISS PiWeb MeshModel library** provides an easy to use interface for reading and especially writing ZEISS PiWeb meshmodel data used by the quality data management system [ZEISS PiWeb](http://www.zeiss.com/industrial-metrology/en_de/products/software/piweb.html). |
 |-|:-|
 
 
